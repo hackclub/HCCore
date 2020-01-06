@@ -1,0 +1,21 @@
+name: HCCore
+version: 1.0.0
+api-version: 1.15
+main: com.hackclub.hccore.HCCorePlugin
+depend: [NBTAPI, ProtocolLib]
+commands:
+  afk:
+    description: Toggles your AFK status
+    usage: /afk
+  loc:
+    description: Manage your saved locations
+    usage: /loc <del|get|list|save|share> [...args]
+  nick:
+    description: Set your nickname
+    usage: /nick <nickname>
+  shrug:
+    description: Shrug, just like /shrug in Slack
+    usage: /shrug [message]
+  spawn:
+    description: Teleports you to the server spawn. Only works if you haven’t been damaged recently
+    usage: /spawn
