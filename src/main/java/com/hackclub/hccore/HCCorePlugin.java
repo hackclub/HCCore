@@ -1,13 +1,16 @@
 package com.hackclub.hccore;
 
+import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
+import com.comphenix.protocol.events.ListenerPriority;
 import com.hackclub.hccore.commands.AFKCommand;
 import com.hackclub.hccore.commands.LocCommand;
 import com.hackclub.hccore.commands.NickCommand;
 import com.hackclub.hccore.commands.ShrugCommand;
 import com.hackclub.hccore.commands.SpawnCommand;
 import com.hackclub.hccore.listeners.BeehiveInteractionListener;
+import com.hackclub.hccore.listeners.NameChangeListener;
 import com.hackclub.hccore.listeners.PlayerListener;
 import com.hackclub.hccore.listeners.SleepListener;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -34,6 +37,10 @@ public class HCCorePlugin extends JavaPlugin {
                 this);
         this.getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
         this.getServer().getPluginManager().registerEvents(new SleepListener(this), this);
+
+        // Register packet listeners
+        this.getProtocolManager().addPacketListener(new NameChangeListener(this,
+                ListenerPriority.NORMAL, PacketType.Play.Server.PLAYER_INFO));
     }
 
     public DataManager getDataManager() {

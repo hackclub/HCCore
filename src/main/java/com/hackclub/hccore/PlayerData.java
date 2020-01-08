@@ -115,18 +115,31 @@ public class PlayerData {
         }
     }
 
-    private void updateDisplayedName() {
-        String builtDisplayName = PlayerData.buildDisplayedName(this);
-        this.player.setDisplayName(builtDisplayName);
-        this.player.setPlayerListName(builtDisplayName);
-        // TODO: Update player nametag
+    public String getDisplayedName() {
+        String format = "%s";
+        if (this.isAfk()) {
+            format = ChatColor.GRAY + format + " (AFK)";
+        }
+        return String.format(format, this.getNickname());
     }
 
-    private static String buildDisplayedName(PlayerData data) {
-        if (data.isAfk()) {
-            return ChatColor.GRAY + data.getNickname() + " (AFK)";
-        } else {
-            return data.getNickname();
+    private void updateDisplayedName() {
+        String builtDisplayName = this.getDisplayedName();
+        this.player.setDisplayName(builtDisplayName);
+        this.player.setPlayerListName(builtDisplayName);
+        this.refreshNameTag();
+    }
+
+    private void refreshNameTag() {
+        for (Player onlinePlayer : this.plugin.getServer().getOnlinePlayers()) {
+            if (onlinePlayer.equals(this.player) || !onlinePlayer.canSee(this.player)) {
+                continue;
+            }
+            // Showing the player again after they've been hidden causes a Player Info packet to be
+            // sent, which is then intercepted by NameChangeListener. The actual modification of the
+            // name tag takes place there.
+            onlinePlayer.hidePlayer(this.plugin, this.player);
+            onlinePlayer.showPlayer(this.plugin, this.player);
         }
     }
 }
