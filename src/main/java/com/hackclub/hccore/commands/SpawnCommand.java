@@ -33,7 +33,7 @@ public class SpawnCommand implements CommandExecutor {
         // Can't be used while in damage cooldown period
         PlayerData data = this.plugin.getDataManager().getData(player);
         long currentTime = System.currentTimeMillis();
-        int secondsSinceLastDamaged = (int) (currentTime - data.getLastDamagedAt()) / 1000;
+        long secondsSinceLastDamaged = (currentTime - data.getLastDamagedAt()) / 1000;
         final int DAMAGE_WAIT_TIME = 20;
         if (secondsSinceLastDamaged < DAMAGE_WAIT_TIME) {
             player.sendMessage(
