@@ -41,6 +41,15 @@ public class HCCorePlugin extends JavaPlugin {
         // Register packet listeners
         this.getProtocolManager().addPacketListener(new NameChangeListener(this,
                 ListenerPriority.NORMAL, PacketType.Play.Server.PLAYER_INFO));
+
+        // Register all the players that were online before this plugin was enabled (example
+        // scenario: plugin reload) to prevent null pointer errors.
+        this.getDataManager().registerAll();
+    }
+
+    @Override
+    public void onDisable() {
+        this.getDataManager().unregisterAll();
     }
 
     public DataManager getDataManager() {
