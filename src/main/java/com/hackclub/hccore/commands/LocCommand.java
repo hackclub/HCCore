@@ -1,5 +1,8 @@
 package com.hackclub.hccore.commands;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import com.hackclub.hccore.HCCorePlugin;
 import com.hackclub.hccore.PlayerData;
@@ -8,10 +11,11 @@ import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
+import org.bukkit.util.StringUtil;
 
-// TODO: Move subcommands into separate classes
-public class LocCommand implements CommandExecutor {
+public class LocCommand implements CommandExecutor, TabCompleter {
     private final HCCorePlugin plugin;
 
     public LocCommand(HCCorePlugin plugin) {
@@ -120,5 +124,54 @@ public class LocCommand implements CommandExecutor {
         }
 
         return true;
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command cmd, String alias,
+            String[] args) {
+        if (!(sender instanceof Player)) {
+            return null;
+        }
+
+        List<String> completions = new ArrayList<String>();
+        switch (args.length) {
+            // Complete subcommand
+            case 1: {
+                List<String> subcommands = List.of("del", "get", "list", "save", "share");
+                StringUtil.copyPartialMatches(args[0], subcommands, completions);
+                break;
+            }
+            // Complete location name for everything but /loc list and /loc save
+            case 2: {
+                if (args[0].equalsIgnoreCase("list") || args[0].equalsIgnoreCase("save")) {
+                    break;
+                }
+
+                Player player = (Player) sender;
+                PlayerData data = this.plugin.getDataManager().getData(player);
+                for (Map.Entry<String, Location> entry : data.getSavedLocations().entrySet()) {
+                    if (StringUtil.startsWithIgnoreCase(entry.getKey(), args[1])) {
+                        completions.add(entry.getKey());
+                    }
+                }
+                break;
+            }
+            // Complete online player name for /loc share
+            case 3: {
+                if (!args[0].equalsIgnoreCase("share")) {
+                    break;
+                }
+
+                for (Player player : this.plugin.getServer().getOnlinePlayers()) {
+                    if (StringUtil.startsWithIgnoreCase(player.getName(), args[2])) {
+                        completions.add(player.getName());
+                    }
+                }
+                break;
+            }
+        }
+
+        Collections.sort(completions);
+        return completions;
     }
 }
