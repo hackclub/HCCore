@@ -9,20 +9,19 @@ import com.hackclub.hccore.PlayerData;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
+import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 
-public class LocCommand implements CommandExecutor, TabCompleter {
+public class LocCommand implements TabExecutor {
     private final HCCorePlugin plugin;
 
     public LocCommand(HCCorePlugin plugin) {
         this.plugin = plugin;
     }
 
-    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+    public boolean onCommand(CommandSender sender, Command cmd, String alias, String[] args) {
         if (!(sender instanceof Player)) {
             sender.sendMessage(ChatColor.RED + "You must be a player to use this");
             return true;
