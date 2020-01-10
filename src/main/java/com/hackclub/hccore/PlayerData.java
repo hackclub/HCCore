@@ -4,40 +4,37 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.Expose;
+import com.hackclub.hccore.utils.gson.GsonUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 public class PlayerData {
-    public static final Gson GSON = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
-
-    private final transient HCCorePlugin plugin;
-    private final transient Player player;
-    private transient File dataFile;
+    private final HCCorePlugin plugin;
+    private final Player player;
+    private File dataFile;
 
     // Session data (will be cleared when player quits)
-    private transient boolean isAfk = false;
-    private transient long lastDamagedAt = 0;
+    private boolean isAfk = false;
+    private long lastDamagedAt = 0;
 
     // Persistent data
-    // TODO: Save on every write or save on leave?
+    @Expose
     private String nickname = null;
-    // private String slackId = null;
-    private Map<String, Location> savedLocations = new HashMap<>();
+    @Expose
+    private String slackId = null;
+    @Expose
+    private Map<String, Location> savedLocations = new LinkedHashMap<>();
 
     public PlayerData(HCCorePlugin plugin, Player player) {
         this.plugin = plugin;
         this.player = player;
         this.dataFile = new File(plugin.getDataManager().getDataFolder(),
                 player.getUniqueId().toString() + ".json");
-
-        // Set defaults
-        this.nickname = player.getName();
     }
 
     public boolean isAfk() {
@@ -58,23 +55,27 @@ public class PlayerData {
     }
 
     public String getNickname() {
-        // TODO: Read from player file
         return this.nickname;
     }
 
     public void setNickname(String name) {
-        // TODO: Write player file
-        this.nickname = name != null ? name : this.player.getName();
+        this.nickname = name;
         this.updateDisplayedName();
     }
 
+    public String getSlackId() {
+        return this.slackId;
+    }
+
+    public void setSlackId(String id) {
+        this.slackId = id;
+    }
+
     public Map<String, Location> getSavedLocations() {
-        // TODO: Read from file
         return this.savedLocations;
     }
 
     public Location getSavedLocation(String name) {
-        // TODO: Read from file
         return this.savedLocations.get(name);
     }
 
@@ -83,12 +84,10 @@ public class PlayerData {
     }
 
     public void addSavedLocation(String name, Location location) {
-        // TODO: Add from file
         this.savedLocations.put(name, location);
     }
 
     public void removeSavedLocation(String name) {
-        // TODO: Remove from file
         this.savedLocations.remove(name);
     }
 
@@ -98,10 +97,14 @@ public class PlayerData {
                 this.plugin.getLogger().log(Level.INFO,
                         "No data file found for " + this.player.getName() + ", creating…");
                 this.dataFile.createNewFile();
+                this.save();
             }
 
-            PlayerData playerData =
-                    PlayerData.GSON.fromJson(new FileReader(this.dataFile), PlayerData.class);
+            // Populate this instance
+            PlayerData playerData = GsonUtil.getInstance().fromJson(new FileReader(this.dataFile),
+                    PlayerData.class);
+            this.setNickname(playerData.nickname);
+            this.savedLocations = playerData.getSavedLocations();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -109,7 +112,11 @@ public class PlayerData {
 
     public void save() {
         try {
-            PlayerData.GSON.toJson(this, new FileWriter(this.dataFile));
+            this.dataFile.getParentFile().mkdirs(); // In case parent directory is missing
+
+            FileWriter writer = new FileWriter(this.dataFile);
+            GsonUtil.getInstance().toJson(this, writer);
+            writer.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -120,7 +127,10 @@ public class PlayerData {
         if (this.isAfk()) {
             format = ChatColor.GRAY + format + " (AFK)";
         }
-        return String.format(format, this.getNickname());
+
+        // Fallback to username if there's no nickname set
+        String name = this.getNickname() != null ? this.getNickname() : this.player.getName();
+        return String.format(format, name);
     }
 
     private void updateDisplayedName() {
