@@ -75,22 +75,6 @@ public class PlayerData {
         return this.savedLocations;
     }
 
-    public Location getSavedLocation(String name) {
-        return this.savedLocations.get(name);
-    }
-
-    public boolean hasSavedLocation(String name) {
-        return this.savedLocations.containsKey(name);
-    }
-
-    public void addSavedLocation(String name, Location location) {
-        this.savedLocations.put(name, location);
-    }
-
-    public void removeSavedLocation(String name) {
-        this.savedLocations.remove(name);
-    }
-
     public void load() {
         try {
             if (!this.dataFile.exists()) {

@@ -37,11 +37,12 @@ public class LocCommand implements CommandExecutor {
                     player.sendMessage(ChatColor.RED + "Please specify the location name");
                     break;
                 }
-                if (!data.hasSavedLocation(args[1])) {
+                if (!data.getSavedLocations().containsKey(args[1])) {
                     player.sendMessage(ChatColor.RED + "No location with that name was found");
                     break;
                 }
-                data.removeSavedLocation(args[1]);
+
+                data.getSavedLocations().remove(args[1]);
                 player.sendMessage(
                         ChatColor.GREEN + "Removed " + args[1] + " from saved locations");
                 break;
@@ -52,11 +53,12 @@ public class LocCommand implements CommandExecutor {
                     player.sendMessage(ChatColor.RED + "Please specify the location name");
                     break;
                 }
-                if (!data.hasSavedLocation(args[1])) {
+                if (!data.getSavedLocations().containsKey(args[1])) {
                     player.sendMessage(ChatColor.RED + "No location with that name was found");
                     break;
                 }
-                Location savedLocation = data.getSavedLocation(args[1]);
+
+                Location savedLocation = data.getSavedLocations().get(args[1]);
                 player.sendMessage(args[1] + ": " + savedLocation.getWorld().getName() + " @ "
                         + savedLocation.getBlockX() + ", " + savedLocation.getBlockY() + ", "
                         + savedLocation.getBlockZ());
@@ -65,15 +67,15 @@ public class LocCommand implements CommandExecutor {
             // /loc list
             case "list": {
                 Map<String, Location> savedLocations = data.getSavedLocations();
-                if (savedLocations.size() == 0) {
+                if (savedLocations.isEmpty()) {
                     player.sendMessage("You have no saved locations");
                     break;
                 }
 
                 player.sendMessage(ChatColor.AQUA + "Your saved locations:");
-                for (String locationName : savedLocations.keySet()) {
-                    Location savedLocation = savedLocations.get(locationName);
-                    player.sendMessage("- " + locationName + ": "
+                for (Map.Entry<String, Location> entry : savedLocations.entrySet()) {
+                    Location savedLocation = entry.getValue();
+                    player.sendMessage("- " + entry.getKey() + ": "
                             + savedLocation.getWorld().getName() + " @ " + savedLocation.getBlockX()
                             + ", " + savedLocation.getBlockY() + ", " + savedLocation.getBlockZ());
                 }
@@ -85,12 +87,13 @@ public class LocCommand implements CommandExecutor {
                     player.sendMessage(ChatColor.RED + "Please specify the location name");
                     break;
                 }
-                if (data.hasSavedLocation(args[1])) {
+                if (data.getSavedLocations().containsKey(args[1])) {
                     player.sendMessage(ChatColor.RED + "A location with that name already exists");
                     break;
                 }
+
                 Location currentLocation = player.getLocation();
-                data.addSavedLocation(args[1], currentLocation);
+                data.getSavedLocations().put(args[1], currentLocation);
                 player.sendMessage(ChatColor.GREEN + "Added " + args[1] + " ("
                         + currentLocation.getWorld().getName() + " @ " + currentLocation.getBlockX()
                         + ", " + currentLocation.getBlockY() + ", " + currentLocation.getBlockZ()
@@ -104,7 +107,7 @@ public class LocCommand implements CommandExecutor {
                             + "Please specify the location name and the player you want to share it with");
                     break;
                 }
-                if (!data.hasSavedLocation(args[1])) {
+                if (!data.getSavedLocations().containsKey(args[1])) {
                     player.sendMessage(ChatColor.RED + "No location with that name was found");
                     break;
                 }
