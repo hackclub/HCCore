@@ -33,7 +33,7 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onPlayerDeath(final PlayerDeathEvent event) {
         event.setDeathMessage(event.getDeathMessage().replace(event.getEntity().getName(),
-                event.getEntity().getDisplayName()));
+                ChatColor.stripColor(event.getEntity().getDisplayName())));
     }
 
     @EventHandler
@@ -53,8 +53,8 @@ public class PlayerListener implements Listener {
 
         // NOTE: Title isn't cleared when the player leaves the server
         event.getPlayer().resetTitle();
-        event.setJoinMessage(event.getJoinMessage().replace(event.getPlayer().getName(),
-                event.getPlayer().getDisplayName()));
+        event.setJoinMessage(ChatColor.YELLOW
+                + ChatColor.stripColor(event.getPlayer().getDisplayName()) + " joined the game");
     }
 
     @EventHandler
@@ -67,8 +67,8 @@ public class PlayerListener implements Listener {
     public void onPlayerQuit(final PlayerQuitEvent event) {
         // NOTE: Title isn't cleared when the player leaves the server
         // event.getPlayer().resetTitle();
-        event.setQuitMessage(event.getQuitMessage().replace(event.getPlayer().getName(),
-                event.getPlayer().getDisplayName()));
+        event.setQuitMessage(ChatColor.YELLOW
+                + ChatColor.stripColor(event.getPlayer().getDisplayName()) + " left the game");
 
         this.plugin.getDataManager().unregisterPlayer(event.getPlayer());
     }
