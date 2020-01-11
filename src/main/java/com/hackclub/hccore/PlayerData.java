@@ -81,6 +81,7 @@ public class PlayerData {
 
     public void setNameColor(ChatColor color) {
         this.nameColor = color != null ? color : ChatColor.WHITE;
+        this.updateDisplayedName();
     }
 
     public ChatColor getMessageColor() {
@@ -133,6 +134,8 @@ public class PlayerData {
         String format = "%s";
         if (this.isAfk()) {
             format = ChatColor.GRAY + format + " (AFK)";
+        } else {
+            format = this.getNameColor() + format;
         }
 
         // Fallback to username if there's no nickname set
