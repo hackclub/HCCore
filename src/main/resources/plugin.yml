@@ -7,6 +7,9 @@ commands:
   afk:
     description: Toggles your AFK status
     usage: /afk
+  color:
+    description: Sets your chat or name color
+    usage: /color <chat|name> [color]
   loc:
     description: Manage your saved locations
     usage: /loc <del|get|list|save|share> [...args]

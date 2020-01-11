@@ -28,6 +28,10 @@ public class PlayerData {
     @Expose
     private String slackId = null;
     @Expose
+    private ChatColor nameColor = ChatColor.WHITE;
+    @Expose
+    private ChatColor messageColor = ChatColor.GRAY;
+    @Expose
     private Map<String, Location> savedLocations = new LinkedHashMap<>();
 
     public PlayerData(HCCorePlugin plugin, Player player) {
@@ -71,6 +75,22 @@ public class PlayerData {
         this.slackId = id;
     }
 
+    public ChatColor getNameColor() {
+        return this.nameColor;
+    }
+
+    public void setNameColor(ChatColor color) {
+        this.nameColor = color != null ? color : ChatColor.WHITE;
+    }
+
+    public ChatColor getMessageColor() {
+        return this.messageColor;
+    }
+
+    public void setMessageColor(ChatColor color) {
+        this.messageColor = color != null ? color : ChatColor.GRAY;
+    }
+
     public Map<String, Location> getSavedLocations() {
         return this.savedLocations;
     }
@@ -85,10 +105,13 @@ public class PlayerData {
             }
 
             // Populate this instance
-            PlayerData playerData = GsonUtil.getInstance().fromJson(new FileReader(this.dataFile),
+            PlayerData data = GsonUtil.getInstance().fromJson(new FileReader(this.dataFile),
                     PlayerData.class);
-            this.setNickname(playerData.nickname);
-            this.savedLocations = playerData.getSavedLocations();
+            this.setNickname(data.nickname);
+            this.setSlackId(data.slackId);
+            this.setNameColor(data.nameColor);
+            this.setMessageColor(data.messageColor);
+            this.savedLocations = data.getSavedLocations();
         } catch (IOException e) {
             e.printStackTrace();
         }

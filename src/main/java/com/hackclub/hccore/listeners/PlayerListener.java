@@ -1,6 +1,7 @@
 package com.hackclub.hccore.listeners;
 
 import com.hackclub.hccore.HCCorePlugin;
+import com.hackclub.hccore.PlayerData;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -37,8 +38,13 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onAsyncPlayerChat(final AsyncPlayerChatEvent event) {
-        event.setMessage(ChatColor.translateAlternateColorCodes('&', event.getMessage()));
         event.setFormat(ChatColor.WHITE + "%s " + ChatColor.GOLD + "» " + ChatColor.GRAY + "%s");
+
+        // Apply the player's chat color to the message and translate color codes
+        PlayerData data = this.plugin.getDataManager().getData(event.getPlayer());
+        ChatColor playerColor = data.getMessageColor();
+        event.setMessage(
+                playerColor + ChatColor.translateAlternateColorCodes('&', event.getMessage()));
     }
 
     @EventHandler
