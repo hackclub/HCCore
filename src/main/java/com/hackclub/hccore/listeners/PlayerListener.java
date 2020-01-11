@@ -1,6 +1,7 @@
 package com.hackclub.hccore.listeners;
 
 import com.hackclub.hccore.HCCorePlugin;
+import com.hackclub.hccore.PlayerData;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -32,13 +33,18 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onPlayerDeath(final PlayerDeathEvent event) {
         event.setDeathMessage(event.getDeathMessage().replace(event.getEntity().getName(),
-                event.getEntity().getDisplayName()));
+                ChatColor.stripColor(event.getEntity().getDisplayName())));
     }
 
     @EventHandler
     public void onAsyncPlayerChat(final AsyncPlayerChatEvent event) {
-        event.setMessage(ChatColor.translateAlternateColorCodes('&', event.getMessage()));
         event.setFormat(ChatColor.WHITE + "%s " + ChatColor.GOLD + "» " + ChatColor.GRAY + "%s");
+
+        // Apply the player's chat color to the message and translate color codes
+        PlayerData data = this.plugin.getDataManager().getData(event.getPlayer());
+        ChatColor playerColor = data.getMessageColor();
+        event.setMessage(
+                playerColor + ChatColor.translateAlternateColorCodes('&', event.getMessage()));
     }
 
     @EventHandler
@@ -47,8 +53,8 @@ public class PlayerListener implements Listener {
 
         // NOTE: Title isn't cleared when the player leaves the server
         event.getPlayer().resetTitle();
-        event.setJoinMessage(event.getJoinMessage().replace(event.getPlayer().getName(),
-                event.getPlayer().getDisplayName()));
+        event.setJoinMessage(ChatColor.YELLOW
+                + ChatColor.stripColor(event.getPlayer().getDisplayName()) + " joined the game");
     }
 
     @EventHandler
@@ -61,8 +67,8 @@ public class PlayerListener implements Listener {
     public void onPlayerQuit(final PlayerQuitEvent event) {
         // NOTE: Title isn't cleared when the player leaves the server
         // event.getPlayer().resetTitle();
-        event.setQuitMessage(event.getQuitMessage().replace(event.getPlayer().getName(),
-                event.getPlayer().getDisplayName()));
+        event.setQuitMessage(ChatColor.YELLOW
+                + ChatColor.stripColor(event.getPlayer().getDisplayName()) + " left the game");
 
         this.plugin.getDataManager().unregisterPlayer(event.getPlayer());
     }
