@@ -8,8 +8,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class ShrugCommand implements CommandExecutor {
+    private final HCCorePlugin plugin;
 
     public ShrugCommand(HCCorePlugin plugin) {
+        this.plugin = plugin;
     }
 
     public boolean onCommand(CommandSender sender, Command cmd, String alias, String[] args) {
