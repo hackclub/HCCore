@@ -12,10 +12,8 @@ import org.bukkit.inventory.EquipmentSlot;
 import de.tr7zw.nbtapi.NBTTileEntity;
 
 public class BeehiveInteractionListener implements Listener {
-    private final HCCorePlugin plugin;
 
     public BeehiveInteractionListener(HCCorePlugin plugin) {
-        this.plugin = plugin;
     }
 
     @EventHandler

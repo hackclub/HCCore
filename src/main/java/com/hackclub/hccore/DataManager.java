@@ -8,8 +8,8 @@ import org.bukkit.entity.Player;
 
 public class DataManager {
     private final HCCorePlugin plugin;
-    private String dataFolder;
-    private Map<UUID, PlayerData> players = new HashMap<>();
+    private final String dataFolder;
+    private final Map<UUID, PlayerData> players = new HashMap<>();
 
     public DataManager(HCCorePlugin plugin) {
         this.plugin = plugin;
