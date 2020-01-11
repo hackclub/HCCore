@@ -16,7 +16,7 @@ import org.bukkit.entity.Player;
 public class PlayerData {
     private final HCCorePlugin plugin;
     private final Player player;
-    private File dataFile;
+    private final File dataFile;
 
     // Session data (will be cleared when player quits)
     private boolean isAfk = false;

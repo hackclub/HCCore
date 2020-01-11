@@ -92,7 +92,6 @@ public class SleepListener implements Listener {
 
     private int getMinSleepingPlayersNeeded(World world) {
         final double SLEEPING_MIN_PERCENTAGE = 0.5;
-        int playersNeeded = (int) Math.ceil(world.getPlayers().size() * SLEEPING_MIN_PERCENTAGE);
-        return playersNeeded;
+        return (int) Math.ceil(world.getPlayers().size() * SLEEPING_MIN_PERCENTAGE);
     }
 }
