@@ -28,8 +28,9 @@ public class SleepListener implements Listener {
         // Add 1 to account for the player that just slept
         int sleepingPlayers = this.getSleepingPlayers(currentWorld) + 1;
         int minSleepingPlayers = this.getMinSleepingPlayersNeeded(currentWorld);
-        this.plugin.getServer().broadcastMessage(ChatColor.GOLD + event.getPlayer().getDisplayName()
-                + " is now sleeping (" + sleepingPlayers + "/" + minSleepingPlayers + " needed)");
+        this.plugin.getServer().broadcastMessage(ChatColor.GOLD
+                + ChatColor.stripColor(event.getPlayer().getDisplayName()) + " is now sleeping ("
+                + sleepingPlayers + "/" + minSleepingPlayers + " needed)");
 
         if (sleepingPlayers < minSleepingPlayers) {
             return;
@@ -69,9 +70,9 @@ public class SleepListener implements Listener {
                         && currentWorld.getTime() <= STORM_SLEEP_END_TICK)
                 || (currentWorld.getTime() >= CLEAR_SLEEP_START_TICK
                         && currentWorld.getTime() <= CLEAR_SLEEP_END_TICK)) {
-            this.plugin.getServer().broadcastMessage(
-                    ChatColor.GOLD + event.getPlayer().getDisplayName() + " has woken up ("
-                            + sleepingPlayers + "/" + minSleepingPlayers + " needed)");
+            this.plugin.getServer().broadcastMessage(ChatColor.GOLD
+                    + ChatColor.stripColor(event.getPlayer().getDisplayName()) + " has woken up ("
+                    + sleepingPlayers + "/" + minSleepingPlayers + " needed)");
         }
 
         // Don't advance if we no longer have the minimum players needed
