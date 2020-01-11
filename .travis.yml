@@ -1,0 +1,26 @@
+language: java
+jdk: openjdk8
+install: true
+script: mvn clean package
+cache:
+  directories:
+    - "$HOME/.m2"
+env:
+  - SERVER_ADDRESS="173.208.140.125"
+before_install:
+  - openssl aes-256-cbc -K $encrypted_758fa9b89a26_key -iv $encrypted_758fa9b89a26_iv
+    -in deploy_key.enc -out ./deploy_key -d
+after_success:
+  - eval "$(ssh-agent -s)"
+  - chmod 600 ./deploy_key
+  - ssh-add ./deploy_key
+  - scp -o "StrictHostKeyChecking=no" -i ./deploy_key target/HCCore.jar minecraft@$SERVER_ADDRESS:~/server/plugins
+deploy:
+  provider: releases
+  api_key:
+    secure: ErgchoYWtI7M7RMpPoH9tAS4p6cznME8YIbJEo4kfjD5d0/BCmocejg6aIY0qb7TdwxrYJua8re07HWOTDB4Glr12sQNnL6sDeQs1deXPPmpplPm8/8yA7fck9elPKTdAuvlZu/f7rBxNCXF+Zpz6b+K0m5ICrKbalBkwnqH6xgSH3Lu91zzkt+ChaWkD9dgwlBPc8KqWwMwXVutOqszHDnqhp14chUpR+KcBz+xYNrMkTbikUl745d6InvAQ3TjfQpxeouYBoOE0WxNi0Wbml+EeO8LGtns1uZQQv1YeLBc8DSdkR7VfJXoWSFjgzfcn0sCPYnvraFIRKflXBH8bJl15LS3FB/8iGjXSX0ea6W4bEWOMya+PiBlEJu2XajaS5bhn/2xSnD+28Umk/9f31mXRBxG9dM/2GNRgiQS+Q8V7ISOPVHk4hVyzcjGNbm962J6nt6FDLDV7la0nQsodecWHDKa4FF9SjhXu3YX017MvzDkFms9nlJE2BI0FWI7TfObZIlLTyJ1p1BvZy6W3nvWuNnOWvwUv5/QExFnOj56sraQJVJnOwJhpkxHtj7aJ8LMeSDzOjwB7V3OaxHcjTrDY2Eua0iayh7O6Tfi8jM59+ucaoffNWpmsNdEQZ+8602258dtV+r/R0LASx2+AP6aVFSte61dvZgoU2eIbnY=
+  file_glob: true
+  file: target/HCCore.jar
+  on:
+    repo: ifvictr/HCCore
+    tags: true

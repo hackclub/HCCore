@@ -1,5 +1,5 @@
-name: HCCore
-version: 1.0.0
+name: ${project.name}
+version: ${project.version}
 api-version: 1.15
 main: com.hackclub.hccore.HCCorePlugin
 depend: [NBTAPI, ProtocolLib]
