@@ -18,7 +18,7 @@ deploy:
       branch: master
       tags: true
   - provider: script
-    script: scripts/deploy_to_server.sh
+    script: bash scripts/deploy_to_server.sh
     skip_cleanup: true
     on:
       repo: ifvictr/HCCore
