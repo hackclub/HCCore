@@ -23,7 +23,7 @@ public class NameChangeListener extends PacketAdapter {
     }
 
     @Override
-    public void onPacketSending(PacketEvent event) {
+    public void onPacketSending(final PacketEvent event) {
         // Only intercept packets that add players to the list
         if (event.getPacket().getPlayerInfoAction()
                 .read(0) != EnumWrappers.PlayerInfoAction.ADD_PLAYER) {

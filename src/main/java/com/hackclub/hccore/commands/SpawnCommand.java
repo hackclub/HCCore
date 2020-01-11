@@ -16,6 +16,7 @@ public class SpawnCommand implements CommandExecutor {
         this.plugin = plugin;
     }
 
+    @Override
     public boolean onCommand(CommandSender sender, Command cmd, String alias, String[] args) {
         if (!(sender instanceof Player)) {
             sender.sendMessage(ChatColor.RED + "You must be a player to use this");
