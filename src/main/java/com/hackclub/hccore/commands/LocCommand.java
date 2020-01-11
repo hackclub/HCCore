@@ -1,6 +1,7 @@
 package com.hackclub.hccore.commands;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -12,7 +13,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
-import org.bukkit.util.StringUtil;
+import org.bukkit.util.StringUtil;;
 
 public class LocCommand implements TabExecutor {
     private final HCCorePlugin plugin;
@@ -136,7 +137,7 @@ public class LocCommand implements TabExecutor {
         switch (args.length) {
             // Complete subcommand
             case 1: {
-                List<String> subcommands = List.of("del", "get", "list", "save", "share");
+                List<String> subcommands = Arrays.asList("del", "get", "list", "save", "share");
                 StringUtil.copyPartialMatches(args[0], subcommands, completions);
                 break;
             }
