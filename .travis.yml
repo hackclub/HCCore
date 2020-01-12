@@ -6,7 +6,7 @@ cache:
   directories:
     - "$HOME/.m2"
 env:
-  - SERVER_ADDRESS="173.208.140.125"
+  - SERVER_ADDRESS="vmc.hackclub.com"
 deploy:
   - provider: releases
     api_key:
