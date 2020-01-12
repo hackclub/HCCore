@@ -39,8 +39,8 @@ public class PlayerData {
     public PlayerData(HCCorePlugin plugin, Player player) {
         this.plugin = plugin;
         this.player = player;
-        this.dataFile = new File(plugin.getDataManager().getDataFolder(),
-                player.getUniqueId().toString() + ".json");
+        this.dataFile =
+                new File(plugin.getDataManager().getDataFolder(), player.getUniqueId() + ".json");
     }
 
     public boolean isAfk() {
@@ -177,7 +177,6 @@ public class PlayerData {
             format = this.getNameColor() + format;
         }
 
-        // Fallback to username if there's no nickname set
         return String.format(format, this.getUsableName());
     }
 
