@@ -119,7 +119,6 @@ public class LocCommand implements TabExecutor {
                 // TODO: Add share functionality
                 break;
             }
-            // /loc <name>, alias for /loc save
             default:
                 return false;
         }

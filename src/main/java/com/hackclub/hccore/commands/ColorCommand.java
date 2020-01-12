@@ -56,6 +56,7 @@ public class ColorCommand implements TabExecutor {
         }
 
         switch (args[0].toLowerCase()) {
+            // /color chat [color]
             case "chat":
                 if (args.length == 1) {
                     data.setMessageColor(null);
@@ -65,6 +66,7 @@ public class ColorCommand implements TabExecutor {
                 data.setMessageColor(newColor);
                 player.sendMessage("Your chat color has been set to " + newColor + "this color");
                 break;
+            // /color name [color]
             case "name":
                 if (args.length == 1) {
                     data.setNameColor(null);

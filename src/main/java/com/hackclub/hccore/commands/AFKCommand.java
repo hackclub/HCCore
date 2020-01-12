@@ -34,7 +34,6 @@ public class AFKCommand implements CommandExecutor {
             player.sendMessage("You are no longer AFK");
             player.sendTitle(ChatColor.RED + ChatColor.BOLD.toString() + "You are AFK",
                     "Run /afk again to turn it off", 0, 1, 20);
-            // player.resetTitle();
         }
 
         return true;
