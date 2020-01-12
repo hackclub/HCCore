@@ -44,7 +44,7 @@ public class NameChangeListener extends PacketAdapter {
             }
 
             // Create a profile with a custom name from current one
-            String newName = this.plugin.getDataManager().getData(player).getDisplayedName();
+            String newName = this.plugin.getDataManager().getData(player).getUsableName();
             WrappedGameProfile newProfile = playerInfoData.getProfile().withName(newName);
             // Copy properties (currently just skin texture) to new profile
             newProfile.getProperties().putAll(playerInfoData.getProfile().getProperties());

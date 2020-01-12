@@ -28,18 +28,17 @@ public class NickCommand implements CommandExecutor {
             return true;
         }
 
-        String newName = String.join(" ", args);
-        // FIX: Prevent other players from being kicked. It's 8 instead of 16 because the AFK
-        // suffix takes up 8 characters. Will need to figure out how to bypass the 16 character
-        // limit.
-        if (newName.length() > 8) {
-            player.sendMessage(ChatColor.RED + "Your nickname can’t be longer than 8 characters");
+        String newNickname = String.join(" ", args);
+        final int MAX_NICKNAME_LENGTH = 16;
+        if (newNickname.length() > MAX_NICKNAME_LENGTH) {
+            player.sendMessage(ChatColor.RED + "Your nickname can’t be longer than "
+                    + MAX_NICKNAME_LENGTH + " characters");
             return true;
         }
 
-        this.plugin.getDataManager().getData(player).setNickname(newName);
+        this.plugin.getDataManager().getData(player).setNickname(newNickname);
         player.sendMessage(
-                ChatColor.GREEN + "Your nickname was set to " + ChatColor.AQUA + newName);
+                ChatColor.GREEN + "Your nickname was set to " + ChatColor.AQUA + newNickname);
 
         return true;
     }

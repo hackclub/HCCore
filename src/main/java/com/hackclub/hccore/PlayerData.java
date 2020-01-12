@@ -12,6 +12,8 @@ import com.hackclub.hccore.utils.gson.GsonUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.Team;
 
 public class PlayerData {
     private final HCCorePlugin plugin;
@@ -48,6 +50,11 @@ public class PlayerData {
     public void setAfk(boolean afk) {
         this.isAfk = afk;
         this.updateDisplayedName();
+
+        ChatColor newColor = afk ? ChatColor.GRAY : this.getNameColor();
+        String newSuffix = afk ? " (AFK)" : "";
+        this.getTeam().setColor(newColor);
+        this.getTeam().setSuffix(newSuffix);
     }
 
     public long getLastDamagedAt() {
@@ -62,9 +69,21 @@ public class PlayerData {
         return this.nickname;
     }
 
-    public void setNickname(String name) {
-        this.nickname = name;
+    public void setNickname(String nickname) {
+        // Validate length if a nickname was specified
+        final int MAX_NICKNAME_LENGTH = 16;
+        if (nickname != null && nickname.length() > MAX_NICKNAME_LENGTH) {
+            return;
+        }
+
+        String oldName = this.getUsableName();
+        this.nickname = nickname;
         this.updateDisplayedName();
+
+        // Team#addEntry takes in a string, which in our case, will be a player name. We have to
+        // remove the old name and add the new one so the game has a reference to the player.
+        this.getTeam().removeEntry(oldName);
+        this.getTeam().addEntry(this.getUsableName());
     }
 
     public String getSlackId() {
@@ -80,8 +99,10 @@ public class PlayerData {
     }
 
     public void setNameColor(ChatColor color) {
-        this.nameColor = color != null ? color : ChatColor.WHITE;
+        this.nameColor = (color != null && color.isColor()) ? color : ChatColor.WHITE;
         this.updateDisplayedName();
+
+        this.getTeam().setColor(this.getNameColor());
     }
 
     public ChatColor getMessageColor() {
@@ -89,14 +110,26 @@ public class PlayerData {
     }
 
     public void setMessageColor(ChatColor color) {
-        this.messageColor = color != null ? color : ChatColor.GRAY;
+        this.messageColor = (color != null && color.isColor()) ? color : ChatColor.GRAY;
     }
 
     public Map<String, Location> getSavedLocations() {
         return this.savedLocations;
     }
 
+    public Team getTeam() {
+        return this.plugin.getServer().getScoreboardManager().getMainScoreboard()
+                .getTeam(this.player.getName());
+    }
+
     public void load() {
+        // Register player's team
+        Scoreboard mainScoreboard =
+                this.plugin.getServer().getScoreboardManager().getMainScoreboard();
+        this.player.setScoreboard(mainScoreboard);
+        Team playerTeam = mainScoreboard.registerNewTeam(this.player.getName());
+        playerTeam.addEntry(this.player.getName());
+
         try {
             if (!this.dataFile.exists()) {
                 this.plugin.getLogger().log(Level.INFO,
@@ -121,13 +154,19 @@ public class PlayerData {
     public void save() {
         try {
             this.dataFile.getParentFile().mkdirs(); // In case parent directory is missing
-
             FileWriter writer = new FileWriter(this.dataFile);
             GsonUtil.getInstance().toJson(this, writer);
             writer.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        // Unregister player's team
+        this.getTeam().unregister();
+    }
+
+    public String getUsableName() {
+        return this.getNickname() != null ? this.getNickname() : this.player.getName();
     }
 
     public String getDisplayedName() {
@@ -139,8 +178,7 @@ public class PlayerData {
         }
 
         // Fallback to username if there's no nickname set
-        String name = this.getNickname() != null ? this.getNickname() : this.player.getName();
-        return String.format(format, name);
+        return String.format(format, this.getUsableName());
     }
 
     private void updateDisplayedName() {
