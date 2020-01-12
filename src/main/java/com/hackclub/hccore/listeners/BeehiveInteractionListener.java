@@ -9,7 +9,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
-import de.tr7zw.nbtapi.NBTTileEntity;
+import de.tr7zw.changeme.nbtapi.NBTTileEntity;
 
 public class BeehiveInteractionListener implements Listener {
     private final HCCorePlugin plugin;
