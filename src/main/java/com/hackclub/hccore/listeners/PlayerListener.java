@@ -10,6 +10,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
@@ -55,6 +56,37 @@ public class PlayerListener implements Listener {
         event.getPlayer().resetTitle();
         event.setJoinMessage(ChatColor.YELLOW
                 + ChatColor.stripColor(event.getPlayer().getDisplayName()) + " joined the game");
+    }
+
+    @EventHandler
+    public void onPlayerLogin(final PlayerLoginEvent event) {
+        if (event.getResult() == PlayerLoginEvent.Result.ALLOWED
+                || event.getResult() == PlayerLoginEvent.Result.KICK_OTHER) {
+            return;
+        }
+
+        String message = null;
+        switch (event.getResult()) {
+            case KICK_BANNED:
+                message = ChatColor.RED + ChatColor.BOLD.toString() + "You’ve been banned :(\n\n"
+                        + ChatColor.RESET + ChatColor.WHITE
+                        + "If you believe this was a mistake, please DM " + ChatColor.AQUA
+                        + "@ifvictr " + ChatColor.WHITE + "on Slack.";
+                break;
+            case KICK_FULL:
+                message = ChatColor.RED + ChatColor.BOLD.toString() + "The server is full!\n\n"
+                        + ChatColor.RESET + ChatColor.WHITE
+                        + "Sorry, it looks like there’s no more room. Please try again in ~20 minutes.";
+                break;
+            case KICK_WHITELIST:
+                message = ChatColor.RED + ChatColor.BOLD.toString() + "You’re not whitelisted!\n\n"
+                        + ChatColor.RESET + ChatColor.WHITE + "Join " + ChatColor.AQUA
+                        + "#minecraft-vanilla " + ChatColor.WHITE + "on Slack and ping "
+                        + ChatColor.AQUA + "@ifvictr " + ChatColor.WHITE + "or " + ChatColor.AQUA
+                        + "@Luke " + ChatColor.WHITE + "to be added.";
+                break;
+        }
+        event.setKickMessage(message);
     }
 
     @EventHandler
