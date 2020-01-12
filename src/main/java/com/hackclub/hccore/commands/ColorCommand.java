@@ -40,7 +40,7 @@ public class ColorCommand implements TabExecutor {
 
         // Validate selected color
         ChatColor newColor = null;
-        if (args.length == 2) {
+        if (args.length > 1) {
             // Not in ChatColor at all
             if (!COLOR_NAMES.contains(args[1].toLowerCase())) {
                 player.sendMessage(ChatColor.RED + "Invalid color specified");
