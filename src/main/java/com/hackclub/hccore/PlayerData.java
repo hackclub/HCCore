@@ -12,7 +12,6 @@ import com.hackclub.hccore.utils.gson.GsonUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
 public class PlayerData {
@@ -123,13 +122,6 @@ public class PlayerData {
     }
 
     public void load() {
-        // Register player's team
-        Scoreboard mainScoreboard =
-                this.plugin.getServer().getScoreboardManager().getMainScoreboard();
-        this.player.setScoreboard(mainScoreboard);
-        Team playerTeam = mainScoreboard.registerNewTeam(this.player.getName());
-        playerTeam.addEntry(this.player.getName());
-
         try {
             if (!this.dataFile.exists()) {
                 this.plugin.getLogger().log(Level.INFO,
@@ -154,15 +146,13 @@ public class PlayerData {
     public void save() {
         try {
             this.dataFile.getParentFile().mkdirs(); // In case parent directory is missing
+
             FileWriter writer = new FileWriter(this.dataFile);
             GsonUtil.getInstance().toJson(this, writer);
             writer.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        // Unregister player's team
-        this.getTeam().unregister();
     }
 
     public String getUsableName() {

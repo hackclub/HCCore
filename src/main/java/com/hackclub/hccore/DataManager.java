@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import org.bukkit.entity.Player;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.Team;
 
 public class DataManager {
     private final HCCorePlugin plugin;
@@ -32,6 +34,14 @@ public class DataManager {
 
     public void registerPlayer(Player player) {
         this.players.put(player.getUniqueId(), new PlayerData(this.plugin, player));
+
+        // Register player's team
+        Scoreboard mainScoreboard =
+                this.plugin.getServer().getScoreboardManager().getMainScoreboard();
+        player.setScoreboard(mainScoreboard);
+        Team playerTeam = mainScoreboard.registerNewTeam(player.getName());
+        playerTeam.addEntry(player.getName());
+        // Load in player data for use
         this.getData(player).load();
     }
 
@@ -43,6 +53,8 @@ public class DataManager {
 
     public void unregisterPlayer(Player player) {
         this.getData(player).save();
+        this.getData(player).getTeam().unregister();
+
         this.players.remove(player.getUniqueId());
     }
 
