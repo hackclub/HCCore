@@ -123,6 +123,8 @@ public class PlayerData {
 
     public void load() {
         try {
+            this.dataFile.getParentFile().mkdirs();
+
             if (!this.dataFile.exists()) {
                 this.plugin.getLogger().log(Level.INFO,
                         "No data file found for " + this.player.getName() + ", creating…");
@@ -145,7 +147,7 @@ public class PlayerData {
 
     public void save() {
         try {
-            this.dataFile.getParentFile().mkdirs(); // In case parent directory is missing
+            this.dataFile.getParentFile().mkdirs();
 
             FileWriter writer = new FileWriter(this.dataFile);
             GsonUtil.getInstance().toJson(this, writer);
