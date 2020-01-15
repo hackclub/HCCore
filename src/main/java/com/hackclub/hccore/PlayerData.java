@@ -12,7 +12,6 @@ import com.hackclub.hccore.utils.gson.GsonUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
 public class PlayerData {
@@ -123,14 +122,9 @@ public class PlayerData {
     }
 
     public void load() {
-        // Register player's team
-        Scoreboard mainScoreboard =
-                this.plugin.getServer().getScoreboardManager().getMainScoreboard();
-        this.player.setScoreboard(mainScoreboard);
-        Team playerTeam = mainScoreboard.registerNewTeam(this.player.getName());
-        playerTeam.addEntry(this.player.getName());
-
         try {
+            this.dataFile.getParentFile().mkdirs();
+
             if (!this.dataFile.exists()) {
                 this.plugin.getLogger().log(Level.INFO,
                         "No data file found for " + this.player.getName() + ", creating…");
@@ -145,7 +139,7 @@ public class PlayerData {
             this.setSlackId(data.slackId);
             this.setNameColor(data.nameColor);
             this.setMessageColor(data.messageColor);
-            this.savedLocations = data.getSavedLocations();
+            this.savedLocations = data.savedLocations;
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -153,16 +147,14 @@ public class PlayerData {
 
     public void save() {
         try {
-            this.dataFile.getParentFile().mkdirs(); // In case parent directory is missing
+            this.dataFile.getParentFile().mkdirs();
+
             FileWriter writer = new FileWriter(this.dataFile);
             GsonUtil.getInstance().toJson(this, writer);
             writer.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        // Unregister player's team
-        this.getTeam().unregister();
     }
 
     public String getUsableName() {
