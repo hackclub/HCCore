@@ -7,17 +7,11 @@
   <packaging>jar</packaging>
   <name>HCCore</name>
   <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   <dependencies>
-    <dependency>
-      <groupId>com.comphenix.protocol</groupId>
-      <artifactId>ProtocolLib</artifactId>
-      <version>4.5.0</version>
-      <scope>provided</scope>
-    </dependency>
     <dependency>
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
@@ -27,6 +21,12 @@
       <groupId>de.tr7zw</groupId>
       <artifactId>item-nbt-api</artifactId>
       <version>2.2.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.comphenix.protocol</groupId>
+      <artifactId>ProtocolLib</artifactId>
+      <version>4.5.0</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.spigotmc</groupId>
@@ -50,7 +50,7 @@
     </repository>
   </repositories>
   <build>
-    <sourceDirectory>${project.basedir}/src/main/java</sourceDirectory>
+    <finalName>${project.name}</finalName>
     <resources>
       <resource>
         <filtering>true</filtering>
@@ -60,18 +60,21 @@
         </includes>
       </resource>
     </resources>
-    <finalName>${project.name}</finalName>
     <plugins>
       <plugin>
         <groupId>com.github.ekryd.sortpom</groupId>
         <artifactId>sortpom-maven-plugin</artifactId>
         <version>2.8.0</version>
+        <configuration>
+          <predefinedSortOrder>recommended_2008_06</predefinedSortOrder>
+          <sortDependencies>artifactId</sortDependencies>
+        </configuration>
         <executions>
           <execution>
-            <phase>verify</phase>
             <goals>
               <goal>sort</goal>
             </goals>
+            <phase>verify</phase>
           </execution>
         </executions>
       </plugin>
@@ -88,14 +91,6 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
         <version>3.2.1</version>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>shade</goal>
-            </goals>
-          </execution>
-        </executions>
         <configuration>
           <createDependencyReducedPom>false</createDependencyReducedPom>
           <relocations>
@@ -105,7 +100,16 @@
             </relocation>
           </relocations>
         </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <phase>package</phase>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
+    <sourceDirectory>${project.basedir}/src/main/java</sourceDirectory>
   </build>
 </project>
