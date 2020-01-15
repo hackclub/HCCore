@@ -139,7 +139,7 @@ public class PlayerData {
             this.setSlackId(data.slackId);
             this.setNameColor(data.nameColor);
             this.setMessageColor(data.messageColor);
-            this.savedLocations = data.getSavedLocations();
+            this.savedLocations = data.savedLocations;
         } catch (IOException e) {
             e.printStackTrace();
         }
