@@ -17,11 +17,8 @@ public class DataManager {
         this.plugin = plugin;
         this.dataFolder = plugin.getDataFolder() + File.separator + "players";
 
-        // Create players folder if it doesn't exist already
         File folder = new File(this.dataFolder);
-        if (!folder.exists()) {
-            folder.mkdirs();
-        }
+        folder.mkdirs();
     }
 
     public String getDataFolder() {
