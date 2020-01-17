@@ -33,8 +33,17 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerDeath(final PlayerDeathEvent event) {
-        event.setDeathMessage(event.getDeathMessage().replace(event.getEntity().getName(),
-                ChatColor.stripColor(event.getEntity().getDisplayName())));
+        String message = event.getDeathMessage();
+        message = message.replace(event.getEntity().getName(),
+                ChatColor.stripColor(event.getEntity().getDisplayName()));
+
+        Player killer = event.getEntity().getKiller();
+        if (killer != null) {
+            message = message.replace(killer.getName(),
+                    ChatColor.stripColor(killer.getDisplayName()));
+        }
+
+        event.setDeathMessage(message);
     }
 
     @EventHandler
