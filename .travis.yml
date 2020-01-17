@@ -5,8 +5,6 @@ script: mvn clean package
 cache:
   directories:
     - "$HOME/.m2"
-env:
-  - SERVER_ADDRESS="173.208.140.125"
 deploy:
   - provider: releases
     api_key:
@@ -18,7 +16,7 @@ deploy:
       branch: master
       tags: true
   - provider: script
-    script: bash scripts/deploy_to_server.sh
+    script: bash scripts/deploy.sh
     skip_cleanup: true
     on:
       repo: ifvictr/HCCore
