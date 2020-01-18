@@ -7,6 +7,7 @@ commands:
   afk:
     description: Toggles your AFK status
     usage: /afk
+    aliases: [a, away]
   color:
     description: Sets your chat or name color
     usage: /color <chat|name> [color]
