@@ -12,6 +12,7 @@ import com.hackclub.hccore.utils.gson.GsonUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.scoreboard.Team;
 
 public class PlayerData {
@@ -22,6 +23,7 @@ public class PlayerData {
     // Session data (will be cleared when player quits)
     private boolean isAfk = false;
     private long lastDamagedAt = 0;
+    private PermissionAttachment attachment;
 
     // Persistent data
     @Expose
@@ -62,6 +64,14 @@ public class PlayerData {
 
     public void setLastDamagedAt(long damagedAt) {
         this.lastDamagedAt = damagedAt;
+    }
+
+    public PermissionAttachment getAttachment() {
+        return this.attachment;
+    }
+
+    public void setAttachment(PermissionAttachment attachment) {
+        this.attachment = attachment;
     }
 
     public String getNickname() {

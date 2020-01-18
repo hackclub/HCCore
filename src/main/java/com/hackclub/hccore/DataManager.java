@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
@@ -32,12 +33,19 @@ public class DataManager {
     public void registerPlayer(Player player) {
         this.players.put(player.getUniqueId(), new PlayerData(this.plugin, player));
 
+        // Register custom permissions
+        PermissionAttachment attachment = player.addAttachment(this.plugin);
+        this.getData(player).setAttachment(attachment);
+        attachment.setPermission("bukkit.command.tps", true);
+        player.updateCommands();
+
         // Register player's team
         Scoreboard mainScoreboard =
                 this.plugin.getServer().getScoreboardManager().getMainScoreboard();
         player.setScoreboard(mainScoreboard);
         Team playerTeam = mainScoreboard.registerNewTeam(player.getName());
         playerTeam.addEntry(player.getName());
+
         // Load in player data for use
         this.getData(player).load();
     }
@@ -50,7 +58,9 @@ public class DataManager {
 
     public void unregisterPlayer(Player player) {
         this.getData(player).save();
+
         this.getData(player).getTeam().unregister();
+        player.removeAttachment(this.getData(player).getAttachment());
 
         this.players.remove(player.getUniqueId());
     }
