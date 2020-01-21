@@ -1,7 +1,9 @@
 package com.hackclub.hccore.commands;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import com.hackclub.hccore.HCCorePlugin;
 import com.hackclub.hccore.PlayerData;
@@ -71,5 +73,9 @@ public class StatsCommand implements TabExecutor {
                 + TimeUtil.toPrettyTime(player.getStatistic(Statistic.PLAY_ONE_MINUTE)));
         sender.sendMessage("- Time since last death: "
                 + TimeUtil.toPrettyTime(player.getStatistic(Statistic.TIME_SINCE_DEATH)));
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        sender.sendMessage(
+                "- Registered since: " + dateFormat.format(new Date(player.getFirstPlayed())));
     }
 }
