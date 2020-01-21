@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import com.hackclub.hccore.HCCorePlugin;
 import com.hackclub.hccore.PlayerData;
+import com.hackclub.hccore.utils.TimeUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Statistic;
 import org.bukkit.command.Command;
@@ -63,13 +64,12 @@ public class StatsCommand implements TabExecutor {
     }
 
     private void sendStatistics(CommandSender sender, Player player) {
-        final int TICKS_PER_MINUTE = 20 * 60;
         sender.sendMessage("- Deaths: " + player.getStatistic(Statistic.DEATHS));
         sender.sendMessage("- Mob kills: " + player.getStatistic(Statistic.MOB_KILLS));
         sender.sendMessage("- Player kills: " + player.getStatistic(Statistic.PLAYER_KILLS));
         sender.sendMessage("- Time played: "
-                + (player.getStatistic(Statistic.PLAY_ONE_MINUTE) / TICKS_PER_MINUTE));
+                + TimeUtil.toPrettyTime(player.getStatistic(Statistic.PLAY_ONE_MINUTE)));
         sender.sendMessage("- Time since last death: "
-                + (player.getStatistic(Statistic.TIME_SINCE_DEATH) / TICKS_PER_MINUTE));
+                + TimeUtil.toPrettyTime(player.getStatistic(Statistic.TIME_SINCE_DEATH)));
     }
 }
