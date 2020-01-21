@@ -16,7 +16,7 @@ commands:
     usage: /loc <del|get|list|save|share> [...args]
   nick:
     description: Set your nickname
-    usage: /nick <nickname>
+    usage: /nick [nickname]
   shrug:
     description: Shrug, just like /shrug in Slack
     usage: /shrug [message]
