@@ -77,7 +77,8 @@ public class LocCommand implements TabExecutor {
                     break;
                 }
 
-                player.sendMessage(ChatColor.AQUA + "Your saved locations:");
+                player.sendMessage(
+                        ChatColor.AQUA + "Your saved locations (" + savedLocations.size() + "):");
                 for (Map.Entry<String, Location> entry : savedLocations.entrySet()) {
                     Location savedLocation = entry.getValue();
                     player.sendMessage("- " + entry.getKey() + ": "
