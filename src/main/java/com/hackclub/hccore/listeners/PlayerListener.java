@@ -80,7 +80,7 @@ public class PlayerListener implements Listener {
                 message = ChatColor.RED + ChatColor.BOLD.toString() + "You’ve been banned :(\n\n"
                         + ChatColor.RESET + ChatColor.WHITE
                         + "If you believe this was a mistake, please DM " + ChatColor.AQUA
-                        + "@ifvictr " + ChatColor.WHITE + "on Slack.";
+                        + "@Luke or @ifvictr " + ChatColor.WHITE + "on Slack.";
                 break;
             case KICK_FULL:
                 message = ChatColor.RED + ChatColor.BOLD.toString() + "The server is full!\n\n"
@@ -90,7 +90,7 @@ public class PlayerListener implements Listener {
             case KICK_WHITELIST:
                 message = ChatColor.RED + ChatColor.BOLD.toString() + "You’re not whitelisted!\n\n"
                         + ChatColor.RESET + ChatColor.WHITE + "Join " + ChatColor.AQUA
-                        + "#minecraft-vanilla " + ChatColor.WHITE + "on Slack and ping "
+                        + "#minecraft " + ChatColor.WHITE + "on Slack and ping "
                         + ChatColor.AQUA + "@ifvictr " + ChatColor.WHITE + "or " + ChatColor.AQUA
                         + "@Luke " + ChatColor.WHITE + "to be added.";
                 break;
