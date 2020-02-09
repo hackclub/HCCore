@@ -80,7 +80,7 @@ public class PlayerListener implements Listener {
                 message = ChatColor.RED + ChatColor.BOLD.toString() + "You’ve been banned :(\n\n"
                         + ChatColor.RESET + ChatColor.WHITE
                         + "If you believe this was a mistake, please DM " + ChatColor.AQUA
-                        + "@Luke or @ifvictr " + ChatColor.WHITE + "on Slack.";
+                        + "@Luke " + ChatColor.WHITE + "or " + ChatColor.AQUA + "@ifvictr " + ChatColor.WHITE + "on Slack.";
                 break;
             case KICK_FULL:
                 message = ChatColor.RED + ChatColor.BOLD.toString() + "The server is full!\n\n"
