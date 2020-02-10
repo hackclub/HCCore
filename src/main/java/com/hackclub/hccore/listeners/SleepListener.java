@@ -31,9 +31,9 @@ public class SleepListener implements Listener {
         // Add 1 to account for the player that just slept
         int sleepingPlayers = this.getSleepingPlayers(currentWorld) + 1;
         int minSleepingPlayers = this.getMinSleepingPlayersNeeded(currentWorld);
-        this.plugin.getServer().broadcastMessage(ChatColor.GOLD
+        this.broadcastMessageToWorld(ChatColor.GOLD
                 + ChatColor.stripColor(event.getPlayer().getDisplayName()) + " is now sleeping ("
-                + sleepingPlayers + "/" + minSleepingPlayers + " needed)");
+                + sleepingPlayers + "/" + minSleepingPlayers + " needed)", currentWorld);
 
         if (sleepingPlayers < minSleepingPlayers) {
             this.plugin.getServer().getScheduler().cancelTask(this.advanceTimeTaskId);
@@ -59,9 +59,9 @@ public class SleepListener implements Listener {
                         && currentWorld.getTime() <= STORM_SLEEP_END_TICK)
                 || (currentWorld.getTime() >= CLEAR_SLEEP_START_TICK
                         && currentWorld.getTime() <= CLEAR_SLEEP_END_TICK)) {
-            this.plugin.getServer().broadcastMessage(ChatColor.GOLD
+            this.broadcastMessageToWorld(ChatColor.GOLD
                     + ChatColor.stripColor(event.getPlayer().getDisplayName()) + " has woken up ("
-                    + sleepingPlayers + "/" + minSleepingPlayers + " needed)");
+                    + sleepingPlayers + "/" + minSleepingPlayers + " needed)", currentWorld);
         }
 
         if (sleepingPlayers < minSleepingPlayers) {
@@ -104,6 +104,15 @@ public class SleepListener implements Listener {
         this.checkCanSkip(event.getPlayer().getWorld());
     }
 
+    private void broadcastMessageToWorld(String message, World world) {
+        this.plugin.getServer().getConsoleSender().sendMessage(ChatColor.GRAY + "Broadcasted to "
+                + world.getName() + ": " + ChatColor.RESET + message);
+
+        for (Player player : world.getPlayers()) {
+            player.sendMessage(message);
+        }
+    }
+
     private void checkCanSkip(World world) {
         final int SLEEP_DURATION_TICKS = 101;
         final int WAKE_AT_TICK = 0;
@@ -127,8 +136,8 @@ public class SleepListener implements Listener {
                             world.setStorm(false);
                         }
 
-                        plugin.getServer().broadcastMessage(
-                                ChatColor.GREEN + "Good morning! Let's get this mf bread.");
+                        broadcastMessageToWorld(
+                                ChatColor.GREEN + "Good morning! Let's get this mf bread.", world);
                     }
                 }, SLEEP_DURATION_TICKS);
     }
