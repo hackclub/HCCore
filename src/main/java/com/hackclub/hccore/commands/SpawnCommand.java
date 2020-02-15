@@ -5,6 +5,7 @@ import com.hackclub.hccore.PlayerData;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World.Environment;
+import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -36,6 +37,14 @@ public class SpawnCommand implements CommandExecutor {
         if (!player.isOnGround()) {
             player.sendMessage(
                     ChatColor.RED + "You need to be standing on the ground to use this command");
+            return true;
+        }
+
+        // Player needs to have sky access (no blocks above them at all)
+        Block highestBlock = player.getWorld().getHighestBlockAt(player.getLocation());
+        if (player.getLocation().getY() < highestBlock.getY()) {
+            player.sendMessage(
+                    ChatColor.RED + "You need to have direct sky access to use this command");
             return true;
         }
 
