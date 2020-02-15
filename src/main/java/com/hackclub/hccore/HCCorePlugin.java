@@ -15,7 +15,10 @@ import com.hackclub.hccore.listeners.BeehiveInteractionListener;
 import com.hackclub.hccore.listeners.NameChangeListener;
 import com.hackclub.hccore.listeners.PlayerListener;
 import com.hackclub.hccore.listeners.SleepListener;
+import org.bukkit.Material;
 import org.bukkit.plugin.java.JavaPlugin;
+import hu.trigary.advancementcreator.Advancement;
+import hu.trigary.advancementcreator.AdvancementFactory;
 
 public class HCCorePlugin extends JavaPlugin {
     private DataManager dataManager;
@@ -46,6 +49,9 @@ public class HCCorePlugin extends JavaPlugin {
         this.getProtocolManager().addPacketListener(new NameChangeListener(this,
                 ListenerPriority.NORMAL, PacketType.Play.Server.PLAYER_INFO));
 
+        // Register advancements
+        this.registerAdvancements();
+
         // Register all the players that were online before this plugin was enabled (example
         // scenario: plugin reload) to prevent null pointer errors.
         this.getDataManager().registerAll();
@@ -62,5 +68,13 @@ public class HCCorePlugin extends JavaPlugin {
 
     public ProtocolManager getProtocolManager() {
         return this.protocolManager;
+    }
+
+    private void registerAdvancements() {
+        AdvancementFactory factory = new AdvancementFactory(this, true, true);
+
+        // NOTE: Ideally, the icon should be a red banner with an "h" on it
+        Advancement root = factory.getRoot("root", "Hack Club", "Beep boop beep beep boop",
+                Material.RED_GLAZED_TERRACOTTA, "block/coal_block");
     }
 }
