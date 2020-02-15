@@ -4,6 +4,7 @@ import com.hackclub.hccore.HCCorePlugin;
 import com.hackclub.hccore.PlayerData;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.World.Environment;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -24,6 +25,13 @@ public class SpawnCommand implements CommandExecutor {
         }
 
         Player player = (Player) sender;
+
+        // Player needs to be in the Overworld
+        if (player.getWorld().getEnvironment() != Environment.NORMAL) {
+            player.sendMessage(ChatColor.RED + "You can only use this command in the Overworld");
+            return true;
+        }
+
         // Player needs to be on the ground
         if (!player.isOnGround()) {
             player.sendMessage(
