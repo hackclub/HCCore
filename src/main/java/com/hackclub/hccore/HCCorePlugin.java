@@ -78,5 +78,7 @@ public class HCCorePlugin extends JavaPlugin {
                 Material.RED_GLAZED_TERRACOTTA, "block/coal_block");
         Advancement connectToNetherHub = factory.getImpossible("connect_to_nether_hub", root,
                 "Linked Up", "Connect your base to the Nether hub", Material.POWERED_RAIL);
+        Advancement contribute = factory.getImpossible("contribute", root, "pairsOfHands++",
+                "Contribute to the server’s codebase on GitHub", Material.COMMAND_BLOCK);
     }
 }
