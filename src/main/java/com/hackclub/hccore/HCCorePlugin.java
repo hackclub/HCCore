@@ -9,7 +9,6 @@ import com.hackclub.hccore.commands.ColorCommand;
 import com.hackclub.hccore.commands.LocCommand;
 import com.hackclub.hccore.commands.NickCommand;
 import com.hackclub.hccore.commands.ShrugCommand;
-import com.hackclub.hccore.commands.SpawnCommand;
 import com.hackclub.hccore.commands.StatsCommand;
 import com.hackclub.hccore.listeners.BeehiveInteractionListener;
 import com.hackclub.hccore.listeners.NameChangeListener;
@@ -33,7 +32,6 @@ public class HCCorePlugin extends JavaPlugin {
         this.getCommand("loc").setExecutor(new LocCommand(this));
         this.getCommand("nick").setExecutor(new NickCommand(this));
         this.getCommand("shrug").setExecutor(new ShrugCommand(this));
-        this.getCommand("spawn").setExecutor(new SpawnCommand(this));
         this.getCommand("stats").setExecutor(new StatsCommand(this));
 
         // Register event listeners
