@@ -3,7 +3,6 @@ package com.hackclub.hccore.commands;
 import com.hackclub.hccore.HCCorePlugin;
 import com.hackclub.hccore.PlayerData;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
@@ -60,9 +59,8 @@ public class SpawnCommand implements CommandExecutor {
             return true;
         }
 
-        Location spawnLocation = this.plugin.getServer().getWorld("world").getSpawnLocation();
-        player.teleport(spawnLocation);
-        player.sendMessage(ChatColor.GREEN + "You’ve been teleported to spawn");
+        player.teleport(player.getWorld().getSpawnLocation());
+        player.sendMessage(ChatColor.GREEN + "You’ve been teleported to the world spawn");
 
         return true;
     }
