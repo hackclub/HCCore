@@ -76,5 +76,7 @@ public class HCCorePlugin extends JavaPlugin {
         // NOTE: Ideally, the icon should be a red banner with an "h" on it
         Advancement root = factory.getRoot("root", "Hack Club", "Beep boop beep beep boop",
                 Material.RED_GLAZED_TERRACOTTA, "block/coal_block");
+        Advancement connectToNetherHub = factory.getImpossible("connect_to_nether_hub", root,
+                "Linked Up", "Connect your base to the Nether hub", Material.POWERED_RAIL);
     }
 }
