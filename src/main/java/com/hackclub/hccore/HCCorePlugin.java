@@ -16,9 +16,13 @@ import com.hackclub.hccore.listeners.NameChangeListener;
 import com.hackclub.hccore.listeners.PlayerListener;
 import com.hackclub.hccore.listeners.SleepListener;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.plugin.java.JavaPlugin;
 import hu.trigary.advancementcreator.Advancement;
+import hu.trigary.advancementcreator.Advancement.Frame;
 import hu.trigary.advancementcreator.AdvancementFactory;
+import hu.trigary.advancementcreator.shared.ItemObject;
+import net.md_5.bungee.api.chat.TextComponent;
 
 public class HCCorePlugin extends JavaPlugin {
     private DataManager dataManager;
@@ -73,9 +77,13 @@ public class HCCorePlugin extends JavaPlugin {
     private void registerAdvancements() {
         AdvancementFactory factory = new AdvancementFactory(this, true, true);
 
-        // NOTE: Ideally, the icon should be a red banner with an "h" on it
-        Advancement root = factory.getRoot("root", "Hack Club", "Beep boop beep beep boop",
-                Material.RED_GLAZED_TERRACOTTA, "block/coal_block");
+        ItemObject hackClubBanner = new ItemObject().setItem(Material.RED_BANNER).setNbt(
+                "{BlockEntityTag:{Patterns:[{Color:0,Pattern:\"rs\"},{Color:14,Pattern:\"hh\"},{Color:0,Pattern:\"ls\"},{Color:0,Pattern:\"ms\"},{Color:14,Pattern:\"bo\"}]}}");
+        Advancement root = new Advancement(new NamespacedKey(this, "root"), hackClubBanner,
+                new TextComponent("Hack Club"), new TextComponent("Beep boop beep beep boop"))
+                        .makeRoot("block/coal_block", true).setFrame(Frame.TASK);
+        root.activate(true);
+
         Advancement connectToNetherHub = factory.getImpossible("connect_to_nether_hub", root,
                 "Linked Up", "Connect your base to the Nether hub", Material.POWERED_RAIL);
         Advancement contribute = factory.getImpossible("contribute", root, "pairsOfHands++",
