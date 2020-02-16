@@ -89,11 +89,11 @@ public class HCCorePlugin extends JavaPlugin {
         Advancement contribute = factory.getImpossible("contribute", root, "pairsOfHands++",
                 "Contribute to the server’s codebase on GitHub", Material.COMMAND_BLOCK);
         Advancement killDragonInsane = factory
-                .getCountedImpossible("kill_dragon_insane", root, "Are You Insane?",
+                .getCountedImpossible("kill_dragon_insane", root, "Dragon Master",
                         "Kill the Ender Dragon 10 times", Material.DRAGON_HEAD, 10)
                 .setFrame(Advancement.Frame.CHALLENGE);
         Advancement killWitherInsane = factory
-                .getCountedImpossible("kill_wither_insane", root, "Totally Dominated",
+                .getCountedImpossible("kill_wither_insane", root, "Are You Insane?!",
                         "Kill the Wither 20 times", Material.WITHER_SKELETON_SKULL, 20)
                 .setFrame(Advancement.Frame.CHALLENGE);
     }
