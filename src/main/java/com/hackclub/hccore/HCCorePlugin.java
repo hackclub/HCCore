@@ -88,5 +88,9 @@ public class HCCorePlugin extends JavaPlugin {
                 "Linked Up", "Connect your base to the Nether hub", Material.POWERED_RAIL);
         Advancement contribute = factory.getImpossible("contribute", root, "pairsOfHands++",
                 "Contribute to the server’s codebase on GitHub", Material.COMMAND_BLOCK);
+        Advancement killDragonInsane = factory
+                .getCountedImpossible("kill_dragon_insane", root, "Are You Insane?",
+                        "Kill the Ender Dragon 10 times", Material.DRAGON_HEAD, 10)
+                .setFrame(Advancement.Frame.CHALLENGE);
     }
 }
