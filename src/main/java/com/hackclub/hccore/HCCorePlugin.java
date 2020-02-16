@@ -18,6 +18,7 @@ import com.hackclub.hccore.listeners.PlayerListener;
 import com.hackclub.hccore.listeners.SleepListener;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.entity.EntityType;
 import org.bukkit.plugin.java.JavaPlugin;
 import hu.trigary.advancementcreator.Advancement;
 import hu.trigary.advancementcreator.Advancement.Frame;
@@ -94,6 +95,8 @@ public class HCCorePlugin extends JavaPlugin {
                 .getCountedImpossible("kill_dragon_insane", root, "Dragon Master",
                         "Kill the Ender Dragon 10 times", Material.DRAGON_HEAD, 10)
                 .setFrame(Advancement.Frame.CHALLENGE);
+        Advancement killElderGuardian = factory.getKill("kill_elder_guardian", root, "The Deep End",
+                "Defeat an Elder Guardian", Material.PRISMARINE_SHARD, EntityType.ELDER_GUARDIAN);
         Advancement killWitherInsane = factory
                 .getCountedImpossible("kill_wither_insane", root, "Are You Insane?!",
                         "Kill the Wither 20 times", Material.WITHER_SKELETON_SKULL, 20)

@@ -24,6 +24,11 @@ public class AdvancementListener implements Listener {
 
         Player player = (Player) event.getEntity().getKiller();
         switch (event.getEntityType()) {
+            case ELDER_GUARDIAN: {
+                this.grantAdvancement(player,
+                        new NamespacedKey(this.plugin, "kill_elder_guardian"));
+                break;
+            }
             case ENDER_DRAGON: {
                 this.incrementAdvancementProgress(player,
                         new NamespacedKey(this.plugin, "kill_dragon_insane"));
@@ -36,6 +41,18 @@ public class AdvancementListener implements Listener {
             }
             default:
                 break;
+        }
+    }
+
+    private void grantAdvancement(Player player, NamespacedKey key) {
+        AdvancementProgress progress =
+                player.getAdvancementProgress(player.getServer().getAdvancement(key));
+        if (progress.isDone()) {
+            return;
+        }
+
+        for (String criteria : progress.getRemainingCriteria()) {
+            progress.awardCriteria(criteria);
         }
     }
 
