@@ -32,6 +32,17 @@ public class SpawnCommand implements CommandExecutor {
             return true;
         }
 
+        // Player needs to be within the allowed radius from spawn
+        int distanceFromSpawn =
+                (int) player.getLocation().distance(player.getWorld().getSpawnLocation());
+        final int ALLOWED_RADIUS = 2000;
+        if (distanceFromSpawn > ALLOWED_RADIUS) {
+            player.sendMessage(ChatColor.RED + "You need to be within " + ALLOWED_RADIUS
+                    + " blocks from spawn to use this command. Currently, you’re "
+                    + (distanceFromSpawn - ALLOWED_RADIUS) + " blocks too far.");
+            return true;
+        }
+
         // Player needs to be on the ground
         if (!player.isOnGround()) {
             player.sendMessage(
