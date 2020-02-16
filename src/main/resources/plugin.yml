@@ -21,7 +21,7 @@ commands:
     description: Shrug, just like /shrug in Slack
     usage: /shrug [message]
   spawn:
-    description: Teleports you to the server spawn. Only works if you haven’t been damaged recently
+    description: Teleports you to the world’s spawn location
     usage: /spawn
   stats:
     description: Gets the stats of you or a specified player
