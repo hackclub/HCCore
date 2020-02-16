@@ -11,6 +11,7 @@ import com.hackclub.hccore.commands.NickCommand;
 import com.hackclub.hccore.commands.ShrugCommand;
 import com.hackclub.hccore.commands.SpawnCommand;
 import com.hackclub.hccore.commands.StatsCommand;
+import com.hackclub.hccore.listeners.AdvancementListener;
 import com.hackclub.hccore.listeners.BeehiveInteractionListener;
 import com.hackclub.hccore.listeners.NameChangeListener;
 import com.hackclub.hccore.listeners.PlayerListener;
@@ -44,6 +45,7 @@ public class HCCorePlugin extends JavaPlugin {
         this.getCommand("stats").setExecutor(new StatsCommand(this));
 
         // Register event listeners
+        this.getServer().getPluginManager().registerEvents(new AdvancementListener(this), this);
         this.getServer().getPluginManager().registerEvents(new BeehiveInteractionListener(this),
                 this);
         this.getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
