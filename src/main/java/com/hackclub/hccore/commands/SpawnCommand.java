@@ -3,7 +3,8 @@ package com.hackclub.hccore.commands;
 import com.hackclub.hccore.HCCorePlugin;
 import com.hackclub.hccore.PlayerData;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
+import org.bukkit.World.Environment;
+import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -24,10 +25,36 @@ public class SpawnCommand implements CommandExecutor {
         }
 
         Player player = (Player) sender;
+
+        // Player needs to be in the Overworld
+        if (player.getWorld().getEnvironment() != Environment.NORMAL) {
+            player.sendMessage(ChatColor.RED + "You can only use this command in the Overworld");
+            return true;
+        }
+
+        // Player needs to be within the allowed radius from spawn
+        int distanceFromSpawn =
+                (int) player.getLocation().distance(player.getWorld().getSpawnLocation());
+        final int ALLOWED_RADIUS = 2000;
+        if (distanceFromSpawn > ALLOWED_RADIUS) {
+            player.sendMessage(ChatColor.RED + "You need to be within " + ALLOWED_RADIUS
+                    + " blocks from spawn to use this command. Currently, you’re "
+                    + (distanceFromSpawn - ALLOWED_RADIUS) + " blocks too far.");
+            return true;
+        }
+
         // Player needs to be on the ground
         if (!player.isOnGround()) {
             player.sendMessage(
                     ChatColor.RED + "You need to be standing on the ground to use this command");
+            return true;
+        }
+
+        // Player needs to have sky access (no blocks above them at all)
+        Block highestBlock = player.getWorld().getHighestBlockAt(player.getLocation());
+        if (player.getLocation().getY() < highestBlock.getY()) {
+            player.sendMessage(
+                    ChatColor.RED + "You need to have direct sky access to use this command");
             return true;
         }
 
@@ -43,9 +70,8 @@ public class SpawnCommand implements CommandExecutor {
             return true;
         }
 
-        Location spawnLocation = this.plugin.getServer().getWorld("world").getSpawnLocation();
-        player.teleport(spawnLocation);
-        player.sendMessage(ChatColor.GREEN + "You’ve been teleported to spawn");
+        player.teleport(player.getWorld().getSpawnLocation());
+        player.sendMessage(ChatColor.GREEN + "You’ve been teleported to the world spawn");
 
         return true;
     }
