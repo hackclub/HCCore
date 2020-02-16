@@ -16,7 +16,7 @@ public class AdvancementListener implements Listener {
     }
 
     @EventHandler
-    public void onEntityDeath(EntityDeathEvent event) {
+    public void onEntityDeath(final EntityDeathEvent event) {
         // Ignore non-player killers
         if (!(event.getEntity().getKiller() instanceof Player)) {
             return;
