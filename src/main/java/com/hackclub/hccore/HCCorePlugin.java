@@ -1,5 +1,7 @@
 package com.hackclub.hccore;
 
+import java.util.ArrayList;
+import java.util.List;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
@@ -80,15 +82,16 @@ public class HCCorePlugin extends JavaPlugin {
     }
 
     private void registerAdvancements() {
-        AdvancementFactory factory = new AdvancementFactory(this, true, true);
+        AdvancementFactory factory = new AdvancementFactory(this, false, false);
 
+        // Create root advancement
         ItemObject hackClubBanner = new ItemObject().setItem(Material.RED_BANNER).setNbt(
                 "{BlockEntityTag:{Patterns:[{Color:0,Pattern:\"rs\"},{Color:14,Pattern:\"hh\"},{Color:0,Pattern:\"ls\"},{Color:0,Pattern:\"ms\"},{Color:14,Pattern:\"bo\"}]}}");
         Advancement root = new Advancement(new NamespacedKey(this, "root"), hackClubBanner,
                 new TextComponent("Hack Club"), new TextComponent("Beep boop beep beep boop"))
                         .makeRoot("block/coal_block", true).setFrame(Advancement.Frame.TASK);
-        root.activate(true);
 
+        // Create regular advancements
         Advancement allMusicDiscs = factory.getAllItems("all_music_discs", root, "Musicophile",
                 "Collect every single music disc", Material.JUKEBOX, Material.MUSIC_DISC_11,
                 Material.MUSIC_DISC_13, Material.MUSIC_DISC_BLOCKS, Material.MUSIC_DISC_CAT,
@@ -111,5 +114,27 @@ public class HCCorePlugin extends JavaPlugin {
                 .setFrame(Advancement.Frame.CHALLENGE);
         Advancement mineDiamondOre = factory.getImpossible("mine_diamond_ore", root,
                 "Look Ma, Diamonds!", "Find your first diamond while mining", Material.DIAMOND_ORE);
+
+        // Activate all the advancements
+        List<Advancement> advancements = new ArrayList<Advancement>() {
+            private static final long serialVersionUID = 0L;
+
+            {
+                add(root);
+                add(allMusicDiscs);
+                add(connectToNetherHub);
+                add(contribute);
+                add(killDragonInsane);
+                add(killElderGuardian);
+                add(killWitherInsane);
+                add(mineDiamondOre);
+            }
+        };
+        for (Advancement advancement : advancements) {
+            advancement.activate(false);
+        }
+
+        // Reload the data cache after all advancements have been added
+        this.getServer().reloadData();
     }
 }
