@@ -1,11 +1,14 @@
 package com.hackclub.hccore.listeners;
 
 import com.hackclub.hccore.HCCorePlugin;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.advancement.AdvancementProgress;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 
 public class AdvancementListener implements Listener {
@@ -13,6 +16,37 @@ public class AdvancementListener implements Listener {
 
     public AdvancementListener(HCCorePlugin plugin) {
         this.plugin = plugin;
+    }
+
+    @EventHandler
+    public void onBlockBreak(final BlockBreakEvent event) {
+        // Check if it's a diamond ore
+        if (event.getBlock().getType() != Material.DIAMOND_ORE) {
+            return;
+        }
+
+        // The diamond ore wasn't found underground
+        final int MAX_Y_DIAMOND_ORE = 16;
+        if (event.getBlock().getY() > MAX_Y_DIAMOND_ORE) {
+            return;
+        }
+
+        Player player = event.getPlayer();
+        NamespacedKey key = new NamespacedKey(this.plugin, "mine_diamond_ore");
+        AdvancementProgress progress =
+                player.getAdvancementProgress(player.getServer().getAdvancement(key));
+        // Skip if player already has this advancement
+        if (progress.isDone()) {
+            return;
+        }
+
+        this.grantAdvancement(player, key);
+        player.sendMessage(ChatColor.GREEN
+                + "Congrats, you’ve found your very first diamond! You are now eligible for the exclusive Hack Club Minecraft Sticker—head over to "
+                + ChatColor.UNDERLINE + this.plugin.getConfig().getString("claim-stickers-url")
+                + ChatColor.RESET + ChatColor.GREEN + " to claim it!");
+        player.sendMessage(ChatColor.GRAY + ChatColor.ITALIC.toString()
+                + "You will only see this message once.");
     }
 
     @EventHandler

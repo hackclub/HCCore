@@ -32,6 +32,9 @@ public class HCCorePlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        // Create config
+        this.saveDefaultConfig();
+
         // Load managers
         this.dataManager = new DataManager(this);
         this.protocolManager = ProtocolLibrary.getProtocolManager();
@@ -107,5 +110,7 @@ public class HCCorePlugin extends JavaPlugin {
                 .getCountedImpossible("kill_wither_insane", root, "Are You Insane?!",
                         "Kill the Wither 20 times", Material.WITHER_SKELETON_SKULL, 20)
                 .setFrame(Advancement.Frame.CHALLENGE);
+        Advancement mineDiamondOre = factory.getImpossible("mine_diamond_ore", root,
+                "Look Ma, Diamonds!", "Find your first diamond while mining", Material.DIAMOND_ORE);
     }
 }
