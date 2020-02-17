@@ -87,6 +87,12 @@ public class HCCorePlugin extends JavaPlugin {
                         .makeRoot("block/coal_block", true).setFrame(Frame.TASK);
         root.activate(true);
 
+        Advancement allMusicDiscs = factory.getAllItems("all_music_discs", root, "Musicophile",
+                "Collect every single music disc", Material.JUKEBOX, Material.MUSIC_DISC_11,
+                Material.MUSIC_DISC_13, Material.MUSIC_DISC_BLOCKS, Material.MUSIC_DISC_CAT,
+                Material.MUSIC_DISC_CHIRP, Material.MUSIC_DISC_FAR, Material.MUSIC_DISC_MALL,
+                Material.MUSIC_DISC_MELLOHI, Material.MUSIC_DISC_STAL, Material.MUSIC_DISC_STRAD,
+                Material.MUSIC_DISC_WAIT, Material.MUSIC_DISC_WARD);
         Advancement connectToNetherHub = factory.getImpossible("connect_to_nether_hub", root,
                 "Linked Up", "Connect your base to the Nether hub", Material.POWERED_RAIL);
         Advancement contribute = factory.getImpossible("contribute", root, "pairsOfHands++",
