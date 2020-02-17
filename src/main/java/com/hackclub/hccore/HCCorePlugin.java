@@ -21,7 +21,6 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.entity.EntityType;
 import org.bukkit.plugin.java.JavaPlugin;
 import hu.trigary.advancementcreator.Advancement;
-import hu.trigary.advancementcreator.Advancement.Frame;
 import hu.trigary.advancementcreator.AdvancementFactory;
 import hu.trigary.advancementcreator.shared.ItemObject;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -87,7 +86,7 @@ public class HCCorePlugin extends JavaPlugin {
                 "{BlockEntityTag:{Patterns:[{Color:0,Pattern:\"rs\"},{Color:14,Pattern:\"hh\"},{Color:0,Pattern:\"ls\"},{Color:0,Pattern:\"ms\"},{Color:14,Pattern:\"bo\"}]}}");
         Advancement root = new Advancement(new NamespacedKey(this, "root"), hackClubBanner,
                 new TextComponent("Hack Club"), new TextComponent("Beep boop beep beep boop"))
-                        .makeRoot("block/coal_block", true).setFrame(Frame.TASK);
+                        .makeRoot("block/coal_block", true).setFrame(Advancement.Frame.TASK);
         root.activate(true);
 
         Advancement allMusicDiscs = factory.getAllItems("all_music_discs", root, "Musicophile",
