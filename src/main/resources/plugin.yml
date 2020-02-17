@@ -17,6 +17,9 @@ commands:
   nick:
     description: Set your nickname
     usage: /nick [nickname]
+  ping:
+    description: Gets your ping
+    usage: /ping
   shrug:
     description: Shrug, just like /shrug in Slack
     usage: /shrug [message]
