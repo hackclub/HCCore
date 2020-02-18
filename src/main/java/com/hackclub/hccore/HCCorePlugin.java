@@ -99,26 +99,27 @@ public class HCCorePlugin extends JavaPlugin {
                 Material.MUSIC_DISC_MELLOHI, Material.MUSIC_DISC_STAL, Material.MUSIC_DISC_STRAD,
                 Material.MUSIC_DISC_WAIT, Material.MUSIC_DISC_WARD)
                 .setFrame(Advancement.Frame.CHALLENGE);
-        Advancement connectToNetherHub = factory
-                .getImpossible("connect_to_nether_hub", root, "Linked Up",
-                        "Connect your base to the Nether hub", Material.POWERED_RAIL)
-                .setFrame(Advancement.Frame.GOAL);
+
         Advancement contribute = factory.getImpossible("contribute", root, "pairsOfHands++",
                 "Contribute to the server’s codebase on GitHub", Material.COMMAND_BLOCK);
-        Advancement killDragonInsane = factory
-                .getCountedImpossible("kill_dragon_insane", root, "Dragon Master",
-                        "Kill the Ender Dragon 10 times", Material.DRAGON_HEAD, 10)
-                .setFrame(Advancement.Frame.CHALLENGE);
-        Advancement killElderGuardian = factory
-                .getKill("kill_elder_guardian", root, "The Deep End", "Defeat an Elder Guardian",
-                        Material.PRISMARINE_SHARD, EntityType.ELDER_GUARDIAN)
-                .setFrame(Advancement.Frame.GOAL);
-        Advancement killWitherInsane = factory
-                .getCountedImpossible("kill_wither_insane", root, "Are You Insane?!",
-                        "Kill the Wither 20 times", Material.WITHER_SKELETON_SKULL, 20)
-                .setFrame(Advancement.Frame.CHALLENGE);
+
         Advancement mineDiamondOre = factory.getImpossible("mine_diamond_ore", root,
                 "Look Ma, Diamonds!", "Find your first diamond while mining", Material.DIAMOND_ORE);
+        Advancement connectToNetherHub = factory
+                .getImpossible("connect_to_nether_hub", mineDiamondOre, "Linked Up",
+                        "Connect your base to the Nether hub", Material.POWERED_RAIL)
+                .setFrame(Advancement.Frame.GOAL);
+        Advancement killDragonInsane = factory
+                .getCountedImpossible("kill_dragon_insane", connectToNetherHub, "Dragon Master",
+                        "Kill the Ender Dragon 10 times", Material.DRAGON_HEAD, 10)
+                .setFrame(Advancement.Frame.CHALLENGE).setHidden(false);
+        Advancement killWitherInsane = factory
+                .getCountedImpossible("kill_wither_insane", killDragonInsane, "Are You Insane?!",
+                        "Kill the Wither 20 times", Material.WITHER_SKELETON_SKULL, 20)
+                .setFrame(Advancement.Frame.CHALLENGE);
+        Advancement killElderGuardian = factory.getKill("kill_elder_guardian", mineDiamondOre,
+                "The Deep End", "Defeat an Elder Guardian", Material.PRISMARINE_SHARD,
+                EntityType.ELDER_GUARDIAN).setFrame(Advancement.Frame.GOAL);
 
         // Activate all the advancements
         List<Advancement> advancements = new ArrayList<Advancement>() {
@@ -127,12 +128,12 @@ public class HCCorePlugin extends JavaPlugin {
             {
                 add(root);
                 add(allMusicDiscs);
-                add(connectToNetherHub);
                 add(contribute);
-                add(killDragonInsane);
-                add(killElderGuardian);
-                add(killWitherInsane);
                 add(mineDiamondOre);
+                add(connectToNetherHub);
+                add(killDragonInsane);
+                add(killWitherInsane);
+                add(killElderGuardian);
             }
         };
         for (Advancement advancement : advancements) {
