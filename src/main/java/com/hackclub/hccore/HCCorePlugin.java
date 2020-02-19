@@ -100,7 +100,9 @@ public class HCCorePlugin extends JavaPlugin {
                 Material.MUSIC_DISC_WAIT, Material.MUSIC_DISC_WARD)
                 .setFrame(Advancement.Frame.CHALLENGE);
 
-        Advancement contribute = factory.getImpossible("contribute", root, "pairsOfHands++",
+        Advancement findBug = factory.getImpossible("find_bug", root, "Bug Squasher",
+                "Find and report a bug", Material.IRON_BOOTS);
+        Advancement contribute = factory.getImpossible("contribute", findBug, "pairsOfHands++",
                 "Contribute to the server’s codebase on GitHub", Material.COMMAND_BLOCK);
 
         Advancement mineDiamondOre = factory.getImpossible("mine_diamond_ore", root,
@@ -128,6 +130,7 @@ public class HCCorePlugin extends JavaPlugin {
             {
                 add(root);
                 add(allMusicDiscs);
+                add(findBug);
                 add(contribute);
                 add(mineDiamondOre);
                 add(connectToNetherHub);
