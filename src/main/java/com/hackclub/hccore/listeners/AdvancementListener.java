@@ -66,6 +66,10 @@ public class AdvancementListener implements Listener {
             case ENDER_DRAGON: {
                 this.incrementAdvancementProgress(player,
                         new NamespacedKey(this.plugin, "kill_dragon_insane"));
+
+                // Give "The Next Generation" since it's not easy to get it after the egg
+                // is taken
+                this.grantAdvancement(player, NamespacedKey.minecraft("end/dragon_egg"));
                 break;
             }
             case WITHER: {
