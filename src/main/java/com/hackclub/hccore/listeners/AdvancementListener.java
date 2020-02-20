@@ -42,9 +42,9 @@ public class AdvancementListener implements Listener {
 
         this.grantAdvancement(player, key);
         player.sendMessage(ChatColor.GREEN
-                + "Congrats, you’ve found your very first diamond! You are now eligible for the exclusive Hack Club Minecraft Sticker—head over to "
+                + "Congrats, you’ve found your very first diamond! You are now eligible for the exclusive (and limited edition!) Hack Club Minecraft stickers. Head over to "
                 + ChatColor.UNDERLINE + this.plugin.getConfig().getString("claim-stickers-url")
-                + ChatColor.RESET + ChatColor.GREEN + " to claim it!");
+                + ChatColor.RESET + ChatColor.GREEN + " to claim them!");
         player.sendMessage(ChatColor.GRAY + ChatColor.ITALIC.toString()
                 + "You will only see this message once.");
     }
