@@ -18,8 +18,8 @@ commands:
     description: Set your nickname
     usage: /nick [nickname]
   ping:
-    description: Gets your ping
-    usage: /ping
+    description: Gets the ping of you or a specified player
+    usage: /ping [player]
   shrug:
     description: Shrug, just like /shrug in Slack
     usage: /shrug [message]
