@@ -35,11 +35,12 @@ public class SpawnCommand implements CommandExecutor {
         // Player needs to be within the allowed radius from spawn
         int distanceFromSpawn =
                 (int) player.getLocation().distance(player.getWorld().getSpawnLocation());
-        final int ALLOWED_RADIUS = 2000;
-        if (distanceFromSpawn > ALLOWED_RADIUS) {
-            sender.sendMessage(ChatColor.RED + "You need to be within " + ALLOWED_RADIUS
+        int allowedRadius =
+                this.plugin.getConfig().getInt("settings.spawn-command.allowed-radius");;
+        if (distanceFromSpawn > allowedRadius) {
+            sender.sendMessage(ChatColor.RED + "You need to be within " + allowedRadius
                     + " blocks from spawn to use this command. Currently, you’re "
-                    + (distanceFromSpawn - ALLOWED_RADIUS) + " blocks too far.");
+                    + (distanceFromSpawn - allowedRadius) + " blocks too far.");
             return true;
         }
 
@@ -62,11 +63,12 @@ public class SpawnCommand implements CommandExecutor {
         PlayerData data = this.plugin.getDataManager().getData(player);
         long currentTime = System.currentTimeMillis();
         long secondsSinceLastDamaged = (currentTime - data.getLastDamagedAt()) / 1000;
-        final int DAMAGE_WAIT_TIME = 20;
-        if (secondsSinceLastDamaged < DAMAGE_WAIT_TIME) {
+        int damageCooldown =
+                this.plugin.getConfig().getInt("settings.spawn-command.damage-cooldown");
+        if (secondsSinceLastDamaged < damageCooldown) {
             sender.sendMessage(
                     ChatColor.RED + "You were hurt recently—you’ll be able to use this command in "
-                            + (DAMAGE_WAIT_TIME - secondsSinceLastDamaged) + " seconds");
+                            + (damageCooldown - secondsSinceLastDamaged) + " seconds");
             return true;
         }
 
