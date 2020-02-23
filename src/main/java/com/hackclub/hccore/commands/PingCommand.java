@@ -32,7 +32,7 @@ public class PingCommand implements TabExecutor {
             int ping = this.getPing(player);
             // Failed for some reason
             if (ping == -1) {
-                player.sendMessage(ChatColor.RED + "Failed to get your ping");
+                sender.sendMessage(ChatColor.RED + "Failed to get your ping");
                 return true;
             }
 

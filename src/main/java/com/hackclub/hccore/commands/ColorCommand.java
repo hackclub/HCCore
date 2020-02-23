@@ -43,14 +43,14 @@ public class ColorCommand implements TabExecutor {
         if (args.length > 1) {
             // Not in ChatColor at all
             if (!COLOR_NAMES.contains(args[1].toLowerCase())) {
-                player.sendMessage(ChatColor.RED + "Invalid color specified");
+                sender.sendMessage(ChatColor.RED + "Invalid color specified");
                 return true;
             }
 
             // Is in ChatColor, but not a color
             newColor = ChatColor.valueOf(args[1].toUpperCase());
             if (!newColor.isColor()) {
-                player.sendMessage(ChatColor.RED + "Invalid color specified");
+                sender.sendMessage(ChatColor.RED + "Invalid color specified");
                 return true;
             }
         }
@@ -60,21 +60,21 @@ public class ColorCommand implements TabExecutor {
             case "chat":
                 if (args.length == 1) {
                     data.setMessageColor(null);
-                    player.sendMessage("Your chat color has been reset");
+                    sender.sendMessage("Your chat color has been reset");
                     break;
                 }
                 data.setMessageColor(newColor);
-                player.sendMessage("Your chat color has been set to " + newColor + "this color");
+                sender.sendMessage("Your chat color has been set to " + newColor + "this color");
                 break;
             // /color name [color]
             case "name":
                 if (args.length == 1) {
                     data.setNameColor(null);
-                    player.sendMessage("Your name color has been reset");
+                    sender.sendMessage("Your name color has been reset");
                     break;
                 }
                 data.setNameColor(newColor);
-                player.sendMessage("Your name color has been set to " + newColor + "this color");
+                sender.sendMessage("Your name color has been set to " + newColor + "this color");
                 break;
             default:
                 return false;

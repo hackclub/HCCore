@@ -28,7 +28,7 @@ public class SpawnCommand implements CommandExecutor {
 
         // Player needs to be in the Overworld
         if (player.getWorld().getEnvironment() != Environment.NORMAL) {
-            player.sendMessage(ChatColor.RED + "You can only use this command in the Overworld");
+            sender.sendMessage(ChatColor.RED + "You can only use this command in the Overworld");
             return true;
         }
 
@@ -37,7 +37,7 @@ public class SpawnCommand implements CommandExecutor {
                 (int) player.getLocation().distance(player.getWorld().getSpawnLocation());
         final int ALLOWED_RADIUS = 2000;
         if (distanceFromSpawn > ALLOWED_RADIUS) {
-            player.sendMessage(ChatColor.RED + "You need to be within " + ALLOWED_RADIUS
+            sender.sendMessage(ChatColor.RED + "You need to be within " + ALLOWED_RADIUS
                     + " blocks from spawn to use this command. Currently, you’re "
                     + (distanceFromSpawn - ALLOWED_RADIUS) + " blocks too far.");
             return true;
@@ -45,7 +45,7 @@ public class SpawnCommand implements CommandExecutor {
 
         // Player needs to be on the ground
         if (!player.isOnGround()) {
-            player.sendMessage(
+            sender.sendMessage(
                     ChatColor.RED + "You need to be standing on the ground to use this command");
             return true;
         }
@@ -53,7 +53,7 @@ public class SpawnCommand implements CommandExecutor {
         // Player needs to have sky access (no blocks above them at all)
         Block highestBlock = player.getWorld().getHighestBlockAt(player.getLocation());
         if (player.getLocation().getY() < highestBlock.getY()) {
-            player.sendMessage(
+            sender.sendMessage(
                     ChatColor.RED + "You need to have direct sky access to use this command");
             return true;
         }
@@ -64,14 +64,14 @@ public class SpawnCommand implements CommandExecutor {
         long secondsSinceLastDamaged = (currentTime - data.getLastDamagedAt()) / 1000;
         final int DAMAGE_WAIT_TIME = 20;
         if (secondsSinceLastDamaged < DAMAGE_WAIT_TIME) {
-            player.sendMessage(
+            sender.sendMessage(
                     ChatColor.RED + "You were hurt recently—you’ll be able to use this command in "
                             + (DAMAGE_WAIT_TIME - secondsSinceLastDamaged) + " seconds");
             return true;
         }
 
         player.teleport(player.getWorld().getSpawnLocation());
-        player.sendMessage(ChatColor.GREEN + "You’ve been teleported to the world spawn");
+        sender.sendMessage(ChatColor.GREEN + "You’ve been teleported to the world spawn");
 
         return true;
     }
