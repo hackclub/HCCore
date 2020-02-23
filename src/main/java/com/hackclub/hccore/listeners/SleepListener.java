@@ -15,6 +15,10 @@ import org.bukkit.event.player.PlayerQuitEvent;
 public class SleepListener implements Listener {
     private static final int SLEEP_DURATION_TICKS = 101;
     private static final int WAKE_AT_TICK = 0;
+    private static final int CLEAR_SLEEP_START_TICK = 12542;
+    private static final int CLEAR_SLEEP_END_TICK = 23460;
+    private static final int STORM_SLEEP_START_TICK = 12010;
+    private static final int STORM_SLEEP_END_TICK = 23992;
 
     private final HCCorePlugin plugin;
     private int advanceTimeTaskId;
@@ -53,15 +57,7 @@ public class SleepListener implements Listener {
         int minSleepingPlayers = this.getMinSleepingPlayersNeeded(currentWorld);
 
         // Only show wake message if it's still within sleeping periods
-        final int CLEAR_SLEEP_START_TICK = 12542;
-        final int CLEAR_SLEEP_END_TICK = 23460;
-        final int STORM_SLEEP_START_TICK = 12010;
-        final int STORM_SLEEP_END_TICK = 23992;
-        if (currentWorld.isThundering()
-                || (currentWorld.hasStorm() && currentWorld.getTime() >= STORM_SLEEP_START_TICK
-                        && currentWorld.getTime() <= STORM_SLEEP_END_TICK)
-                || (currentWorld.getTime() >= CLEAR_SLEEP_START_TICK
-                        && currentWorld.getTime() <= CLEAR_SLEEP_END_TICK)) {
+        if (this.canSleep(currentWorld)) {
             this.broadcastMessageToWorld(ChatColor.GOLD
                     + ChatColor.stripColor(event.getPlayer().getDisplayName()) + " has woken up ("
                     + sleepingPlayers + "/" + minSleepingPlayers + " needed)", currentWorld);
@@ -141,6 +137,14 @@ public class SleepListener implements Listener {
                                 ChatColor.GREEN + "Good morning! Let's get this mf bread.", world);
                     }
                 }, SleepListener.SLEEP_DURATION_TICKS);
+    }
+
+    private boolean canSleep(World world) {
+        return world.isThundering()
+                || (world.hasStorm() && world.getTime() >= SleepListener.STORM_SLEEP_START_TICK
+                        && world.getTime() <= SleepListener.STORM_SLEEP_END_TICK)
+                || (world.getTime() >= SleepListener.CLEAR_SLEEP_START_TICK
+                        && world.getTime() <= SleepListener.CLEAR_SLEEP_END_TICK);
     }
 
     private int getSleepingPlayers(World world) {
