@@ -3,8 +3,8 @@ package com.hackclub.hccore.utils;
 import java.util.concurrent.TimeUnit;
 
 public class TimeUtil {
-    public static int TICKS_PER_SECOND = 20;
-    public static int SECONDS_PER_MINUTE = 60;
+    public static final int TICKS_PER_SECOND = 20;
+    public static final int SECONDS_PER_MINUTE = 60;
 
     public static String toPrettyTime(int ticks) {
         return TimeUtil.toPrettyTime(ticks, false);
