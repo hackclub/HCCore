@@ -142,9 +142,9 @@ public class SleepListener implements Listener {
     private boolean canSleep(World world) {
         return world.isThundering()
                 || (world.hasStorm() && world.getTime() >= SleepListener.STORM_SLEEP_START_TICK
-                        && world.getTime() <= SleepListener.STORM_SLEEP_END_TICK)
+                        && world.getTime() < SleepListener.STORM_SLEEP_END_TICK)
                 || (world.getTime() >= SleepListener.CLEAR_SLEEP_START_TICK
-                        && world.getTime() <= SleepListener.CLEAR_SLEEP_END_TICK);
+                        && world.getTime() < SleepListener.CLEAR_SLEEP_END_TICK);
     }
 
     private int getSleepingPlayers(World world) {
