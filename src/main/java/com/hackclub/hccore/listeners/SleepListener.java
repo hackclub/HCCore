@@ -158,7 +158,7 @@ public class SleepListener implements Listener {
     }
 
     private int getMinSleepingPlayersNeeded(World world) {
-        final double SLEEPING_MIN_PERCENTAGE = 0.5;
-        return (int) Math.ceil(world.getPlayers().size() * SLEEPING_MIN_PERCENTAGE);
+        return (int) Math.ceil(world.getPlayers().size()
+                * this.plugin.getConfig().getDouble("settings.skip-sleep-threshold"));
     }
 }
