@@ -15,6 +15,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
 public class PlayerData {
+    public static final int MAX_NICKNAME_LENGTH = 16;
+
     private final HCCorePlugin plugin;
     private final Player player;
     private final File dataFile;
@@ -70,8 +72,7 @@ public class PlayerData {
 
     public void setNickname(String nickname) {
         // Validate length if a nickname was specified
-        final int MAX_NICKNAME_LENGTH = 16;
-        if (nickname != null && nickname.length() > MAX_NICKNAME_LENGTH) {
+        if (nickname != null && nickname.length() > PlayerData.MAX_NICKNAME_LENGTH) {
             return;
         }
 
