@@ -33,8 +33,7 @@ public class DataManager {
         this.players.put(player.getUniqueId(), new PlayerData(this.plugin, player));
 
         // Register player's team
-        Scoreboard mainScoreboard =
-                this.plugin.getServer().getScoreboardManager().getMainScoreboard();
+        Scoreboard mainScoreboard = player.getServer().getScoreboardManager().getMainScoreboard();
         player.setScoreboard(mainScoreboard);
         // Unregister existing teams in the player's name
         Team playerTeam = mainScoreboard.getTeam(player.getName());

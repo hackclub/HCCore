@@ -41,7 +41,7 @@ public class PingCommand implements TabExecutor {
         }
 
         // /ping [player]
-        Player targetPlayer = this.plugin.getServer().getPlayerExact(args[0]);
+        Player targetPlayer = sender.getServer().getPlayerExact(args[0]);
         if (targetPlayer != null) {
             PlayerData data = this.plugin.getDataManager().getData(targetPlayer);
             int ping = this.getPing(targetPlayer);
@@ -65,7 +65,7 @@ public class PingCommand implements TabExecutor {
             String[] args) {
         List<String> completions = new ArrayList<String>();
         if (args.length == 1) {
-            for (Player player : this.plugin.getServer().getOnlinePlayers()) {
+            for (Player player : sender.getServer().getOnlinePlayers()) {
                 if (StringUtil.startsWithIgnoreCase(player.getName(), args[0])) {
                     completions.add(player.getName());
                 }

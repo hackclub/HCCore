@@ -36,7 +36,7 @@ public class SleepListener implements Listener {
                 + sleepingPlayers + "/" + minSleepingPlayers + " needed)", currentWorld);
 
         if (sleepingPlayers < minSleepingPlayers) {
-            this.plugin.getServer().getScheduler().cancelTask(this.advanceTimeTaskId);
+            event.getPlayer().getServer().getScheduler().cancelTask(this.advanceTimeTaskId);
             return;
         }
 
@@ -65,7 +65,7 @@ public class SleepListener implements Listener {
         }
 
         if (sleepingPlayers < minSleepingPlayers) {
-            this.plugin.getServer().getScheduler().cancelTask(this.advanceTimeTaskId);
+            event.getPlayer().getServer().getScheduler().cancelTask(this.advanceTimeTaskId);
             return;
         }
 
@@ -81,7 +81,7 @@ public class SleepListener implements Listener {
 
         if (this.getSleepingPlayers(currentWorld) < this
                 .getMinSleepingPlayersNeeded(currentWorld)) {
-            this.plugin.getServer().getScheduler().cancelTask(this.advanceTimeTaskId);
+            event.getPlayer().getServer().getScheduler().cancelTask(this.advanceTimeTaskId);
             return;
         }
 
@@ -97,7 +97,7 @@ public class SleepListener implements Listener {
 
         if (this.getSleepingPlayers(
                 currentWorld) < (this.getMinSleepingPlayersNeeded(currentWorld) - 1)) {
-            this.plugin.getServer().getScheduler().cancelTask(this.advanceTimeTaskId);
+            event.getPlayer().getServer().getScheduler().cancelTask(this.advanceTimeTaskId);
             return;
         }
 

@@ -117,7 +117,7 @@ public class PlayerData {
     }
 
     public Team getTeam() {
-        return this.plugin.getServer().getScoreboardManager().getMainScoreboard()
+        return this.player.getServer().getScoreboardManager().getMainScoreboard()
                 .getTeam(this.player.getName());
     }
 
@@ -180,7 +180,7 @@ public class PlayerData {
     }
 
     private void refreshNameTag() {
-        for (Player onlinePlayer : this.plugin.getServer().getOnlinePlayers()) {
+        for (Player onlinePlayer : this.player.getServer().getOnlinePlayers()) {
             if (onlinePlayer.equals(this.player) || !onlinePlayer.canSee(this.player)) {
                 continue;
             }

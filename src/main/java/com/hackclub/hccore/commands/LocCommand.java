@@ -163,7 +163,7 @@ public class LocCommand implements TabExecutor {
                     break;
                 }
 
-                for (Player player : this.plugin.getServer().getOnlinePlayers()) {
+                for (Player player : sender.getServer().getOnlinePlayers()) {
                     if (StringUtil.startsWithIgnoreCase(player.getName(), args[2])) {
                         completions.add(player.getName());
                     }
