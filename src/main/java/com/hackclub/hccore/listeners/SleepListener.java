@@ -13,6 +13,9 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 public class SleepListener implements Listener {
+    private static final int SLEEP_DURATION_TICKS = 101;
+    private static final int WAKE_AT_TICK = 0;
+
     private final HCCorePlugin plugin;
     private int advanceTimeTaskId;
 
@@ -114,8 +117,6 @@ public class SleepListener implements Listener {
     }
 
     private void checkCanSkip(World world) {
-        final int SLEEP_DURATION_TICKS = 101;
-        final int WAKE_AT_TICK = 0;
         this.advanceTimeTaskId = this.plugin.getServer().getScheduler()
                 .scheduleSyncDelayedTask(this.plugin, new Runnable() {
                     @Override
@@ -130,7 +131,7 @@ public class SleepListener implements Listener {
                         }
 
                         // Advance to morning and clear thunderstorms
-                        world.setTime(WAKE_AT_TICK);
+                        world.setTime(SleepListener.WAKE_AT_TICK);
                         if (world.isThundering()) {
                             world.setThundering(false);
                             world.setStorm(false);
@@ -139,7 +140,7 @@ public class SleepListener implements Listener {
                         broadcastMessageToWorld(
                                 ChatColor.GREEN + "Good morning! Let's get this mf bread.", world);
                     }
-                }, SLEEP_DURATION_TICKS);
+                }, SleepListener.SLEEP_DURATION_TICKS);
     }
 
     private int getSleepingPlayers(World world) {
