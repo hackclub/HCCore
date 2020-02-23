@@ -15,10 +15,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 
 public class ColorCommand implements TabExecutor {
-    private final HCCorePlugin plugin;
     private static final List<String> COLOR_NAMES =
             Arrays.asList(ChatColor.values()).stream().filter(value -> value.isColor())
                     .map(color -> color.name().toLowerCase()).collect(Collectors.toList());
+
+    private final HCCorePlugin plugin;
 
     public ColorCommand(HCCorePlugin plugin) {
         this.plugin = plugin;
