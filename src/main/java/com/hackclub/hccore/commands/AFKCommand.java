@@ -27,14 +27,12 @@ public class AFKCommand implements CommandExecutor {
         PlayerData data = this.plugin.getDataManager().getData(player);
         data.setAfk(!data.isAfk());
         if (data.isAfk()) {
-            player.sendMessage("You are now AFK");
             player.sendTitle(ChatColor.RED + ChatColor.BOLD.toString() + "You are AFK",
                     "Run /" + alias + " again to turn this off", 10, 999999, 20);
-            this.plugin.getServer().broadcastMessage(data.getUsableName() + " is now AFK");
+            sender.getServer().broadcastMessage(data.getUsableName() + " is now AFK");
         } else {
-            player.sendMessage("You are now active");
             player.sendTitle(null, null, 0, 1, -1);
-            this.plugin.getServer().broadcastMessage(data.getUsableName() + " is now active");
+            sender.getServer().broadcastMessage(data.getUsableName() + " is now active");
         }
 
         return true;
