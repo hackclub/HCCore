@@ -39,32 +39,32 @@ public class LocCommand implements TabExecutor {
             // /loc del <name>
             case "del": {
                 if (args.length < 2) {
-                    player.sendMessage(ChatColor.RED + "Please specify the location name");
+                    sender.sendMessage(ChatColor.RED + "Please specify the location name");
                     break;
                 }
                 if (!data.getSavedLocations().containsKey(args[1])) {
-                    player.sendMessage(ChatColor.RED + "No location with that name was found");
+                    sender.sendMessage(ChatColor.RED + "No location with that name was found");
                     break;
                 }
 
                 data.getSavedLocations().remove(args[1]);
-                player.sendMessage(
+                sender.sendMessage(
                         ChatColor.GREEN + "Removed " + args[1] + " from saved locations");
                 break;
             }
             // /loc get <name>
             case "get": {
                 if (args.length < 2) {
-                    player.sendMessage(ChatColor.RED + "Please specify the location name");
+                    sender.sendMessage(ChatColor.RED + "Please specify the location name");
                     break;
                 }
                 if (!data.getSavedLocations().containsKey(args[1])) {
-                    player.sendMessage(ChatColor.RED + "No location with that name was found");
+                    sender.sendMessage(ChatColor.RED + "No location with that name was found");
                     break;
                 }
 
                 Location savedLocation = data.getSavedLocations().get(args[1]);
-                player.sendMessage(args[1] + ": " + savedLocation.getWorld().getName() + " @ "
+                sender.sendMessage(args[1] + ": " + savedLocation.getWorld().getName() + " @ "
                         + savedLocation.getBlockX() + ", " + savedLocation.getBlockY() + ", "
                         + savedLocation.getBlockZ());
                 break;
@@ -73,15 +73,15 @@ public class LocCommand implements TabExecutor {
             case "list": {
                 Map<String, Location> savedLocations = data.getSavedLocations();
                 if (savedLocations.isEmpty()) {
-                    player.sendMessage("You have no saved locations");
+                    sender.sendMessage("You have no saved locations");
                     break;
                 }
 
-                player.sendMessage(
+                sender.sendMessage(
                         ChatColor.AQUA + "Your saved locations (" + savedLocations.size() + "):");
                 for (Map.Entry<String, Location> entry : savedLocations.entrySet()) {
                     Location savedLocation = entry.getValue();
-                    player.sendMessage("- " + entry.getKey() + ": "
+                    sender.sendMessage("- " + entry.getKey() + ": "
                             + savedLocation.getWorld().getName() + " @ " + savedLocation.getBlockX()
                             + ", " + savedLocation.getBlockY() + ", " + savedLocation.getBlockZ());
                 }
@@ -90,17 +90,17 @@ public class LocCommand implements TabExecutor {
             // /loc save <name>
             case "save": {
                 if (args.length < 2) {
-                    player.sendMessage(ChatColor.RED + "Please specify the location name");
+                    sender.sendMessage(ChatColor.RED + "Please specify the location name");
                     break;
                 }
                 if (data.getSavedLocations().containsKey(args[1])) {
-                    player.sendMessage(ChatColor.RED + "A location with that name already exists");
+                    sender.sendMessage(ChatColor.RED + "A location with that name already exists");
                     break;
                 }
 
                 Location currentLocation = player.getLocation();
                 data.getSavedLocations().put(args[1], currentLocation);
-                player.sendMessage(ChatColor.GREEN + "Added " + args[1] + " ("
+                sender.sendMessage(ChatColor.GREEN + "Added " + args[1] + " ("
                         + currentLocation.getWorld().getName() + " @ " + currentLocation.getBlockX()
                         + ", " + currentLocation.getBlockY() + ", " + currentLocation.getBlockZ()
                         + ") to saved locations");
@@ -109,12 +109,12 @@ public class LocCommand implements TabExecutor {
             // /loc share <name> <player>
             case "share": {
                 if (args.length < 3) {
-                    player.sendMessage(ChatColor.RED
+                    sender.sendMessage(ChatColor.RED
                             + "Please specify the location name and the player you want to share it with");
                     break;
                 }
                 if (!data.getSavedLocations().containsKey(args[1])) {
-                    player.sendMessage(ChatColor.RED + "No location with that name was found");
+                    sender.sendMessage(ChatColor.RED + "No location with that name was found");
                     break;
                 }
                 // TODO: Add share functionality
@@ -163,7 +163,7 @@ public class LocCommand implements TabExecutor {
                     break;
                 }
 
-                for (Player player : this.plugin.getServer().getOnlinePlayers()) {
+                for (Player player : sender.getServer().getOnlinePlayers()) {
                     if (StringUtil.startsWithIgnoreCase(player.getName(), args[2])) {
                         completions.add(player.getName());
                     }

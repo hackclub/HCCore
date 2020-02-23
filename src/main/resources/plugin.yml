@@ -15,7 +15,7 @@ commands:
     description: Manage your saved locations
     usage: /loc <del|get|list|save|share> [...args]
   nick:
-    description: Set your nickname
+    description: Sets your nickname
     usage: /nick [nickname]
   ping:
     description: Gets the ping of you or a specified player

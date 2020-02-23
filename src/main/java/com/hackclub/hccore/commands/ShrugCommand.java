@@ -8,6 +8,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class ShrugCommand implements CommandExecutor {
+    private static final String SHRUG = "¯\\_(ツ)_/¯";
+
     private final HCCorePlugin plugin;
 
     public ShrugCommand(HCCorePlugin plugin) {
@@ -22,11 +24,10 @@ public class ShrugCommand implements CommandExecutor {
         }
 
         Player player = (Player) sender;
-        final String SHRUG = "¯\\_(ツ)_/¯";
         if (args.length == 0) {
-            player.chat(SHRUG);
+            player.chat(ShrugCommand.SHRUG);
         } else {
-            player.chat(String.join(" ", args) + " " + SHRUG);
+            player.chat(String.join(" ", args) + " " + ShrugCommand.SHRUG);
         }
 
         return true;

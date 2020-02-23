@@ -13,6 +13,13 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 public class SleepListener implements Listener {
+    private static final int SLEEP_DURATION_TICKS = 101;
+    private static final int WAKE_AT_TICK = 0;
+    private static final int CLEAR_SLEEP_START_TICK = 12542;
+    private static final int CLEAR_SLEEP_END_TICK = 23460;
+    private static final int STORM_SLEEP_START_TICK = 12010;
+    private static final int STORM_SLEEP_END_TICK = 23992;
+
     private final HCCorePlugin plugin;
     private int advanceTimeTaskId;
 
@@ -36,7 +43,7 @@ public class SleepListener implements Listener {
                 + sleepingPlayers + "/" + minSleepingPlayers + " needed)", currentWorld);
 
         if (sleepingPlayers < minSleepingPlayers) {
-            this.plugin.getServer().getScheduler().cancelTask(this.advanceTimeTaskId);
+            event.getPlayer().getServer().getScheduler().cancelTask(this.advanceTimeTaskId);
             return;
         }
 
@@ -50,22 +57,14 @@ public class SleepListener implements Listener {
         int minSleepingPlayers = this.getMinSleepingPlayersNeeded(currentWorld);
 
         // Only show wake message if it's still within sleeping periods
-        final int CLEAR_SLEEP_START_TICK = 12542;
-        final int CLEAR_SLEEP_END_TICK = 23460;
-        final int STORM_SLEEP_START_TICK = 12010;
-        final int STORM_SLEEP_END_TICK = 23992;
-        if (currentWorld.isThundering()
-                || (currentWorld.hasStorm() && currentWorld.getTime() >= STORM_SLEEP_START_TICK
-                        && currentWorld.getTime() <= STORM_SLEEP_END_TICK)
-                || (currentWorld.getTime() >= CLEAR_SLEEP_START_TICK
-                        && currentWorld.getTime() <= CLEAR_SLEEP_END_TICK)) {
+        if (this.canSleep(currentWorld)) {
             this.broadcastMessageToWorld(ChatColor.GOLD
                     + ChatColor.stripColor(event.getPlayer().getDisplayName()) + " has woken up ("
                     + sleepingPlayers + "/" + minSleepingPlayers + " needed)", currentWorld);
         }
 
         if (sleepingPlayers < minSleepingPlayers) {
-            this.plugin.getServer().getScheduler().cancelTask(this.advanceTimeTaskId);
+            event.getPlayer().getServer().getScheduler().cancelTask(this.advanceTimeTaskId);
             return;
         }
 
@@ -81,7 +80,7 @@ public class SleepListener implements Listener {
 
         if (this.getSleepingPlayers(currentWorld) < this
                 .getMinSleepingPlayersNeeded(currentWorld)) {
-            this.plugin.getServer().getScheduler().cancelTask(this.advanceTimeTaskId);
+            event.getPlayer().getServer().getScheduler().cancelTask(this.advanceTimeTaskId);
             return;
         }
 
@@ -97,7 +96,7 @@ public class SleepListener implements Listener {
 
         if (this.getSleepingPlayers(
                 currentWorld) < (this.getMinSleepingPlayersNeeded(currentWorld) - 1)) {
-            this.plugin.getServer().getScheduler().cancelTask(this.advanceTimeTaskId);
+            event.getPlayer().getServer().getScheduler().cancelTask(this.advanceTimeTaskId);
             return;
         }
 
@@ -114,8 +113,6 @@ public class SleepListener implements Listener {
     }
 
     private void checkCanSkip(World world) {
-        final int SLEEP_DURATION_TICKS = 101;
-        final int WAKE_AT_TICK = 0;
         this.advanceTimeTaskId = this.plugin.getServer().getScheduler()
                 .scheduleSyncDelayedTask(this.plugin, new Runnable() {
                     @Override
@@ -130,7 +127,7 @@ public class SleepListener implements Listener {
                         }
 
                         // Advance to morning and clear thunderstorms
-                        world.setTime(WAKE_AT_TICK);
+                        world.setTime(SleepListener.WAKE_AT_TICK);
                         if (world.isThundering()) {
                             world.setThundering(false);
                             world.setStorm(false);
@@ -139,7 +136,15 @@ public class SleepListener implements Listener {
                         broadcastMessageToWorld(
                                 ChatColor.GREEN + "Good morning! Let's get this mf bread.", world);
                     }
-                }, SLEEP_DURATION_TICKS);
+                }, SleepListener.SLEEP_DURATION_TICKS);
+    }
+
+    private boolean canSleep(World world) {
+        return world.isThundering()
+                || (world.hasStorm() && world.getTime() >= SleepListener.STORM_SLEEP_START_TICK
+                        && world.getTime() < SleepListener.STORM_SLEEP_END_TICK)
+                || (world.getTime() >= SleepListener.CLEAR_SLEEP_START_TICK
+                        && world.getTime() < SleepListener.CLEAR_SLEEP_END_TICK);
     }
 
     private int getSleepingPlayers(World world) {
@@ -153,7 +158,7 @@ public class SleepListener implements Listener {
     }
 
     private int getMinSleepingPlayersNeeded(World world) {
-        final double SLEEPING_MIN_PERCENTAGE = 0.5;
-        return (int) Math.ceil(world.getPlayers().size() * SLEEPING_MIN_PERCENTAGE);
+        return (int) Math.ceil(world.getPlayers().size()
+                * this.plugin.getConfig().getDouble("settings.skip-sleep-threshold"));
     }
 }

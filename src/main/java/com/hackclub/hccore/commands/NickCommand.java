@@ -1,6 +1,7 @@
 package com.hackclub.hccore.commands;
 
 import com.hackclub.hccore.HCCorePlugin;
+import com.hackclub.hccore.PlayerData;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -24,20 +25,19 @@ public class NickCommand implements CommandExecutor {
         Player player = (Player) sender;
         if (args.length == 0) {
             this.plugin.getDataManager().getData(player).setNickname(null);
-            player.sendMessage(ChatColor.GREEN + "Your nickname has been reset!");
+            sender.sendMessage(ChatColor.GREEN + "Your nickname has been reset!");
             return true;
         }
 
         String newNickname = String.join(" ", args);
-        final int MAX_NICKNAME_LENGTH = 16;
-        if (newNickname.length() > MAX_NICKNAME_LENGTH) {
-            player.sendMessage(ChatColor.RED + "Your nickname can’t be longer than "
-                    + MAX_NICKNAME_LENGTH + " characters");
+        if (newNickname.length() > PlayerData.MAX_NICKNAME_LENGTH) {
+            sender.sendMessage(ChatColor.RED + "Your nickname can’t be longer than "
+                    + PlayerData.MAX_NICKNAME_LENGTH + " characters");
             return true;
         }
 
         this.plugin.getDataManager().getData(player).setNickname(newNickname);
-        player.sendMessage(
+        sender.sendMessage(
                 ChatColor.GREEN + "Your nickname was set to " + ChatColor.AQUA + newNickname);
 
         return true;
