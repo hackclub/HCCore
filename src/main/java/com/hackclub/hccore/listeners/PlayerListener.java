@@ -60,6 +60,9 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onPlayerJoin(final PlayerJoinEvent event) {
         this.plugin.getDataManager().registerPlayer(event.getPlayer());
+        // Set the initial active time
+        this.plugin.getDataManager().getData(event.getPlayer())
+                .setLastActiveAt(System.currentTimeMillis());
 
         // NOTE: Title isn't cleared when the player leaves the server
         event.getPlayer().resetTitle();

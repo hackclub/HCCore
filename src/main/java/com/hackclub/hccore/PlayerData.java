@@ -24,6 +24,7 @@ public class PlayerData {
     // Session data (will be cleared when player quits)
     private boolean isAfk = false;
     private long lastDamagedAt = 0;
+    private long lastActiveAt = 0;
 
     // Persistent data
     @Expose
@@ -64,6 +65,14 @@ public class PlayerData {
 
     public void setLastDamagedAt(long damagedAt) {
         this.lastDamagedAt = damagedAt;
+    }
+
+    public long getLastActiveAt() {
+        return this.lastActiveAt;
+    }
+
+    public void setLastActiveAt(long activeAt) {
+        this.lastActiveAt = activeAt;
     }
 
     public String getNickname() {
