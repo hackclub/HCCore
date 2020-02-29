@@ -124,6 +124,10 @@ public class HCCorePlugin extends JavaPlugin {
         Advancement killElderGuardian = factory.getKill("kill_elder_guardian", mineDiamondOre,
                 "The Deep End", "Defeat an Elder Guardian", Material.PRISMARINE_SHARD,
                 EntityType.ELDER_GUARDIAN).setFrame(Advancement.Frame.GOAL);
+        Advancement youMonster = factory.getKill("you_monster", "You Monster",
+                "Slaughter an Innocent Doggo", Material.BONE,
+                EntityType.WOLF).setFrame(Advancement.Frame.GOAL);
+                
 
         // Activate all the advancements
         List<Advancement> advancements = new ArrayList<Advancement>() {
@@ -139,6 +143,7 @@ public class HCCorePlugin extends JavaPlugin {
                 add(killDragonInsane);
                 add(killWitherInsane);
                 add(killElderGuardian);
+                add(youMonster);
             }
         };
         for (Advancement advancement : advancements) {
