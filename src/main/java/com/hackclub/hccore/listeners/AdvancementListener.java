@@ -46,7 +46,7 @@ public class AdvancementListener implements Listener {
                 + ChatColor.UNDERLINE + this.plugin.getConfig().getString("claim-stickers-url")
                 + ChatColor.RESET + ChatColor.GREEN + " to claim them!*");
         player.sendMessage(ChatColor.GRAY + ChatColor.ITALIC.toString()
-                + "*Please note that this offer only applies to players who have never received the stickers before. If you have, please do not fill out the form again!");
+                + "*This offer only applies to players who have never received the stickers before. If you have, please do not fill out the form again!");
         player.sendMessage(ChatColor.GRAY + ChatColor.ITALIC.toString()
                 + "You will only see this message once.");
     }
