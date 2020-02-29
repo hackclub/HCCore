@@ -44,7 +44,7 @@ public class AdvancementListener implements Listener {
         player.sendMessage(ChatColor.GREEN
                 + "Congrats, you’ve found your very first diamond! You are now eligible for the exclusive (and limited edition!) Hack Club Minecraft stickers. Head over to "
                 + ChatColor.UNDERLINE + this.plugin.getConfig().getString("claim-stickers-url")
-                + ChatColor.RESET + ChatColor.GREEN + " to claim them!" 
+                + ChatColor.RESET + ChatColor.GREEN + " to claim them! " 
                 + ChatColor.RESET + ChatColor.ITALIC + "[Please note that if you recieved stickers previously, please do not fill out the form again! You are not eligible for more stickers].");
         player.sendMessage(ChatColor.GRAY + ChatColor.ITALIC.toString()
                 + "You will only see this message once.");
