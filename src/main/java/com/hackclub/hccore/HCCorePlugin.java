@@ -19,8 +19,10 @@ import com.hackclub.hccore.listeners.BeehiveInteractionListener;
 import com.hackclub.hccore.listeners.NameChangeListener;
 import com.hackclub.hccore.listeners.PlayerListener;
 import com.hackclub.hccore.listeners.SleepListener;
+import org.bukkit.GameRule;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.World;
 import org.bukkit.entity.EntityType;
 import org.bukkit.plugin.java.JavaPlugin;
 import hu.trigary.advancementcreator.Advancement;
@@ -34,6 +36,11 @@ public class HCCorePlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        // Disable default advancement announcements
+        for (World world : this.getServer().getWorlds()) {
+            world.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
+        }
+
         // Create config
         this.saveDefaultConfig();
 
