@@ -10,6 +10,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.player.PlayerAdvancementDoneEvent;
 
 public class AdvancementListener implements Listener {
     private final HCCorePlugin plugin;
@@ -41,14 +42,6 @@ public class AdvancementListener implements Listener {
         }
 
         this.grantAdvancement(player, key);
-        player.sendMessage(ChatColor.GREEN
-                + "Congrats, you’ve found your very first diamond! You are now eligible for the exclusive (and limited edition!) Hack Club Minecraft stickers. Head over to "
-                + ChatColor.UNDERLINE + this.plugin.getConfig().getString("claim-stickers-url")
-                + ChatColor.RESET + ChatColor.GREEN + " to claim them!*");
-        player.sendMessage(ChatColor.GRAY + ChatColor.ITALIC.toString()
-                + "*This offer only applies to players who have never received the stickers before. If you have, please do not fill out the form again!");
-        player.sendMessage(ChatColor.GRAY + ChatColor.ITALIC.toString()
-                + "You will only see this message once.");
     }
 
     @EventHandler
@@ -81,6 +74,23 @@ public class AdvancementListener implements Listener {
             }
             default:
                 break;
+        }
+    }
+
+    @EventHandler
+    public void onPlayerAdvancementDone(final PlayerAdvancementDoneEvent event) {
+        Player player = event.getPlayer();
+
+        if (event.getAdvancement().getKey()
+                .equals(new NamespacedKey(this.plugin, "mine_diamond_ore"))) {
+            player.sendMessage(ChatColor.GREEN
+                    + "Congrats, you’ve found your very first diamond! You are now eligible for the exclusive (and limited edition!) Hack Club Minecraft stickers. Head over to "
+                    + ChatColor.UNDERLINE + this.plugin.getConfig().getString("claim-stickers-url")
+                    + ChatColor.RESET + ChatColor.GREEN + " to claim them!*");
+            player.sendMessage(ChatColor.GRAY + ChatColor.ITALIC.toString()
+                    + "*This offer only applies to players who have never received the stickers before. If you have, please do not fill out the form again!");
+            player.sendMessage(ChatColor.GRAY + ChatColor.ITALIC.toString()
+                    + "You will only see this message once.");
         }
     }
 
