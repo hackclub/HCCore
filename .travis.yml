@@ -8,6 +8,11 @@ script:
 cache:
   directories:
     - "$HOME/.m2"
+    - "$HOME/BuildData"
+    - "$HOME/Bukkit"
+    - "$HOME/CraftBukkit"
+    - "$HOME/Spigot"
+    - "$HOME/work"
 deploy:
   - provider: releases
     api_key:
