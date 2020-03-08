@@ -14,6 +14,7 @@ import com.hackclub.hccore.commands.PingCommand;
 import com.hackclub.hccore.commands.ShrugCommand;
 import com.hackclub.hccore.commands.SpawnCommand;
 import com.hackclub.hccore.commands.StatsCommand;
+import com.hackclub.hccore.commands.TableflipCommand;
 import com.hackclub.hccore.listeners.AdvancementListener;
 import com.hackclub.hccore.listeners.BeehiveInteractionListener;
 import com.hackclub.hccore.listeners.NameChangeListener;
