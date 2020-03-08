@@ -57,6 +57,7 @@ public class HCCorePlugin extends JavaPlugin {
         this.getCommand("shrug").setExecutor(new ShrugCommand(this));
         this.getCommand("spawn").setExecutor(new SpawnCommand(this));
         this.getCommand("stats").setExecutor(new StatsCommand(this));
+        this.getCommand("tableflip").setExecutor(new ShrugCommand(this));
 
         // Register event listeners
         this.getServer().getPluginManager().registerEvents(new AdvancementListener(this), this);
