@@ -8,7 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class TableflipCommand implements CommandExecutor {
-    private static final String SHRUG = "(╯°□°）╯︵ ┻━┻";
+    private static final String TABLEFLIP = "(╯°□°）╯︵ ┻━┻";
 
     private final HCCorePlugin plugin;
 
@@ -25,9 +25,9 @@ public class TableflipCommand implements CommandExecutor {
 
         Player player = (Player) sender;
         if (args.length == 0) {
-            player.chat(TableflipCommand.SHRUG);
+            player.chat(TableflipCommand.TABLEFLIP);
         } else {
-            player.chat(String.join(" ", args) + " " + TableflipCommand.SHRUG);
+            player.chat(String.join(" ", args) + " " + TableflipCommand.TABLEFLIP);
         }
 
         return true;
