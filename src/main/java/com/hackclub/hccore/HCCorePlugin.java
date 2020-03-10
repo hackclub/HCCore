@@ -143,7 +143,7 @@ public class HCCorePlugin extends JavaPlugin {
                 add(killDragonInsane);
                 add(killWitherInsane);
                 add(killElderGuardian);
-                add(youMonster);
+                add(killWolf);
             }
         };
         for (Advancement advancement : advancements) {
