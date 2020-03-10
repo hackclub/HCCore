@@ -124,9 +124,9 @@ public class HCCorePlugin extends JavaPlugin {
         Advancement killElderGuardian = factory.getKill("kill_elder_guardian", mineDiamondOre,
                 "The Deep End", "Defeat an Elder Guardian", Material.PRISMARINE_SHARD,
                 EntityType.ELDER_GUARDIAN).setFrame(Advancement.Frame.GOAL);
-        Advancement killWolf = factory.getKill("kill_wolf", mineDiamondOre, "You Monster",
-                "Slaughter an Innocent Doggo", Material.BONE,
-                EntityType.WOLF).setFrame(Advancement.Frame.GOAL);
+        Advancement killWolf = factory.getKill("kill_wolf", mineDiamondOre, "You Monster!",
+                "Slaughter a doggo", Material.BONE,
+                EntityType.WOLF).setFrame(Advancement.Frame.TASK);
                 
 
         // Activate all the advancements
