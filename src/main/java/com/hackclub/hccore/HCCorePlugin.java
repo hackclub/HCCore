@@ -9,6 +9,7 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.hackclub.hccore.commands.AFKCommand;
 import com.hackclub.hccore.commands.ColorCommand;
 import com.hackclub.hccore.commands.LocCommand;
+import com.hackclub.hccore.commands.MsgCommand;
 import com.hackclub.hccore.commands.NickCommand;
 import com.hackclub.hccore.commands.PingCommand;
 import com.hackclub.hccore.commands.ShrugCommand;
@@ -52,6 +53,7 @@ public class HCCorePlugin extends JavaPlugin {
         this.getCommand("afk").setExecutor(new AFKCommand(this));
         this.getCommand("color").setExecutor(new ColorCommand(this));
         this.getCommand("loc").setExecutor(new LocCommand(this));
+        this.getCommand("msg").setExecutor(new MsgCommand(this));
         this.getCommand("nick").setExecutor(new NickCommand(this));
         this.getCommand("ping").setExecutor(new PingCommand(this));
         this.getCommand("shrug").setExecutor(new ShrugCommand(this));

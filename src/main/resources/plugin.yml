@@ -14,6 +14,10 @@ commands:
   loc:
     description: Manage your saved locations
     usage: /loc <del|get|list|save|share> [...args]
+  msg:
+    description: Sends the specified player a private message
+    usage: /msg <player> [message]
+    alias: [dm, tell, w]
   nick:
     description: Sets your nickname
     usage: /nick [nickname]
