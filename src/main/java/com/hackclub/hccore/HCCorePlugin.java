@@ -136,7 +136,7 @@ public class HCCorePlugin extends JavaPlugin {
         Advancement killWolf = factory.getKill("kill_wolf", mineDiamondOre, "You Monster!",
                 "Slaughter a doggo", Material.BONE,
                 EntityType.WOLF).setFrame(Advancement.Frame.TASK);
-                
+
 
         // Activate all the advancements
         List<Advancement> advancements = new ArrayList<Advancement>() {
