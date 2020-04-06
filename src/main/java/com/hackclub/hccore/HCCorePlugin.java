@@ -14,6 +14,7 @@ import com.hackclub.hccore.commands.PingCommand;
 import com.hackclub.hccore.commands.ShrugCommand;
 import com.hackclub.hccore.commands.SpawnCommand;
 import com.hackclub.hccore.commands.StatsCommand;
+import com.hackclub.hccore.commands.TableflipCommand;
 import com.hackclub.hccore.listeners.AFKListener;
 import com.hackclub.hccore.listeners.AdvancementListener;
 import com.hackclub.hccore.listeners.BeehiveInteractionListener;
@@ -22,8 +23,10 @@ import com.hackclub.hccore.listeners.PlayerListener;
 import com.hackclub.hccore.listeners.SleepListener;
 import com.hackclub.hccore.tasks.AutoAFKTask;
 import com.hackclub.hccore.utils.TimeUtil;
+import org.bukkit.GameRule;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.World;
 import org.bukkit.entity.EntityType;
 import org.bukkit.plugin.java.JavaPlugin;
 import hu.trigary.advancementcreator.Advancement;
@@ -37,6 +40,11 @@ public class HCCorePlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        // Disable default advancement announcements
+        for (World world : this.getServer().getWorlds()) {
+            world.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
+        }
+
         // Create config
         this.saveDefaultConfig();
 
@@ -53,6 +61,7 @@ public class HCCorePlugin extends JavaPlugin {
         this.getCommand("shrug").setExecutor(new ShrugCommand(this));
         this.getCommand("spawn").setExecutor(new SpawnCommand(this));
         this.getCommand("stats").setExecutor(new StatsCommand(this));
+        this.getCommand("tableflip").setExecutor(new TableflipCommand(this));
 
         // Register event listeners
         this.getServer().getPluginManager().registerEvents(new AdvancementListener(this), this);
@@ -131,6 +140,9 @@ public class HCCorePlugin extends JavaPlugin {
         Advancement killElderGuardian = factory.getKill("kill_elder_guardian", mineDiamondOre,
                 "The Deep End", "Defeat an Elder Guardian", Material.PRISMARINE_SHARD,
                 EntityType.ELDER_GUARDIAN).setFrame(Advancement.Frame.GOAL);
+        Advancement killWolf =
+                factory.getKill("kill_wolf", mineDiamondOre, "You Monster!", "Slaughter a doggo",
+                        Material.BONE, EntityType.WOLF).setFrame(Advancement.Frame.TASK);
 
         // Activate all the advancements
         List<Advancement> advancements = new ArrayList<Advancement>() {
@@ -146,10 +158,13 @@ public class HCCorePlugin extends JavaPlugin {
                 add(killDragonInsane);
                 add(killWitherInsane);
                 add(killElderGuardian);
+                add(killWolf);
             }
         };
         for (Advancement advancement : advancements) {
-            advancement.activate(false);
+            if (this.getServer().getAdvancement(advancement.getId()) == null) {
+                advancement.activate(false);
+            }
         }
 
         // Reload the data cache after all advancements have been added
