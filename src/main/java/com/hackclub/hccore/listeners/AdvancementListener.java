@@ -13,6 +13,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerAdvancementDoneEvent;
+import org.bukkit.event.player.PlayerStatisticIncrementEvent;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -43,6 +44,31 @@ public class AdvancementListener implements Listener {
 
         Player player = event.getPlayer();
         NamespacedKey key = new NamespacedKey(this.plugin, "mine_diamond_ore");
+        AdvancementProgress progress =
+                player.getAdvancementProgress(player.getServer().getAdvancement(key));
+        // Skip if player already has this advancement
+        if (progress.isDone()) {
+            return;
+        }
+
+        this.grantAdvancement(player, key);
+    }
+    
+        @EventHandler
+    public void onPlayerStatisticIncrement(final PlayerStatisticIncrementEvent event) {
+        // Check if it's a diamond ore
+        if (event.getStatistic() != statistic.FLY_ONE_CM) {
+            return;
+        }
+
+        // The diamond ore wasn't found underground
+        final int MILLION_AMNT = 1609344000;
+        if (event.getNewValue() < MILLION_AMNT) {
+            return;
+        }
+
+        Player player = event.getPlayer();
+        NamespacedKey key = new NamespacedKey(this.plugin, "mil_miles");
         AdvancementProgress progress =
                 player.getAdvancementProgress(player.getServer().getAdvancement(key));
         // Skip if player already has this advancement
