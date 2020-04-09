@@ -136,8 +136,8 @@ public class HCCorePlugin extends JavaPlugin {
         Advancement killWolf =
                 factory.getKill("kill_wolf", mineDiamondOre, "You Monster!", "Slaughter a doggo",
                         Material.BONE, EntityType.WOLF).setFrame(Advancement.Frame.TASK);
-        Advancement milMiles = factory.getCountedImpossible("mil_miles", root, "Million Miler",
-                "Fly one million miles. 1609344000 m", Material.ELYTRA, 1609344000).setFrame(Advancement.Frame.CHALLENGE);
+        Advancement millionMiles = factory.getImpossible("million_miles", mineDiamondOre, "Million Miler",
+                "Fly one million miles with elytra. 1,609,344 km", Material.ELYTRA).setFrame(Advancement.Frame.CHALLENGE);
  
 
         // Activate all the advancements
@@ -155,7 +155,7 @@ public class HCCorePlugin extends JavaPlugin {
                 add(killWitherInsane);
                 add(killElderGuardian);
                 add(killWolf);
-                add(milMiles);
+                add(millionMiles);
             }
         };
         for (Advancement advancement : advancements) {
