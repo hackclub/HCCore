@@ -54,21 +54,21 @@ public class AdvancementListener implements Listener {
         this.grantAdvancement(player, key);
     }
     
-        @EventHandler
+    @EventHandler
     public void onPlayerStatisticIncrement(final PlayerStatisticIncrementEvent event) {
-        // Check if it's a diamond ore
+        // Check if statistic is about meters flown
         if (event.getStatistic() != statistic.FLY_ONE_CM) {
             return;
         }
 
-        // The diamond ore wasn't found underground
+        // Check that the value is equal or above that of 1 million miles (1,609,344 km)
         final int MILLION_AMNT = 1609344000;
-        if (event.getNewValue() < MILLION_AMNT) {
+        if (event.getNewValue() <= MILLION_AMNT) {
             return;
         }
 
         Player player = event.getPlayer();
-        NamespacedKey key = new NamespacedKey(this.plugin, "mil_miles");
+        NamespacedKey key = new NamespacedKey(this.plugin, "million_miles");
         AdvancementProgress progress =
                 player.getAdvancementProgress(player.getServer().getAdvancement(key));
         // Skip if player already has this advancement
@@ -127,6 +127,8 @@ public class AdvancementListener implements Listener {
             player.sendMessage(ChatColor.GRAY + ChatColor.ITALIC.toString()
                     + "You will only see this message once.");
         }
+        
+            
 
         try {
             // NOTE: We interface with Minecraft's internal code here. It is unlikely, but possible
