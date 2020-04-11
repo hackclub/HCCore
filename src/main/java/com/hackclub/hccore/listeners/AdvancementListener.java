@@ -1,6 +1,7 @@
 package com.hackclub.hccore.listeners;
 
 import com.hackclub.hccore.HCCorePlugin;
+import org.bukkit.Statistic;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -57,7 +58,7 @@ public class AdvancementListener implements Listener {
     @EventHandler
     public void onPlayerStatisticIncrement(final PlayerStatisticIncrementEvent event) {
         // Check if statistic is about meters flown
-        if (event.getStatistic() != statistic.FLY_ONE_CM) {
+        if (event.getStatistic() != Statistic.FLY_ONE_CM) {
             return;
         }
 
