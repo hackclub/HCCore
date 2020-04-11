@@ -134,7 +134,7 @@ public class SleepListener implements Listener {
                         }
 
                         broadcastMessageToWorld(
-                                ChatColor.GREEN + "Good morning! Let's get this mf bread.", world);
+                                ChatColor.GREEN + "GOOOOOOOOOD MORNING, LETS YEET THIS WHEAT.", world);
                     }
                 }, SleepListener.SLEEP_DURATION_TICKS);
     }
