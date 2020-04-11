@@ -69,7 +69,7 @@ public class AdvancementListener implements Listener {
         }
 
         Player player = event.getPlayer();
-        NamespacedKey key = new NamespacedKey(this.plugin, "million_miles");
+        NamespacedKey key = new NamespacedKey(this.plugin, "million_miler");
         AdvancementProgress progress =
                 player.getAdvancementProgress(player.getServer().getAdvancement(key));
         // Skip if player already has this advancement
