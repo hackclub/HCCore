@@ -56,19 +56,24 @@ public class AdvancementListener implements Listener {
     }
     
     @EventHandler
-    public void onPlayerStatisticIncrement(final PlayerStatisticIncrementEvent event) {
-        // Check if statistic is about meters flown
-        if (event.getStatistic() != Statistic.FLY_ONE_CM) {
+    public void onEntityToggleGlide(final EntityToggleGlideEvent event) {
+
+
+        // Ignore takeoff events
+        if (event.isGliding()) {
             return;
         }
+        if (!(event.getEntity() instanceof Player)) {
+            return;
+        }
+        Player player = (Player) event.getEntity();
 
         // Check that the value is equal or above that of 1 million miles (1,609,344 km)
         final int MILLION_AMNT = 1609344000;
-        if (event.getNewValue() <= MILLION_AMNT) {
+        if (player.getStatistic(Statistic.FLY_ONE_CM) <= MILLION_AMNT) {
             return;
         }
-
-        Player player = event.getPlayer();
+        
         NamespacedKey key = new NamespacedKey(this.plugin, "million_miler");
         AdvancementProgress progress =
                 player.getAdvancementProgress(player.getServer().getAdvancement(key));
@@ -76,8 +81,9 @@ public class AdvancementListener implements Listener {
         if (progress.isDone()) {
             return;
         }
-
+        // Grants Advancement
         this.grantAdvancement(player, key);
+
     }
 
     @EventHandler
