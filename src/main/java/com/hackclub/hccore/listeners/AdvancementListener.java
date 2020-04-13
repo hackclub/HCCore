@@ -70,7 +70,7 @@ public class AdvancementListener implements Listener {
 
         // Check that the value is equal or above that of 1 million miles (1,609,344 km)
         final float METERS_PER_MILE = 1609.344;
-        if (player.getStatistic(Statistic.FLY_ONE_CM) <= (1000000 * METERS_PER_MILE) {
+        if (player.getStatistic(Statistic.FLY_ONE_CM) <= (1000000 * METERS_PER_MILE)) {
             return;
         }
         
