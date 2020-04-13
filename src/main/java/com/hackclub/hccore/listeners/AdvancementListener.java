@@ -4,10 +4,10 @@ import com.hackclub.hccore.HCCorePlugin;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.Statistic;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.advancement.AdvancementProgress;
 import org.bukkit.craftbukkit.v1_15_R1.advancement.CraftAdvancement;
-import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -54,37 +54,6 @@ public class AdvancementListener implements Listener {
 
         this.grantAdvancement(player, key);
     }
-    
-    @EventHandler
-    public void onEntityToggleGlide(final EntityToggleGlideEvent event) {
-
-
-        // Ignore takeoff events
-        if (event.isGliding()) {
-            return;
-        }
-        if (!(event.getEntity() instanceof Player)) {
-            return;
-        }
-        Player player = (Player) event.getEntity();
-
-        // Check that the value is equal or above that of 1 million miles (1,609,344 km)
-        final double METERS_PER_MILE = 1609.344;
-        if (player.getStatistic(Statistic.FLY_ONE_CM) <= (1000000 * METERS_PER_MILE)) {
-            return;
-        }
-        
-        NamespacedKey key = new NamespacedKey(this.plugin, "million_miler");
-        AdvancementProgress progress =
-                player.getAdvancementProgress(player.getServer().getAdvancement(key));
-        // Skip if player already has this advancement
-        if (progress.isDone()) {
-            return;
-        }
-        // Grants Advancement
-        this.grantAdvancement(player, key);
-
-    }
 
     @EventHandler
     public void onEntityDeath(final EntityDeathEvent event) {
@@ -120,6 +89,36 @@ public class AdvancementListener implements Listener {
     }
 
     @EventHandler
+    public void onEntityToggleGlide(final EntityToggleGlideEvent event) {
+        // Ignore takeoff events
+        if (event.isGliding()) {
+            return;
+        }
+
+        if (!(event.getEntity() instanceof Player)) {
+            return;
+        }
+
+        Player player = (Player) event.getEntity();
+
+        // Check the player has flown over 1m miles (1,609,344 km)
+        final double METERS_PER_MILE = 1609.344;
+        if (player.getStatistic(Statistic.FLY_ONE_CM) <= (1000000 * METERS_PER_MILE)) {
+            return;
+        }
+
+        NamespacedKey key = new NamespacedKey(this.plugin, "million_miler");
+        AdvancementProgress progress =
+                player.getAdvancementProgress(player.getServer().getAdvancement(key));
+        // Skip if player already has this advancement
+        if (progress.isDone()) {
+            return;
+        }
+
+        this.grantAdvancement(player, key);
+    }
+
+    @EventHandler
     public void onPlayerAdvancementDone(final PlayerAdvancementDoneEvent event) {
         Player player = event.getPlayer();
         Advancement advancement = event.getAdvancement();
@@ -134,8 +133,6 @@ public class AdvancementListener implements Listener {
             player.sendMessage(ChatColor.GRAY + ChatColor.ITALIC.toString()
                     + "You will only see this message once.");
         }
-        
-            
 
         try {
             // NOTE: We interface with Minecraft's internal code here. It is unlikely, but possible
