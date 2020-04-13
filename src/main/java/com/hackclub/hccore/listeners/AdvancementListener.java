@@ -102,8 +102,8 @@ public class AdvancementListener implements Listener {
         Player player = (Player) event.getEntity();
 
         // Check the player has flown over 1m miles (1,609,344 km)
-        final double METERS_PER_MILE = 1609.344;
-        if (player.getStatistic(Statistic.AVIATE_ONE_CM) <= (1000000 * METERS_PER_MILE)) {
+        final int CM_PER_MILE = 160934;
+        if (player.getStatistic(Statistic.AVIATE_ONE_CM) <= (1000000 * CM_PER_MILE)) {
             return;
         }
 
