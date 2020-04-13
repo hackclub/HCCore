@@ -138,7 +138,7 @@ public class HCCorePlugin extends JavaPlugin {
                         Material.BONE, EntityType.WOLF).setFrame(Advancement.Frame.TASK);
         Advancement millionMiler = factory
                 .getImpossible("million_miler", mineDiamondOre, "Million Miler",
-                        "Fly one million miles with elytra. 1,609,344 km", Material.ELYTRA)
+                        "Fly one million miles (1,609,344 km) with an elytra", Material.ELYTRA)
                 .setFrame(Advancement.Frame.CHALLENGE);
 
 
