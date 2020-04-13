@@ -4,6 +4,7 @@ import com.hackclub.hccore.HCCorePlugin;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.Statistic;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.advancement.AdvancementProgress;
 import org.bukkit.craftbukkit.v1_15_R1.advancement.CraftAdvancement;
@@ -12,6 +13,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntityToggleGlideEvent;
 import org.bukkit.event.player.PlayerAdvancementDoneEvent;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -84,6 +86,36 @@ public class AdvancementListener implements Listener {
             default:
                 break;
         }
+    }
+
+    @EventHandler
+    public void onEntityToggleGlide(final EntityToggleGlideEvent event) {
+        // Ignore takeoff events
+        if (event.isGliding()) {
+            return;
+        }
+
+        if (!(event.getEntity() instanceof Player)) {
+            return;
+        }
+
+        Player player = (Player) event.getEntity();
+
+        // Check the player has flown over 1m miles (1,609,344 km)
+        final int CM_PER_MILE = 160934;
+        if (player.getStatistic(Statistic.AVIATE_ONE_CM) <= (1000000 * CM_PER_MILE)) {
+            return;
+        }
+
+        NamespacedKey key = new NamespacedKey(this.plugin, "million_miler");
+        AdvancementProgress progress =
+                player.getAdvancementProgress(player.getServer().getAdvancement(key));
+        // Skip if player already has this advancement
+        if (progress.isDone()) {
+            return;
+        }
+
+        this.grantAdvancement(player, key);
     }
 
     @EventHandler
