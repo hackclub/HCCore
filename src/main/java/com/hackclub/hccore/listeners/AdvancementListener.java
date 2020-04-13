@@ -8,7 +8,6 @@ import org.bukkit.advancement.Advancement;
 import org.bukkit.advancement.AdvancementProgress;
 import org.bukkit.craftbukkit.v1_15_R1.advancement.CraftAdvancement;
 import org.bukkit.Statistic;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -70,8 +69,8 @@ public class AdvancementListener implements Listener {
         Player player = (Player) event.getEntity();
 
         // Check that the value is equal or above that of 1 million miles (1,609,344 km)
-        final int MILLION_AMNT = 1609344000;
-        if (player.getStatistic(Statistic.FLY_ONE_CM) <= MILLION_AMNT) {
+        final float METERS_PER_MILE = 1609.344;
+        if (player.getStatistic(Statistic.FLY_ONE_CM) <= (1000000 * METERS_PER_MILE) {
             return;
         }
         
