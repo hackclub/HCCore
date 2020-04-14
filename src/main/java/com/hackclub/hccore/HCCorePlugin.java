@@ -141,7 +141,6 @@ public class HCCorePlugin extends JavaPlugin {
                         "Fly one million miles (1,609,344 km) with an elytra", Material.ELYTRA)
                 .setFrame(Advancement.Frame.CHALLENGE);
 
-
         // Activate all the advancements
         List<Advancement> advancements = new ArrayList<Advancement>() {
             private static final long serialVersionUID = 0L;
