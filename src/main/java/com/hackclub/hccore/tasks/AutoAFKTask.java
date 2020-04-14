@@ -27,7 +27,7 @@ public class AutoAFKTask extends BukkitRunnable {
             if (secondsSinceLastActive > this.plugin.getConfig().getInt("settings.auto-afk-time")) {
                 data.setAfk(true);
                 player.sendMessage(ChatColor.GRAY + ChatColor.ITALIC.toString()
-                        + "You’ve been set to AFK due to inactivity.");
+                        + "You’ve been automatically set to AFK due to inactivity.");
             }
         }
     }
