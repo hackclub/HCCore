@@ -15,11 +15,14 @@ import com.hackclub.hccore.commands.ShrugCommand;
 import com.hackclub.hccore.commands.SpawnCommand;
 import com.hackclub.hccore.commands.StatsCommand;
 import com.hackclub.hccore.commands.TableflipCommand;
+import com.hackclub.hccore.listeners.AFKListener;
 import com.hackclub.hccore.listeners.AdvancementListener;
 import com.hackclub.hccore.listeners.BeehiveInteractionListener;
 import com.hackclub.hccore.listeners.NameChangeListener;
 import com.hackclub.hccore.listeners.PlayerListener;
 import com.hackclub.hccore.listeners.SleepListener;
+import com.hackclub.hccore.tasks.AutoAFKTask;
+import com.hackclub.hccore.utils.TimeUtil;
 import org.bukkit.GameRule;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -62,6 +65,7 @@ public class HCCorePlugin extends JavaPlugin {
 
         // Register event listeners
         this.getServer().getPluginManager().registerEvents(new AdvancementListener(this), this);
+        this.getServer().getPluginManager().registerEvents(new AFKListener(this), this);
         this.getServer().getPluginManager().registerEvents(new BeehiveInteractionListener(this),
                 this);
         this.getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
@@ -70,6 +74,9 @@ public class HCCorePlugin extends JavaPlugin {
         // Register packet listeners
         this.getProtocolManager().addPacketListener(new NameChangeListener(this,
                 ListenerPriority.NORMAL, PacketType.Play.Server.PLAYER_INFO));
+
+        // Register tasks
+        new AutoAFKTask(this).runTaskTimer(this, 0, 30 * TimeUtil.TICKS_PER_SECOND);
 
         // Register advancements
         this.registerAdvancements();
