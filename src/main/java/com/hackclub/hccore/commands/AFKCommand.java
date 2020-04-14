@@ -26,14 +26,6 @@ public class AFKCommand implements CommandExecutor {
         // Toggle player's AFK status
         PlayerData data = this.plugin.getDataManager().getData(player);
         data.setAfk(!data.isAfk());
-        if (data.isAfk()) {
-            player.sendTitle(ChatColor.RED + ChatColor.BOLD.toString() + "You are AFK",
-                    "Run /" + alias + " again to turn this off", 10, 999999, 20);
-            sender.getServer().broadcastMessage(data.getUsableName() + " is now AFK");
-        } else {
-            player.sendTitle(null, null, 0, 1, -1);
-            sender.getServer().broadcastMessage(data.getUsableName() + " is now active");
-        }
 
         return true;
     }
