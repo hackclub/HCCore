@@ -59,7 +59,7 @@ public class AFKListener implements Listener {
 
         if (event.getNewValue()) {
             player.sendTitle(ChatColor.RED + ChatColor.BOLD.toString() + "You are AFK",
-                    "Run /afk to turn this off", 10, 999999, 20);
+                    "Run /afk to mark yourself as active", 10, 999999, 20);
             player.getServer().broadcastMessage(data.getUsableName() + " is now AFK");
         } else {
             player.sendTitle(null, null, 0, 1, -1);
