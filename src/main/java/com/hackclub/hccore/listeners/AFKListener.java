@@ -1,7 +1,11 @@
 package com.hackclub.hccore.listeners;
 
 import com.hackclub.hccore.HCCorePlugin;
+import com.hackclub.hccore.PlayerData;
+import com.hackclub.hccore.events.player.PlayerAFKStatusChangeEvent;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -46,5 +50,20 @@ public class AFKListener implements Listener {
 
         this.plugin.getDataManager().getData(event.getPlayer())
                 .setLastActiveAt(System.currentTimeMillis());
+    }
+
+    @EventHandler
+    public void onPlayerAFKStatusChange(final PlayerAFKStatusChangeEvent event) {
+        Player player = event.getPlayer();
+        PlayerData data = this.plugin.getDataManager().getData(player);
+
+        if (event.getNewValue()) {
+            player.sendTitle(ChatColor.RED + ChatColor.BOLD.toString() + "You are AFK",
+                    "Run /afk to turn this off", 10, 999999, 20);
+            player.getServer().broadcastMessage(data.getUsableName() + " is now AFK");
+        } else {
+            player.sendTitle(null, null, 0, 1, -1);
+            player.getServer().broadcastMessage(data.getUsableName() + " is now active");
+        }
     }
 }
