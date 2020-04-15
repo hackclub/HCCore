@@ -22,6 +22,23 @@ public class LocCommand implements TabExecutor {
         this.plugin = plugin;
     }
 
+    /**
+     * Convert args from startIndex to args.length into a
+     *  space-separated string.
+     * @param args List of arguments
+     * @param startIndex The argument to start concatenating from
+     * @return Concatenated, space-separated argument string.
+     */
+    private String getArgsAsString(String[] args, int startIndex) {
+        if (startIndex > args.length - 1) return ""; // Invalid starting index
+        if (args.length < 2) return ""; // Only one arg, hence nothing to concat
+        String arguments = args[startIndex];
+        for (int i = startIndex+1; i < args.length; ++i) {
+            arguments = String.join(" ", arguments, args[i]);
+        }
+        return arguments;
+    }
+
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String alias, String[] args) {
         if (!(sender instanceof Player)) {
@@ -61,12 +78,14 @@ public class LocCommand implements TabExecutor {
                     break;
                 }
                 if (!data.getSavedLocations().containsKey(locationName)) {
+                
                     sender.sendMessage(ChatColor.RED + "No location with that name was found");
                     break;
                 }
 
                 Location savedLocation = data.getSavedLocations().get(locationName);
                 sender.sendMessage(locationName + ": " + savedLocation.getWorld().getName() + " @ "
+
                         + savedLocation.getBlockX() + ", " + savedLocation.getBlockY() + ", "
                         + savedLocation.getBlockZ());
                 break;
@@ -117,6 +136,7 @@ public class LocCommand implements TabExecutor {
                     sender.sendMessage(ChatColor.RED + "Please specify the location name");
                     break;
                 }
+
                 if (data.getSavedLocations().containsKey(locationName)) {
                     sender.sendMessage(ChatColor.RED + "A location with that name already exists");
                     break;
