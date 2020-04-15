@@ -22,6 +22,7 @@ import com.hackclub.hccore.listeners.NameChangeListener;
 import com.hackclub.hccore.listeners.PlayerListener;
 import com.hackclub.hccore.listeners.SleepListener;
 import com.hackclub.hccore.tasks.AutoAFKTask;
+import com.hackclub.hccore.tasks.CheckAdAstraTask;
 import com.hackclub.hccore.utils.TimeUtil;
 import org.bukkit.GameRule;
 import org.bukkit.Material;
@@ -77,6 +78,7 @@ public class HCCorePlugin extends JavaPlugin {
 
         // Register tasks
         new AutoAFKTask(this).runTaskTimer(this, 0, 30 * TimeUtil.TICKS_PER_SECOND);
+        new CheckAdAstraTask(this).runTaskTimer(this, 0, 10 * TimeUtil.TICKS_PER_SECOND);
 
         // Register advancements
         this.registerAdvancements();
@@ -147,6 +149,10 @@ public class HCCorePlugin extends JavaPlugin {
                 .getImpossible("million_miler", mineDiamondOre, "Million Miler",
                         "Fly one million miles (1,609,344 km) with an elytra", Material.ELYTRA)
                 .setFrame(Advancement.Frame.CHALLENGE);
+        Advancement adAstra = factory
+                .getImpossible("ad_astra", millionMiler, "Ad Astra",
+                        "Reach outer space and touch the stars", Material.FIREWORK_ROCKET)
+                .setFrame(Advancement.Frame.CHALLENGE);
 
         // Activate all the advancements
         List<Advancement> advancements = new ArrayList<Advancement>() {
@@ -164,6 +170,7 @@ public class HCCorePlugin extends JavaPlugin {
                 add(killElderGuardian);
                 add(killWolf);
                 add(millionMiler);
+                add(adAstra);
             }
         };
         for (Advancement advancement : advancements) {
