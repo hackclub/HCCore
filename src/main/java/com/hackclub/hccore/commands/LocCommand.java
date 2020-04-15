@@ -32,7 +32,7 @@ public class LocCommand implements TabExecutor {
     private String getArgsAsString(String[] args, int startIndex) {
         if (startIndex > args.length - 1) return ""; // Invalid starting index
         if (args.length < 2) return ""; // Only one arg, hence nothing to concat
-        String arguments = String.join(" ", Arrays.copyOfRange(args, startIndex, args.length));
+        String arguments = String.join("_", Arrays.copyOfRange(args, startIndex, args.length));
         return arguments;
     }
 
@@ -68,7 +68,7 @@ public class LocCommand implements TabExecutor {
                         ChatColor.GREEN + "Removed " + locationName + " from saved locations");
                 break;
             }
-            // /loc get <name>
+            // /loc get <name> 
             case "get": {
                 if (args.length < 2) {
                     sender.sendMessage(ChatColor.RED + "Please specify the location name");
