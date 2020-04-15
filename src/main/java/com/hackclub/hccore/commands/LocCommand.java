@@ -57,7 +57,7 @@ public class LocCommand implements TabExecutor {
                     sender.sendMessage(ChatColor.RED + "Please specify the location name");
                     break;
                 }
-
+                
                 if (!data.getSavedLocations().containsKey(locationName)) {
                     sender.sendMessage(ChatColor.RED + "No location with that name was found");
                     break;
@@ -75,14 +75,12 @@ public class LocCommand implements TabExecutor {
                     break;
                 }
                 if (!data.getSavedLocations().containsKey(locationName)) {
-                
                     sender.sendMessage(ChatColor.RED + "No location with that name was found");
                     break;
                 }
 
                 Location savedLocation = data.getSavedLocations().get(locationName);
                 sender.sendMessage(locationName + ": " + savedLocation.getWorld().getName() + " @ "
-
                         + savedLocation.getBlockX() + ", " + savedLocation.getBlockY() + ", "
                         + savedLocation.getBlockZ());
                 break;
@@ -133,7 +131,6 @@ public class LocCommand implements TabExecutor {
                     sender.sendMessage(ChatColor.RED + "Please specify the location name");
                     break;
                 }
-
                 if (data.getSavedLocations().containsKey(locationName)) {
                     sender.sendMessage(ChatColor.RED + "A location with that name already exists");
                     break;
