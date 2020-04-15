@@ -137,11 +137,33 @@ public class LocCommand implements TabExecutor {
                             + "Please specify the location name and the player you want to share it with");
                     break;
                 }
+                // Re-get the location name because our arguments here are a bit different...
+                locationName = getArgsAsString(args, 2);
                 if (!data.getSavedLocations().containsKey(locationName)) {
                     sender.sendMessage(ChatColor.RED + "No location with that name was found");
                     break;
                 }
+                Location sendLocation = data.getSavedLocations().get(locationName);
                 // TODO: Add share functionality
+                // Get the player we're sending to
+                Player recipient = org.bukkit.Bukkit.getPlayer(args[1]);
+                if (recipient == null) {
+                    sender.sendMessage(ChatColor.RED
+                            + "Player '" + args[1] + "' does not exist.");
+                    break;
+                }
+                if (recipient.getName().equals(player.getName())) {
+                    sender.sendMessage(ChatColor.RED
+                            + "You can't share a location with yourself!");
+                    break;
+                }
+                PlayerData recipData  = this.plugin.getDataManager().getData(recipient);
+                String locationString = "("
+                    + sendLocation.getWorld().getName() + " @ " + sendLocation.getBlockX()
+                    + ", " + sendLocation.getBlockY() + ", " + sendLocation.getBlockZ()
+                    + ")";
+                recipient.sendMessage(String.format("%s has shared a location: %s (%s)", player.getName(), locationName, locationString));
+                //recipData.getSavedLocations().put(locationName,sendLocation); // Not sure if we want this functionality
                 break;
             }
             default:
