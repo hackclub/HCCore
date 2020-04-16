@@ -22,20 +22,6 @@ public class LocCommand implements TabExecutor {
         this.plugin = plugin;
     }
 
-    /**
-     * Convert args from startIndex to args.length into a
-     *  space-separated string.
-     * @param args List of arguments
-     * @param startIndex The argument to start concatenating from
-     * @return Concatenated, space-separated argument string.
-     */
-    private String getArgsAsString(String[] args, int startIndex) {
-        if (startIndex > args.length - 1) return ""; // Invalid starting index
-        if (args.length < 2) return ""; // Only one arg, hence nothing to concat
-        String arguments = String.join("_", Arrays.copyOfRange(args, startIndex, args.length));
-        return arguments;
-    }
-
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String alias, String[] args) {
         if (!(sender instanceof Player)) {
