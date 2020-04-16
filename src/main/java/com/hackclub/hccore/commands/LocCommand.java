@@ -54,7 +54,7 @@ public class LocCommand implements TabExecutor {
                         ChatColor.GREEN + "Removed " + locationName + " from saved locations");
                 break;
             }
-            // /loc get <name> 
+            // /loc get <name>
             case "get": {
                 if (args.length < 2) {
                     sender.sendMessage(ChatColor.RED + "Please specify the location name");
