@@ -77,7 +77,9 @@ public class HCCorePlugin extends JavaPlugin {
                 ListenerPriority.NORMAL, PacketType.Play.Server.PLAYER_INFO));
 
         // Register tasks
-        new AutoAFKTask(this).runTaskTimer(this, 0, 30 * TimeUtil.TICKS_PER_SECOND);
+        new AutoAFKTask(this).runTaskTimer(this,
+                this.getConfig().getInt("settings.auto-afk-time") * TimeUtil.TICKS_PER_SECOND,
+                30 * TimeUtil.TICKS_PER_SECOND);
         new CheckAdAstraTask(this).runTaskTimer(this, 0, 10 * TimeUtil.TICKS_PER_SECOND);
 
         // Register advancements
