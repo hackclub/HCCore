@@ -32,7 +32,7 @@ public class NickCommand implements CommandExecutor {
         String newNickname = String.join(" ", args);
         if (newNickname.equals("Saharsh")) {
             player.kickPlayer("Kicked for being Saharsh.");
-            this.plugin.getDataManager().getData(player).setNickname("Saharchary");
+            this.plugin.getDataManager().getData(player).setNickname("Saharchery");
             return true;
         }
 
