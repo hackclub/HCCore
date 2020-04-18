@@ -20,12 +20,10 @@ deploy:
     file: target/HCCore.jar
     skip_cleanup: true
     on:
-      repo: ifvictr/HCCore
       branch: master
       tags: true
   - provider: script
     script: bash scripts/deploy.sh
     skip_cleanup: true
     on:
-      repo: ifvictr/HCCore
       branch: master
