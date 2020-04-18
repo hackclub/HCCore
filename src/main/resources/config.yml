@@ -1,6 +1,8 @@
 # URL to request form to claim exclusive Hack Club stickers
 claim-stickers-url: "https://example.com/claim-stickers"
 settings:
+  # Time in seconds after which a player will be automatically set to AFK
+  auto-afk-time: 600
   skip-sleep-threshold: 0.5
   spawn-command:
     # Radius extending from the world spawn in which the command can be used

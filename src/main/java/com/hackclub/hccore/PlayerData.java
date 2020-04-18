@@ -8,10 +8,12 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import com.google.gson.annotations.Expose;
+import com.hackclub.hccore.events.player.PlayerAFKStatusChangeEvent;
 import com.hackclub.hccore.utils.gson.GsonUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.scoreboard.Team;
 
 public class PlayerData {
@@ -24,6 +26,7 @@ public class PlayerData {
     // Session data (will be cleared when player quits)
     private boolean isAfk = false;
     private long lastDamagedAt = 0;
+    private long lastActiveAt = 0;
 
     // Persistent data
     @Expose
@@ -56,6 +59,9 @@ public class PlayerData {
         String newSuffix = afk ? " (AFK)" : "";
         this.getTeam().setColor(newColor);
         this.getTeam().setSuffix(newSuffix);
+
+        Event event = new PlayerAFKStatusChangeEvent(this.player, afk);
+        this.player.getServer().getPluginManager().callEvent(event);
     }
 
     public long getLastDamagedAt() {
@@ -64,6 +70,14 @@ public class PlayerData {
 
     public void setLastDamagedAt(long damagedAt) {
         this.lastDamagedAt = damagedAt;
+    }
+
+    public long getLastActiveAt() {
+        return this.lastActiveAt;
+    }
+
+    public void setLastActiveAt(long activeAt) {
+        this.lastActiveAt = activeAt;
     }
 
     public String getNickname() {

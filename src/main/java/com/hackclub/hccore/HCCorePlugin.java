@@ -15,11 +15,16 @@ import com.hackclub.hccore.commands.PingCommand;
 import com.hackclub.hccore.commands.ShrugCommand;
 import com.hackclub.hccore.commands.SpawnCommand;
 import com.hackclub.hccore.commands.StatsCommand;
+import com.hackclub.hccore.commands.TableflipCommand;
+import com.hackclub.hccore.listeners.AFKListener;
 import com.hackclub.hccore.listeners.AdvancementListener;
 import com.hackclub.hccore.listeners.BeehiveInteractionListener;
 import com.hackclub.hccore.listeners.NameChangeListener;
 import com.hackclub.hccore.listeners.PlayerListener;
 import com.hackclub.hccore.listeners.SleepListener;
+import com.hackclub.hccore.tasks.AutoAFKTask;
+import com.hackclub.hccore.tasks.CheckAdAstraTask;
+import com.hackclub.hccore.utils.TimeUtil;
 import org.bukkit.GameRule;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -59,9 +64,11 @@ public class HCCorePlugin extends JavaPlugin {
         this.getCommand("shrug").setExecutor(new ShrugCommand(this));
         this.getCommand("spawn").setExecutor(new SpawnCommand(this));
         this.getCommand("stats").setExecutor(new StatsCommand(this));
+        this.getCommand("tableflip").setExecutor(new TableflipCommand(this));
 
         // Register event listeners
         this.getServer().getPluginManager().registerEvents(new AdvancementListener(this), this);
+        this.getServer().getPluginManager().registerEvents(new AFKListener(this), this);
         this.getServer().getPluginManager().registerEvents(new BeehiveInteractionListener(this),
                 this);
         this.getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
@@ -70,6 +77,12 @@ public class HCCorePlugin extends JavaPlugin {
         // Register packet listeners
         this.getProtocolManager().addPacketListener(new NameChangeListener(this,
                 ListenerPriority.NORMAL, PacketType.Play.Server.PLAYER_INFO));
+
+        // Register tasks
+        new AutoAFKTask(this).runTaskTimer(this,
+                this.getConfig().getInt("settings.auto-afk-time") * TimeUtil.TICKS_PER_SECOND,
+                30 * TimeUtil.TICKS_PER_SECOND);
+        new CheckAdAstraTask(this).runTaskTimer(this, 0, 10 * TimeUtil.TICKS_PER_SECOND);
 
         // Register advancements
         this.registerAdvancements();
@@ -133,6 +146,17 @@ public class HCCorePlugin extends JavaPlugin {
         Advancement killElderGuardian = factory.getKill("kill_elder_guardian", mineDiamondOre,
                 "The Deep End", "Defeat an Elder Guardian", Material.PRISMARINE_SHARD,
                 EntityType.ELDER_GUARDIAN).setFrame(Advancement.Frame.GOAL);
+        Advancement killWolf =
+                factory.getKill("kill_wolf", mineDiamondOre, "You Monster!", "Slaughter a doggo",
+                        Material.BONE, EntityType.WOLF).setFrame(Advancement.Frame.TASK);
+        Advancement millionMiler = factory
+                .getImpossible("million_miler", mineDiamondOre, "Million Miler",
+                        "Fly one million miles (1,609,344 km) with an elytra", Material.ELYTRA)
+                .setFrame(Advancement.Frame.CHALLENGE);
+        Advancement adAstra = factory
+                .getImpossible("ad_astra", millionMiler, "Ad Astra",
+                        "Reach outer space and touch the stars", Material.FIREWORK_ROCKET)
+                .setFrame(Advancement.Frame.CHALLENGE);
 
         // Activate all the advancements
         List<Advancement> advancements = new ArrayList<Advancement>() {
@@ -148,10 +172,15 @@ public class HCCorePlugin extends JavaPlugin {
                 add(killDragonInsane);
                 add(killWitherInsane);
                 add(killElderGuardian);
+                add(killWolf);
+                add(millionMiler);
+                add(adAstra);
             }
         };
         for (Advancement advancement : advancements) {
-            advancement.activate(false);
+            if (this.getServer().getAdvancement(advancement.getId()) == null) {
+                advancement.activate(false);
+            }
         }
 
         // Reload the data cache after all advancements have been added
