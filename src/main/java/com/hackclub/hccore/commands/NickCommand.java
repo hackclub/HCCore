@@ -30,7 +30,7 @@ public class NickCommand implements CommandExecutor {
         }
 
         String newNickname = String.join(" ", args);
-        if (newNickname.equals("Saharsh")) {
+        if (newNickname.equalsIgnoreCase("Saharsh")) {
             this.plugin.getDataManager().getData(player).setNickname("Saharchery");
             player.kickPlayer("Kicked for being Saharsh.");
             return true;
