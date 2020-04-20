@@ -22,6 +22,7 @@ import com.hackclub.hccore.listeners.NameChangeListener;
 import com.hackclub.hccore.listeners.PlayerListener;
 import com.hackclub.hccore.listeners.SleepListener;
 import com.hackclub.hccore.tasks.AutoAFKTask;
+import com.hackclub.hccore.tasks.CheckAdAstraTask;
 import com.hackclub.hccore.utils.TimeUtil;
 import org.bukkit.GameRule;
 import org.bukkit.Material;
@@ -76,7 +77,10 @@ public class HCCorePlugin extends JavaPlugin {
                 ListenerPriority.NORMAL, PacketType.Play.Server.PLAYER_INFO));
 
         // Register tasks
-        new AutoAFKTask(this).runTaskTimer(this, 0, 30 * TimeUtil.TICKS_PER_SECOND);
+        new AutoAFKTask(this).runTaskTimer(this,
+                this.getConfig().getInt("settings.auto-afk-time") * TimeUtil.TICKS_PER_SECOND,
+                30 * TimeUtil.TICKS_PER_SECOND);
+        new CheckAdAstraTask(this).runTaskTimer(this, 0, 10 * TimeUtil.TICKS_PER_SECOND);
 
         // Register advancements
         this.registerAdvancements();
@@ -143,9 +147,17 @@ public class HCCorePlugin extends JavaPlugin {
         Advancement killWolf =
                 factory.getKill("kill_wolf", mineDiamondOre, "You Monster!", "Slaughter a doggo",
                         Material.BONE, EntityType.WOLF).setFrame(Advancement.Frame.TASK);
+        Advancement killIronGolem = factory
+                .getKill("kill_iron_golem", killWolf, "Well That’s IRONic…",
+                        "Kill an Iron Golem", Material.IRON_INGOT, EntityType.IRON_GOLEM)
+                .setFrame(Advancement.Frame.TASK);
         Advancement millionMiler = factory
                 .getImpossible("million_miler", mineDiamondOre, "Million Miler",
                         "Fly one million miles (1,609,344 km) with an elytra", Material.ELYTRA)
+                .setFrame(Advancement.Frame.CHALLENGE);
+        Advancement adAstra = factory
+                .getImpossible("ad_astra", millionMiler, "Ad Astra",
+                        "Reach outer space and touch the stars", Material.FIREWORK_ROCKET)
                 .setFrame(Advancement.Frame.CHALLENGE);
 
         // Activate all the advancements
@@ -163,7 +175,9 @@ public class HCCorePlugin extends JavaPlugin {
                 add(killWitherInsane);
                 add(killElderGuardian);
                 add(killWolf);
+                add(killIronGolem);
                 add(millionMiler);
+                add(adAstra);
             }
         };
         for (Advancement advancement : advancements) {
