@@ -155,6 +155,10 @@ public class HCCorePlugin extends JavaPlugin {
                 .getImpossible("ad_astra", millionMiler, "Ad Astra",
                         "Reach outer space and touch the stars", Material.FIREWORK_ROCKET)
                 .setFrame(Advancement.Frame.CHALLENGE);
+        Advancement killGolem = factory
+                .getKill("kill_golem", killWolf, "Well that's IRONic...",
+                        "Kill an Iron Golem", Material.IRON_INGOT, EntityType.IRON_GOLEM)
+                .setFrame(Advancement.Frame.TASK);
 
         // Activate all the advancements
         List<Advancement> advancements = new ArrayList<Advancement>() {
@@ -173,6 +177,7 @@ public class HCCorePlugin extends JavaPlugin {
                 add(killWolf);
                 add(millionMiler);
                 add(adAstra);
+                add(killGolem);
             }
         };
         for (Advancement advancement : advancements) {
