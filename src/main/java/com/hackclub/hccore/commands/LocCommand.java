@@ -137,12 +137,24 @@ public class LocCommand implements TabExecutor {
                     break;
                 }
                 PlayerData recipData  = this.plugin.getDataManager().getData(recipient);
+                String shareLocName = player.getName() + " " + locationName;
+
+                if (recipData.getSavedLocations().containsKey(player.getName() + ":" + shareLocName)) {
+                    sender.sendMessage(ChatColor.RED
+                        + recipientName + " already has a location called "
+                        + shareLocName
+                    );
+                    break;
+                }
+
                 String locationString = "("
                     + sendLocation.getWorld().getName() + " @ " + sendLocation.getBlockX()
                     + ", " + sendLocation.getBlockY() + ", " + sendLocation.getBlockZ()
                     + ")";
-                recipient.sendMessage(String.format("%s has shared a location: %s (%s)", player.getName(), locationName, locationString));
-                recipData.getSavedLocations().put(locationName,sendLocation);              
+
+                player.sendMessage(ChatColor.GREEN + String.format("Shared %s with %s", locationName, recipientName));
+                recipient.sendMessage(ChatColor.GREEN + String.format("%s has shared a location: %s (%s)", player.getName(), locationName, locationString));
+                recipData.getSavedLocations().put(player.getName() + ":" + locationName,sendLocation);              
                 break;
             }
             default:
