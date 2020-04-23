@@ -2,7 +2,6 @@
 
 Main plugin for the Hack Club Minecraft server.
 
-
 ## License
 
 [MIT](LICENSE.txt)
