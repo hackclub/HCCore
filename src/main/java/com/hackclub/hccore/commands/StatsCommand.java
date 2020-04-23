@@ -36,59 +36,59 @@ public class StatsCommand implements TabExecutor {
         // /stats [player] [tag]
         Player targetPlayer = null;
 
-        if ((args.length == 0)) {
-            extended = false;
-            if (sender instanceof Player) {
-                sender.sendMessage("Your stats:");
-                this.sendStatistics(sender, (Player) sender, extended);
-            } else {
-                sender.sendMessage("You must be a player to use this");
-            }
-            return true;
 
-        }
-        if ((args.length == 1) && (args[0] == "extended")) {
-            extended = true;
-            if (sender instanceof Player) {
-                sender.sendMessage("Your stats:");
-                this.sendStatistics(sender, (Player) sender, extended);
-            } else {
-                sender.sendMessage("You must be a player to use this");
-            }
-            return true;
 
-        }
-
-        switch (args[1]) {
-
-            case "extended": // /stats [player] extended
+        if ((args.length == 0) || (args[0].contains("extended"))) {
+            if ((args.length == 0)) {
+                extended = false;
+            } else if (args[0].contains("extended")) {
                 extended = true;
-                targetPlayer = sender.getServer().getPlayerExact(args[0]);
-                break;
+            }
+            if (sender instanceof Player) {
+                sender.sendMessage("Your stats:");
+                this.sendStatistics(sender, (Player) sender, extended);
+            } else {
+                sender.sendMessage("You must be a player to use this");
+            }
+            return true;
 
 
-            case "only": // /stats [player] only [Statistic]
-                if (args.length != 3) {
+        }
+
+        if (args.length > 1) {
+            switch (args[1]) {
+
+                case "extended": // /stats [player] extended
+                    extended = true;
+                    targetPlayer = sender.getServer().getPlayerExact(args[0]);
+                    break;
+
+
+                case "only": // /stats [player] only [Statistic]
+                    if (args.length != 3) {
+                        return false;
+
+                    }
+                    specificStat = args[2];
+                    Player player = sender.getServer().getPlayerExact(args[0]);
+                    if (player != null) {
+                        PlayerData data = this.plugin.getDataManager().getData(player);
+                        sender.sendMessage(data.getUsableName() + "’s stat:");
+                        sender.sendMessage(specificStat + " = "
+                                + player.getStatistic(Statistic.valueOf(specificStat)));
+                    } else {
+                        sender.sendMessage(
+                                ChatColor.RED + "No online player with that name was found");
+                    }
+                    return true;
+
+                default:
                     return false;
 
-                }
-                specificStat = args[2];
-                Player player = sender.getServer().getPlayerExact(args[0]);
-                if (player != null) {
-                    PlayerData data = this.plugin.getDataManager().getData(player);
-                    sender.sendMessage(data.getUsableName() + "’s stat:");
-                    sender.sendMessage(specificStat + " = "
-                            + player.getStatistic(Statistic.valueOf(specificStat)));
-                } else {
-                    sender.sendMessage(ChatColor.RED + "No online player with that name was found");
-                }
-                return true;
+            }
 
-            default: // /stats [player]
-                extended = false;
-                targetPlayer = sender.getServer().getPlayerExact(args[0]);
-                break;
-
+        } else {
+            extended = false;
         }
 
         // /stats [player]
