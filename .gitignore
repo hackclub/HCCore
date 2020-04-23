@@ -5,4 +5,3 @@ target/
 .project
 *.iml
 pom.xml.bak
-.DS_Store
