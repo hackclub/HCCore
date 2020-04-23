@@ -1,3 +1,4 @@
+**/.DS_Store
 .idea/
 .settings/
 target/
@@ -5,4 +6,3 @@ target/
 .project
 *.iml
 pom.xml.bak
-.DS_Store
