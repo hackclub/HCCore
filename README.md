@@ -8,7 +8,7 @@ Main plugin for the Hack Club Minecraft server.
 
 `/stats [player] extended` shows extended statistics
 
-`stats <player> only <statistic>` shows specific [statistic](https://minecraft.gamepedia.com/Statistics) for player
+`/stats <player> only <statistic>` shows specific [statistic](https://minecraft.gamepedia.com/Statistics) for player
 
 `/nick <nickname>` allows players to set their own nicknames
 
