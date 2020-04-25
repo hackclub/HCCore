@@ -29,11 +29,11 @@ public class StatsCommand implements TabExecutor {
     public boolean onCommand(CommandSender sender, Command cmd, String alias, String[] args) {
 
         // set extended to false by default
-        Boolean extended = false;
+        boolean extended = false;
         // initialize specificStat variable
-        String specificStat = "";
+        Statistic specificStat = null;
 
-        List<Statistic> STATISTIC_NAMES = Arrays.asList(Statistic.values());
+        final List<Statistic> STATISTIC_NAMES = Arrays.asList(Statistic.values());
 
         if ((args.length == 0) || (args[0].contains("extended"))) {
             if ((args.length == 0)) {
@@ -60,22 +60,21 @@ public class StatsCommand implements TabExecutor {
                 case "only": // /stats [player] only [Statistic]
                     if (args.length < 3) {
                         sender.sendMessage(ChatColor.RED
-                                + "You Must Include both a statistic and a player name");
+                                + "You must include both a statistic and a player name");
                         return true;
                     }
-                    specificStat = args[2];
-                    if (!(STATISTIC_NAMES.contains(Statistic.valueOf(specificStat)))) {
+                    if (!STATISTIC_NAMES.contains(args[2].toUpperCase())) {
                         sender.sendMessage(ChatColor.RED + "Not a valid statistic");
                         return true;
                     }
+                    specificStat = Statistic.valueOf(args[2].toUpperCase());
+
                     Player player = sender.getServer().getPlayerExact(args[0]);
                     if (player != null) {
                         PlayerData data = this.plugin.getDataManager().getData(player);
                         sender.sendMessage(data.getUsableName() + "’s stat:");
-                        if (args.length == 3) {
-                            sender.sendMessage(specificStat + " = " + player
-                                    .getStatistic(Statistic.valueOf(specificStat.toUpperCase())));
-                        }
+                        sender.sendMessage(
+                                specificStat + " = " + player.getStatistic(specificStat));
                     } else {
                         sender.sendMessage(
                                 ChatColor.RED + "No online player with that name was found");
@@ -148,17 +147,17 @@ public class StatsCommand implements TabExecutor {
                 "- Registered since: " + dateFormat.format(new Date(player.getFirstPlayed())));
 
         if (extended) {
-            sender.sendMessage("- Distance by Elytra: "
+            sender.sendMessage("- Distance by elytra: "
                     + formatStatistic((double) player.getStatistic(Statistic.AVIATE_ONE_CM)) + "m");
-            sender.sendMessage("- Distance by Minecart: "
+            sender.sendMessage("- Distance by minecart: "
                     + formatStatistic((double) player.getStatistic(Statistic.MINECART_ONE_CM))
                     + "m");
-            sender.sendMessage("- Distance Walked: "
+            sender.sendMessage("- Distance walked: "
                     + formatStatistic((double) player.getStatistic(Statistic.WALK_ONE_CM)) + "m");
-            sender.sendMessage("- Damage Taken: " + player.getStatistic(Statistic.DAMAGE_TAKEN));
-            sender.sendMessage("- Damage Dealt: " + player.getStatistic(Statistic.DAMAGE_DEALT));
-            sender.sendMessage("- Times Jumped: " + player.getStatistic(Statistic.JUMP));
-            sender.sendMessage("- Raids Won: " + player.getStatistic(Statistic.RAID_WIN));
+            sender.sendMessage("- Damage taken: " + player.getStatistic(Statistic.DAMAGE_TAKEN));
+            sender.sendMessage("- Damage dealt: " + player.getStatistic(Statistic.DAMAGE_DEALT));
+            sender.sendMessage("- Times jumped: " + player.getStatistic(Statistic.JUMP));
+            sender.sendMessage("- Raids won: " + player.getStatistic(Statistic.RAID_WIN));
             sender.sendMessage("- Diamonds gained: "
                     + player.getStatistic(Statistic.PICKUP, Material.DIAMOND));
 
