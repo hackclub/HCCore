@@ -2,7 +2,6 @@ package com.hackclub.hccore.commands;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -33,7 +32,13 @@ public class StatsCommand implements TabExecutor {
         // initialize specificStat variable
         Statistic specificStat = null;
 
-        final List<Statistic> STATISTIC_NAMES = Arrays.asList(Statistic.values());
+        ArrayList<String> STATISTIC_NAMES = new ArrayList<String>();
+
+        for (Statistic stat : Statistic.values()) {
+            STATISTIC_NAMES.add(stat.name());
+        }
+
+
 
         if ((args.length == 0) || (args[0].contains("extended"))) {
             if ((args.length == 0)) {
@@ -63,11 +68,16 @@ public class StatsCommand implements TabExecutor {
                                 + "You must include both a statistic and a player name");
                         return true;
                     }
-                    if (!STATISTIC_NAMES.contains(args[2].toUpperCase())) {
+                    if (!(STATISTIC_NAMES.contains(args[2].toUpperCase()))) {
                         sender.sendMessage(ChatColor.RED + "Not a valid statistic");
                         return true;
                     }
                     specificStat = Statistic.valueOf(args[2].toUpperCase());
+                    if (specificStat.isSubstatistic()) {
+                        sender.sendMessage(
+                                ChatColor.RED + "This statistic is not currently supported");
+                        return true;
+                    }
 
                     Player player = sender.getServer().getPlayerExact(args[0]);
                     if (player != null) {
