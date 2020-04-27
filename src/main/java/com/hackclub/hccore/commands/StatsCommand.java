@@ -34,18 +34,13 @@ public class StatsCommand implements TabExecutor {
 
         ArrayList<String> STATISTIC_NAMES = new ArrayList<String>();
 
-        for (Statistic stat : Statistic.values()) {
-            STATISTIC_NAMES.add(stat.name());
+        for (Statistic number : Statistic.values()) {
+            STATISTIC_NAMES.add(number.name());
         }
 
-
-
-        if ((args.length == 0) || (args[0].contains("extended"))) {
-            if ((args.length == 0)) {
-                extended = false;
-            } else if (args[0].contains("extended")) {
-                extended = true;
-            }
+        // /stats
+        if ((args.length == 0)) {
+            extended = false;
             if (sender instanceof Player) {
                 sender.sendMessage("Your stats:");
                 this.sendStatistics(sender, (Player) sender, extended);
@@ -58,11 +53,11 @@ public class StatsCommand implements TabExecutor {
         if (args.length > 1) {
             switch (args[1]) {
 
-                case "extended": // /stats [player] extended
+                case "extended": // /stats <player> extended
                     extended = true;
                     break;
 
-                case "only": // /stats [player] only [Statistic]
+                case "only": // /stats <player> only <Statistic>
                     if (args.length < 3) {
                         sender.sendMessage(ChatColor.RED
                                 + "You must include both a statistic and a player name");
@@ -82,7 +77,7 @@ public class StatsCommand implements TabExecutor {
                     Player player = sender.getServer().getPlayerExact(args[0]);
                     if (player != null) {
                         PlayerData data = this.plugin.getDataManager().getData(player);
-                        sender.sendMessage(data.getUsableName() + "’s stat:");
+                        sender.sendMessage(data.getUsableName() + "’s number:");
                         sender.sendMessage(
                                 specificStat + " = " + player.getStatistic(specificStat));
                     } else {
@@ -100,7 +95,7 @@ public class StatsCommand implements TabExecutor {
             extended = false;
         }
 
-        // /stats [player]
+        // /stats <player>
         Player targetPlayer = sender.getServer().getPlayerExact(args[0]);
         if (targetPlayer != null) {
             PlayerData data = this.plugin.getDataManager().getData(targetPlayer);
@@ -124,14 +119,13 @@ public class StatsCommand implements TabExecutor {
                     completions.add(player.getName());
                 }
             }
-            completions.add("extended");
         }
 
         if (args.length == 2) {
             completions.add("extended");
             completions.add("only");
         }
-        if ((args.length == 3)) {
+        if (args.length == 3) {
             for (Statistic statistic : Statistic.values()) {
                 if (StringUtil.startsWithIgnoreCase(statistic.name(), args[2])) {
                     completions.add(statistic.name().toLowerCase());
@@ -158,12 +152,11 @@ public class StatsCommand implements TabExecutor {
 
         if (extended) {
             sender.sendMessage("- Distance by elytra: "
-                    + formatStatistic((double) player.getStatistic(Statistic.AVIATE_ONE_CM)) + "m");
+                    + toSIPrefix((double) player.getStatistic(Statistic.AVIATE_ONE_CM)) + "m");
             sender.sendMessage("- Distance by minecart: "
-                    + formatStatistic((double) player.getStatistic(Statistic.MINECART_ONE_CM))
-                    + "m");
+                    + toSIPrefix((double) player.getStatistic(Statistic.MINECART_ONE_CM)) + "m");
             sender.sendMessage("- Distance walked: "
-                    + formatStatistic((double) player.getStatistic(Statistic.WALK_ONE_CM)) + "m");
+                    + toSIPrefix((double) player.getStatistic(Statistic.WALK_ONE_CM)) + "m");
             sender.sendMessage("- Damage taken: " + player.getStatistic(Statistic.DAMAGE_TAKEN));
             sender.sendMessage("- Damage dealt: " + player.getStatistic(Statistic.DAMAGE_DEALT));
             sender.sendMessage("- Times jumped: " + player.getStatistic(Statistic.JUMP));
@@ -174,20 +167,22 @@ public class StatsCommand implements TabExecutor {
         }
     }
 
-    private String formatStatistic(double stat) {
-        if (stat < 100) {
-            return (String.valueOf(stat) + " c");
 
-        } else if (stat < 100000) {
-            stat = Math.round(stat / 100);
-            return (String.valueOf(stat));
+    // converts numbers to their SI prefix laden counterparts
+    private String toSIPrefix(double number) {
+        if (number < 100) {
+            return (String.valueOf(number) + " c");
 
-        } else if (stat >= 100000) {
+        } else if (number < 100000) {
+            number = Math.round(number / 100);
+            return (String.valueOf(number));
+
+        } else if (number >= 100000) {
             // Divides by 1000 to allow for two significant digits
-            stat = Math.round(stat / 1000);
+            number = Math.round(number / 1000);
             // Divides by 100 to finally get to km
-            stat = (stat / 100);
-            return (String.format("%,.2f k", stat));
+            number = (number / 100);
+            return (String.format("%,.2f k", number));
 
         }
         return null;
