@@ -26,9 +26,7 @@ public class StatsCommand implements TabExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String alias, String[] args) {
-        // set extended to false by default
         boolean extended = false;
-        // initialize specificStat variable
         Statistic specificStat = null;
 
         ArrayList<String> STATISTIC_NAMES = new ArrayList<String>();
