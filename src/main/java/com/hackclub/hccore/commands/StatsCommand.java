@@ -52,7 +52,7 @@ public class StatsCommand implements TabExecutor {
                 case "extended": // /stats <player> extended
                     extended = true;
                     break;
-                case "only": // /stats <player> only <Statistic>
+                case "only": // /stats <player> only <statistic>
                     if (args.length < 3) {
                         sender.sendMessage(ChatColor.RED
                                 + "You must include both a statistic and a player name");
