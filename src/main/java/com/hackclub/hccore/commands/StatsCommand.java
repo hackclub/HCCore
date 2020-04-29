@@ -113,26 +113,29 @@ public class StatsCommand implements TabExecutor {
     public List<String> onTabComplete(CommandSender sender, Command cmd, String alias,
             String[] args) {
         List<String> completions = new ArrayList<String>();
-        if (args.length == 1) {
-            for (Player player : sender.getServer().getOnlinePlayers()) {
-                if (StringUtil.startsWithIgnoreCase(player.getName(), args[0])) {
-                    completions.add(player.getName());
-                }
-            }
-        }
 
-        if (args.length == 2) {
-            completions.add("extended");
-            completions.add("only");
-        }
-        if (args.length == 3) {
-            for (Statistic statistic : Statistic.values()) {
-                if (StringUtil.startsWithIgnoreCase(statistic.name(), args[2])) {
-                    completions.add(statistic.name().toLowerCase());
+        switch (args.length) {
+            case 1:
+                for (Player player : sender.getServer().getOnlinePlayers()) {
+                    if (StringUtil.startsWithIgnoreCase(player.getName(), args[0])) {
+                        completions.add(player.getName());
+                    }
                 }
-            }
-        }
+                break;
+            case 2:
+                completions.add("extended");
+                completions.add("only");
+                break;
+            case 3:
+                for (Statistic statistic : Statistic.values()) {
+                    if (StringUtil.startsWithIgnoreCase(statistic.name(), args[2])) {
+                        completions.add(statistic.name().toLowerCase());
+                    }
+                }
+            default:
+                break;
 
+        }
         Collections.sort(completions);
         return completions;
     }
@@ -155,21 +158,24 @@ public class StatsCommand implements TabExecutor {
                     + toSIPrefix((double) player.getStatistic(Statistic.AVIATE_ONE_CM)) + "m");
             sender.sendMessage("- Distance by minecart: "
                     + toSIPrefix((double) player.getStatistic(Statistic.MINECART_ONE_CM)) + "m");
+            sender.sendMessage("- Distance by horse: "
+                    + toSIPrefix((double) player.getStatistic(Statistic.HORSE_ONE_CM)) + "m");
             sender.sendMessage("- Distance walked: "
                     + toSIPrefix((double) player.getStatistic(Statistic.WALK_ONE_CM)) + "m");
             sender.sendMessage("- Damage taken: " + player.getStatistic(Statistic.DAMAGE_TAKEN));
             sender.sendMessage("- Damage dealt: " + player.getStatistic(Statistic.DAMAGE_DEALT));
             sender.sendMessage("- Times jumped: " + player.getStatistic(Statistic.JUMP));
             sender.sendMessage("- Raids won: " + player.getStatistic(Statistic.RAID_WIN));
-            sender.sendMessage("- Diamonds gained: "
+            sender.sendMessage("- Diamonds picked up: "
                     + player.getStatistic(Statistic.PICKUP, Material.DIAMOND));
+            sender.sendMessage("Diamonds picked up is not an accurate measure of net worth");
 
         }
     }
 
 
     // converts numbers to their SI prefix laden counterparts
-    private String toSIPrefix(double number) {
+    private static String toSIPrefix(double number) {
         if (number < 100) {
             return (String.valueOf(number) + " c");
 
