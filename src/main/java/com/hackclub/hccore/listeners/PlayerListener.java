@@ -87,7 +87,11 @@ public class PlayerListener implements Listener {
         event.getPlayer().resetTitle();
         event.setJoinMessage(ChatColor.YELLOW
                 + ChatColor.stripColor(event.getPlayer().getDisplayName()) + " joined the game");
-    }
+
+        if (event.getPlayer().hasPlayedBefore() == false) {
+            event.getPlayer().performCommand("tutorial");
+        }
+        }
 
     @EventHandler
     public void onPlayerLogin(final PlayerLoginEvent event) {
