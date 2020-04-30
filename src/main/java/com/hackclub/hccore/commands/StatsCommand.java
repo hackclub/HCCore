@@ -116,6 +116,11 @@ public class StatsCommand implements TabExecutor {
                 Collections.addAll(completions, "extended", "only");
                 break;
             case 3:
+                // Only send statistic name suggestions in /stats <player> only
+                if (!args[1].equalsIgnoreCase("only")) {
+                    break;
+                }
+
                 for (Statistic statistic : Statistic.values()) {
                     if (StringUtil.startsWithIgnoreCase(statistic.name(), args[2])) {
                         completions.add(statistic.name().toLowerCase());
