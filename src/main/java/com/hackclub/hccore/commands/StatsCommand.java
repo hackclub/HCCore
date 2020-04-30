@@ -166,7 +166,7 @@ public class StatsCommand implements TabExecutor {
             number = Math.round(number / 1000);
             // Divides by 100 to finally get to km
             number /= 100;
-            return String.format("%,.2f k", number);
+            return String.format("%.2f k", number);
         }
         return null;
     }
