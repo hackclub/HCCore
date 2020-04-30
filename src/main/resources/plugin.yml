@@ -32,3 +32,7 @@ commands:
   tableflip:
     description: Appends a tableflip to your message
     usage: /tableflip [message]
+  tutorial:
+    description: Greets new users to the server
+    usage: /tutorial
+
