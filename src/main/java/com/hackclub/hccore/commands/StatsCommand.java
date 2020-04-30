@@ -9,6 +9,7 @@ import com.hackclub.hccore.HCCorePlugin;
 import com.hackclub.hccore.PlayerData;
 import com.hackclub.hccore.utils.TimeUtil;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.Statistic;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -25,23 +26,73 @@ public class StatsCommand implements TabExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String alias, String[] args) {
+        boolean extended = false;
+        Statistic specificStat = null;
+
+        ArrayList<String> STATISTIC_NAMES = new ArrayList<String>();
+
+        for (Statistic number : Statistic.values()) {
+            STATISTIC_NAMES.add(number.name());
+        }
+
         // /stats
         if (args.length == 0) {
+            extended = false;
             if (sender instanceof Player) {
                 sender.sendMessage("Your stats:");
-                this.sendStatistics(sender, (Player) sender);
+                this.sendStatistics(sender, (Player) sender, extended);
             } else {
                 sender.sendMessage(ChatColor.RED + "You must be a player to use this");
             }
             return true;
         }
 
-        // /stats [player]
+        if (args.length > 1) {
+            switch (args[1]) {
+                case "extended": // /stats <player> extended
+                    extended = true;
+                    break;
+                case "only": // /stats <player> only <statistic>
+                    if (args.length < 3) {
+                        sender.sendMessage(ChatColor.RED
+                                + "You must include both a statistic and a player name");
+                        return true;
+                    }
+                    if (!(STATISTIC_NAMES.contains(args[2].toUpperCase()))) {
+                        sender.sendMessage(ChatColor.RED + "Not a valid statistic");
+                        return true;
+                    }
+                    specificStat = Statistic.valueOf(args[2].toUpperCase());
+                    if (specificStat.isSubstatistic()) {
+                        sender.sendMessage(
+                                ChatColor.RED + "This statistic is not currently supported");
+                        return true;
+                    }
+
+                    Player player = sender.getServer().getPlayerExact(args[0]);
+                    if (player != null) {
+                        PlayerData data = this.plugin.getDataManager().getData(player);
+                        sender.sendMessage(data.getUsableName() + "’s number:");
+                        sender.sendMessage(
+                                specificStat + " = " + player.getStatistic(specificStat));
+                    } else {
+                        sender.sendMessage(
+                                ChatColor.RED + "No online player with that name was found");
+                    }
+                    return true;
+                default:
+                    return false;
+            }
+        } else {
+            extended = false;
+        }
+
+        // /stats <player>
         Player targetPlayer = sender.getServer().getPlayerExact(args[0]);
         if (targetPlayer != null) {
             PlayerData data = this.plugin.getDataManager().getData(targetPlayer);
             sender.sendMessage(data.getUsableName() + "’s stats:");
-            this.sendStatistics(sender, targetPlayer);
+            this.sendStatistics(sender, targetPlayer, extended);
         } else {
             sender.sendMessage(ChatColor.RED + "No online player with that name was found");
         }
@@ -53,19 +104,32 @@ public class StatsCommand implements TabExecutor {
     public List<String> onTabComplete(CommandSender sender, Command cmd, String alias,
             String[] args) {
         List<String> completions = new ArrayList<String>();
-        if (args.length == 1) {
-            for (Player player : sender.getServer().getOnlinePlayers()) {
-                if (StringUtil.startsWithIgnoreCase(player.getName(), args[0])) {
-                    completions.add(player.getName());
+
+        switch (args.length) {
+            case 1:
+                for (Player player : sender.getServer().getOnlinePlayers()) {
+                    if (StringUtil.startsWithIgnoreCase(player.getName(), args[0])) {
+                        completions.add(player.getName());
+                    }
                 }
-            }
+                break;
+            case 2:
+                completions.add("extended");
+                completions.add("only");
+                break;
+            case 3:
+                for (Statistic statistic : Statistic.values()) {
+                    if (StringUtil.startsWithIgnoreCase(statistic.name(), args[2])) {
+                        completions.add(statistic.name().toLowerCase());
+                    }
+                }
         }
 
         Collections.sort(completions);
         return completions;
     }
 
-    private void sendStatistics(CommandSender sender, Player player) {
+    private void sendStatistics(CommandSender sender, Player player, Boolean extended) {
         sender.sendMessage("- Deaths: " + player.getStatistic(Statistic.DEATHS));
         sender.sendMessage("- Mob kills: " + player.getStatistic(Statistic.MOB_KILLS));
         sender.sendMessage("- Player kills: " + player.getStatistic(Statistic.PLAYER_KILLS));
@@ -77,5 +141,40 @@ public class StatsCommand implements TabExecutor {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         sender.sendMessage(
                 "- Registered since: " + dateFormat.format(new Date(player.getFirstPlayed())));
+
+        if (extended) {
+            sender.sendMessage("- Distance by elytra: "
+                    + toSIPrefix((double) player.getStatistic(Statistic.AVIATE_ONE_CM)) + "m");
+            sender.sendMessage("- Distance by minecart: "
+                    + toSIPrefix((double) player.getStatistic(Statistic.MINECART_ONE_CM)) + "m");
+            sender.sendMessage("- Distance by horse: "
+                    + toSIPrefix((double) player.getStatistic(Statistic.HORSE_ONE_CM)) + "m");
+            sender.sendMessage("- Distance walked: "
+                    + toSIPrefix((double) player.getStatistic(Statistic.WALK_ONE_CM)) + "m");
+            sender.sendMessage("- Damage taken: " + player.getStatistic(Statistic.DAMAGE_TAKEN));
+            sender.sendMessage("- Damage dealt: " + player.getStatistic(Statistic.DAMAGE_DEALT));
+            sender.sendMessage("- Times jumped: " + player.getStatistic(Statistic.JUMP));
+            sender.sendMessage("- Raids won: " + player.getStatistic(Statistic.RAID_WIN));
+            sender.sendMessage("- Diamonds picked up: "
+                    + player.getStatistic(Statistic.PICKUP, Material.DIAMOND));
+            sender.sendMessage("Diamonds picked up is not an accurate measure of net worth");
+        }
+    }
+
+    // converts numbers to their SI prefix laden counterparts
+    private static String toSIPrefix(double number) {
+        if (number < 100) {
+            return (String.valueOf(number) + " c");
+        } else if (number < 100000) {
+            number = Math.round(number / 100);
+            return (String.valueOf(number));
+        } else if (number >= 100000) {
+            // Divides by 1000 to allow for two significant digits
+            number = Math.round(number / 1000);
+            // Divides by 100 to finally get to km
+            number = (number / 100);
+            return (String.format("%,.2f k", number));
+        }
+        return null;
     }
 }
