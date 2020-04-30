@@ -2,9 +2,11 @@ package com.hackclub.hccore.commands;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 import com.hackclub.hccore.HCCorePlugin;
 import com.hackclub.hccore.PlayerData;
 import com.hackclub.hccore.utils.TimeUtil;
@@ -18,6 +20,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 
 public class StatsCommand implements TabExecutor {
+    private static final List<String> STATISTIC_NAMES = Arrays.asList(Statistic.values()).stream()
+            .map(statistic -> statistic.name().toLowerCase()).collect(Collectors.toList());
+
     private final HCCorePlugin plugin;
 
     public StatsCommand(HCCorePlugin plugin) {
@@ -28,12 +33,6 @@ public class StatsCommand implements TabExecutor {
     public boolean onCommand(CommandSender sender, Command cmd, String alias, String[] args) {
         boolean extended = false;
         Statistic specificStat = null;
-
-        ArrayList<String> STATISTIC_NAMES = new ArrayList<String>();
-
-        for (Statistic number : Statistic.values()) {
-            STATISTIC_NAMES.add(number.name());
-        }
 
         // /stats
         if (args.length == 0) {
@@ -58,7 +57,7 @@ public class StatsCommand implements TabExecutor {
                                 + "You must include both a statistic and a player name");
                         return true;
                     }
-                    if (!(STATISTIC_NAMES.contains(args[2].toUpperCase()))) {
+                    if (!STATISTIC_NAMES.contains(args[2].toLowerCase())) {
                         sender.sendMessage(ChatColor.RED + "Not a valid statistic");
                         return true;
                     }
@@ -114,8 +113,7 @@ public class StatsCommand implements TabExecutor {
                 }
                 break;
             case 2:
-                completions.add("extended");
-                completions.add("only");
+                Collections.addAll(completions, "extended", "only");
                 break;
             case 3:
                 for (Statistic statistic : Statistic.values()) {
