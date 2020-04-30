@@ -51,7 +51,7 @@ public class StatsCommand implements TabExecutor {
             case "only": // /stats <player> only <statistic>
                 if (args.length < 3) {
                     sender.sendMessage(
-                            ChatColor.RED + "You must include both a statistic and a player name");
+                            ChatColor.RED + "You must include both a player and statistic name");
                     return true;
                 }
                 if (!STATISTIC_NAMES.contains(args[2].toLowerCase())) {
@@ -67,8 +67,8 @@ public class StatsCommand implements TabExecutor {
                 Player player = sender.getServer().getPlayerExact(args[0]);
                 if (player != null) {
                     PlayerData data = this.plugin.getDataManager().getData(player);
-                    sender.sendMessage(data.getUsableName() + "’s number:");
-                    sender.sendMessage(specificStat + " = " + player.getStatistic(specificStat));
+                    sender.sendMessage(data.getUsableName() + "’s " + args[2].toLowerCase()
+                            + " statistic: " + player.getStatistic(specificStat));
                 } else {
                     sender.sendMessage(ChatColor.RED + "No online player with that name was found");
                 }
@@ -151,7 +151,6 @@ public class StatsCommand implements TabExecutor {
             sender.sendMessage("- Raids won: " + player.getStatistic(Statistic.RAID_WIN));
             sender.sendMessage("- Diamonds picked up: "
                     + player.getStatistic(Statistic.PICKUP, Material.DIAMOND));
-            sender.sendMessage("Diamonds picked up is not an accurate measure of net worth");
         }
     }
 
