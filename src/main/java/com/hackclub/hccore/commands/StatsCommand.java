@@ -157,16 +157,16 @@ public class StatsCommand implements TabExecutor {
     // converts numbers to their SI prefix laden counterparts
     private static String toSIPrefix(double number) {
         if (number < 100) {
-            return (String.valueOf(number) + " c");
+            return String.valueOf(number) + " c";
         } else if (number < 100000) {
             number = Math.round(number / 100);
-            return (String.valueOf(number));
+            return String.valueOf(number);
         } else if (number >= 100000) {
             // Divides by 1000 to allow for two significant digits
             number = Math.round(number / 1000);
             // Divides by 100 to finally get to km
-            number = (number / 100);
-            return (String.format("%,.2f k", number));
+            number /= 100;
+            return String.format("%,.2f k", number);
         }
         return null;
     }
