@@ -2,9 +2,11 @@ package com.hackclub.hccore.commands;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 import com.hackclub.hccore.HCCorePlugin;
 import com.hackclub.hccore.PlayerData;
 import com.hackclub.hccore.utils.TimeUtil;
@@ -18,6 +20,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 
 public class StatsCommand implements TabExecutor {
+    private static final List<String> STATISTIC_NAMES = Arrays.asList(Statistic.values()).stream()
+            .map(statistic -> statistic.name().toLowerCase()).collect(Collectors.toList());
+
     private final HCCorePlugin plugin;
 
     public StatsCommand(HCCorePlugin plugin) {
@@ -27,17 +32,9 @@ public class StatsCommand implements TabExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String alias, String[] args) {
         boolean extended = false;
-        Statistic specificStat = null;
-
-        ArrayList<String> STATISTIC_NAMES = new ArrayList<String>();
-
-        for (Statistic number : Statistic.values()) {
-            STATISTIC_NAMES.add(number.name());
-        }
 
         // /stats
         if (args.length == 0) {
-            extended = false;
             if (sender instanceof Player) {
                 sender.sendMessage("Your stats:");
                 this.sendStatistics(sender, (Player) sender, extended);
@@ -47,44 +44,37 @@ public class StatsCommand implements TabExecutor {
             return true;
         }
 
-        if (args.length > 1) {
-            switch (args[1]) {
-                case "extended": // /stats <player> extended
-                    extended = true;
-                    break;
-                case "only": // /stats <player> only <statistic>
-                    if (args.length < 3) {
-                        sender.sendMessage(ChatColor.RED
-                                + "You must include both a statistic and a player name");
-                        return true;
-                    }
-                    if (!(STATISTIC_NAMES.contains(args[2].toUpperCase()))) {
-                        sender.sendMessage(ChatColor.RED + "Not a valid statistic");
-                        return true;
-                    }
-                    specificStat = Statistic.valueOf(args[2].toUpperCase());
-                    if (specificStat.isSubstatistic()) {
-                        sender.sendMessage(
-                                ChatColor.RED + "This statistic is not currently supported");
-                        return true;
-                    }
-
-                    Player player = sender.getServer().getPlayerExact(args[0]);
-                    if (player != null) {
-                        PlayerData data = this.plugin.getDataManager().getData(player);
-                        sender.sendMessage(data.getUsableName() + "’s number:");
-                        sender.sendMessage(
-                                specificStat + " = " + player.getStatistic(specificStat));
-                    } else {
-                        sender.sendMessage(
-                                ChatColor.RED + "No online player with that name was found");
-                    }
+        switch (args[1].toLowerCase()) {
+            case "extended": // /stats <player> extended
+                extended = true;
+                break;
+            case "only": // /stats <player> only <statistic>
+                if (args.length < 3) {
+                    sender.sendMessage(
+                            ChatColor.RED + "You must include both a statistic and a player name");
                     return true;
-                default:
-                    return false;
-            }
-        } else {
-            extended = false;
+                }
+                if (!STATISTIC_NAMES.contains(args[2].toLowerCase())) {
+                    sender.sendMessage(ChatColor.RED + "Not a valid statistic");
+                    return true;
+                }
+                Statistic specificStat = Statistic.valueOf(args[2].toUpperCase());
+                if (specificStat.isSubstatistic()) {
+                    sender.sendMessage(ChatColor.RED + "This statistic is not currently supported");
+                    return true;
+                }
+
+                Player player = sender.getServer().getPlayerExact(args[0]);
+                if (player != null) {
+                    PlayerData data = this.plugin.getDataManager().getData(player);
+                    sender.sendMessage(data.getUsableName() + "’s number:");
+                    sender.sendMessage(specificStat + " = " + player.getStatistic(specificStat));
+                } else {
+                    sender.sendMessage(ChatColor.RED + "No online player with that name was found");
+                }
+                return true;
+            default:
+                return false;
         }
 
         // /stats <player>
@@ -114,10 +104,14 @@ public class StatsCommand implements TabExecutor {
                 }
                 break;
             case 2:
-                completions.add("extended");
-                completions.add("only");
+                Collections.addAll(completions, "extended", "only");
                 break;
             case 3:
+                // Only send statistic name suggestions in /stats <player> only
+                if (!args[1].equalsIgnoreCase("only")) {
+                    break;
+                }
+
                 for (Statistic statistic : Statistic.values()) {
                     if (StringUtil.startsWithIgnoreCase(statistic.name(), args[2])) {
                         completions.add(statistic.name().toLowerCase());
