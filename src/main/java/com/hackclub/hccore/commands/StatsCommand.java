@@ -47,7 +47,7 @@ public class StatsCommand implements TabExecutor {
         }
 
         if (args.length > 1) {
-            switch (args[1]) {
+            switch (args[1].toLowerCase()) {
                 case "extended": // /stats <player> extended
                     extended = true;
                     break;
