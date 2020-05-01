@@ -35,4 +35,3 @@ commands:
   tutorial:
     description: Greets new users to the server
     usage: /tutorial
-
