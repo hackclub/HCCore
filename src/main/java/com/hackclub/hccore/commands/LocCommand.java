@@ -43,7 +43,7 @@ public class LocCommand implements TabExecutor {
                     sender.sendMessage(ChatColor.RED + "Please specify the location name");
                     break;
                 }
-                
+
                 if (!data.getSavedLocations().containsKey(locationName)) {
                     sender.sendMessage(ChatColor.RED + "No location with that name was found");
                     break;
@@ -89,6 +89,22 @@ public class LocCommand implements TabExecutor {
                 }
                 break;
             }
+            // /loc rename <old name> <new name>
+            case "rename": {
+                if (args.length < 2) {
+                    return false;
+                }
+                if (!(data.getSavedLocations().containsKey(args[1]))) {
+                    sender.sendMessage(ChatColor.RED + "A location with that name does not exist");
+                }
+                String newName = String.join("_", Arrays.copyOfRange(args, 2, args.length));
+                Location oldLoc = data.getSavedLocations().get(args[1]);
+                data.getSavedLocations().put(newName, oldLoc);
+                sender.sendMessage(ChatColor.GREEN + "Location renamed to " + newName);
+
+                break;
+            }
+
             // /loc save <name>
             case "save": {
                 if (args.length < 2) {
@@ -106,6 +122,7 @@ public class LocCommand implements TabExecutor {
                         + currentLocation.getWorld().getName() + " @ " + currentLocation.getBlockX()
                         + ", " + currentLocation.getBlockY() + ", " + currentLocation.getBlockZ()
                         + ") to saved locations");
+
                 break;
             }
             // /loc share <name> <player>
@@ -125,6 +142,10 @@ public class LocCommand implements TabExecutor {
             default:
                 return false;
         }
+        for (String var : args) {
+            System.out.println(var);
+        }
+        System.out.println(locationName);
 
         return true;
     }
