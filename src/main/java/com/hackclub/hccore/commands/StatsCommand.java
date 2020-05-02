@@ -44,37 +44,41 @@ public class StatsCommand implements TabExecutor {
             return true;
         }
 
-        switch (args[1].toLowerCase()) {
-            case "extended": // /stats <player> extended
-                extended = true;
-                break;
-            case "only": // /stats <player> only <statistic>
-                if (args.length < 3) {
-                    sender.sendMessage(
-                            ChatColor.RED + "You must include both a player and statistic name");
-                    return true;
-                }
-                if (!STATISTIC_NAMES.contains(args[2].toLowerCase())) {
-                    sender.sendMessage(ChatColor.RED + "Not a valid statistic");
-                    return true;
-                }
-                Statistic specificStat = Statistic.valueOf(args[2].toUpperCase());
-                if (specificStat.isSubstatistic()) {
-                    sender.sendMessage(ChatColor.RED + "This statistic is not currently supported");
-                    return true;
-                }
+        if (args.length > 1) {
+            switch (args[1].toLowerCase()) {
+                case "extended": // /stats <player> extended
+                    extended = true;
+                    break;
+                case "only": // /stats <player> only <statistic>
+                    if (args.length < 3) {
+                        sender.sendMessage(ChatColor.RED
+                                + "You must include both a player and statistic name");
+                        return true;
+                    }
+                    if (!STATISTIC_NAMES.contains(args[2].toLowerCase())) {
+                        sender.sendMessage(ChatColor.RED + "Not a valid statistic");
+                        return true;
+                    }
+                    Statistic specificStat = Statistic.valueOf(args[2].toUpperCase());
+                    if (specificStat.isSubstatistic()) {
+                        sender.sendMessage(
+                                ChatColor.RED + "This statistic is not currently supported");
+                        return true;
+                    }
 
-                Player player = sender.getServer().getPlayerExact(args[0]);
-                if (player != null) {
-                    PlayerData data = this.plugin.getDataManager().getData(player);
-                    sender.sendMessage(data.getUsableName() + "’s " + args[2].toLowerCase()
-                            + " statistic: " + player.getStatistic(specificStat));
-                } else {
-                    sender.sendMessage(ChatColor.RED + "No online player with that name was found");
-                }
-                return true;
-            default:
-                return false;
+                    Player player = sender.getServer().getPlayerExact(args[0]);
+                    if (player != null) {
+                        PlayerData data = this.plugin.getDataManager().getData(player);
+                        sender.sendMessage(data.getUsableName() + "’s " + args[2].toLowerCase()
+                                + " statistic: " + player.getStatistic(specificStat));
+                    } else {
+                        sender.sendMessage(
+                                ChatColor.RED + "No online player with that name was found");
+                    }
+                    return true;
+                default:
+                    return false;
+            }
         }
 
         // /stats <player>
