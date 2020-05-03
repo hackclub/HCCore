@@ -21,11 +21,13 @@ public class TutorialCommand implements CommandExecutor {
         if (!(sender instanceof Player)) {
             sender.sendMessage(ChatColor.RED + "You must be a player to use this");
             return true;
+        } else {
+            for (String message : TutorialCommand.MESSAGE) {
+                sender.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + message);
+            }
         }
 
-        for (String message : TutorialCommand.MESSAGE) {
-            sender.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + message);
-            }
+
 
         return true;
     }
