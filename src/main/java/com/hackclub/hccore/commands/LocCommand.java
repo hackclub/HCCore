@@ -78,7 +78,6 @@ public class LocCommand implements TabExecutor {
                     sender.sendMessage("You have no saved locations");
                     break;
                 }
-
                 sender.sendMessage(
                         ChatColor.AQUA + "Your saved locations (" + savedLocations.size() + "):");
                 for (Map.Entry<String, Location> entry : savedLocations.entrySet()) {
@@ -91,20 +90,27 @@ public class LocCommand implements TabExecutor {
             }
             // /loc rename <old name> <new name>
             case "rename": {
-                if (args.length < 2) {
-                    return false;
-                }
-                if (!(data.getSavedLocations().containsKey(args[1]))) {
-                    sender.sendMessage(ChatColor.RED + "A location with that name does not exist");
+                if (args.length < 3) {
+                    sender.sendMessage(
+                            ChatColor.RED + "You must include both a location and a new name");
+                    break;
                 }
                 String newName = String.join("_", Arrays.copyOfRange(args, 2, args.length));
-                Location oldLoc = data.getSavedLocations().get(args[1]);
-                data.getSavedLocations().put(newName, oldLoc);
-                sender.sendMessage(ChatColor.GREEN + "Location renamed to " + newName);
-
+                String oldName = args[1];
+                Location targetLoc = data.getSavedLocations().get(oldName);
+                if (!data.getSavedLocations().containsKey(oldName)) {
+                    sender.sendMessage(ChatColor.RED + "No location with that name was found");
+                    break;
+                }
+                if (data.getSavedLocations().containsKey(newName)) {
+                    sender.sendMessage(ChatColor.RED + "A location with that name already exists");
+                    break;
+                }
+                data.getSavedLocations().put(newName, targetLoc);
+                data.getSavedLocations().remove(oldName);
+                sender.sendMessage(ChatColor.GREEN + "Renamed from " + oldName + "to " + newName);
                 break;
             }
-
             // /loc save <name>
             case "save": {
                 if (args.length < 2) {
@@ -142,11 +148,6 @@ public class LocCommand implements TabExecutor {
             default:
                 return false;
         }
-        for (String var : args) {
-            System.out.println(var);
-        }
-        System.out.println(locationName);
-
         return true;
     }
 
