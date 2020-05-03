@@ -23,7 +23,6 @@ public class TutorialCommand implements CommandExecutor {
             return true;
         }
 
-        Player player = (Player) sender;
         for (String message : TutorialCommand.MESSAGE) {
             sender.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + message);
             }
