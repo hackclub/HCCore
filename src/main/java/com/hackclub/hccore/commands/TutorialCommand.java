@@ -27,8 +27,6 @@ public class TutorialCommand implements CommandExecutor {
             }
         }
 
-
-
         return true;
     }
 }
