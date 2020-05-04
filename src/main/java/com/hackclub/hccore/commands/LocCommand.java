@@ -78,6 +78,7 @@ public class LocCommand implements TabExecutor {
                     sender.sendMessage("You have no saved locations");
                     break;
                 }
+
                 sender.sendMessage(
                         ChatColor.AQUA + "Your saved locations (" + savedLocations.size() + "):");
                 for (Map.Entry<String, Location> entry : savedLocations.entrySet()) {
@@ -93,10 +94,10 @@ public class LocCommand implements TabExecutor {
                 if (args.length < 3) {
                     sender.sendMessage(
                             ChatColor.RED + "You must include both a location and a new name");
-                    break;
+                    return false;
                 }
-                String newName = String.join("_", Arrays.copyOfRange(args, 2, args.length));
                 String oldName = args[1];
+                String newName = String.join("_", Arrays.copyOfRange(args, 2, args.length));
                 Location targetLoc = data.getSavedLocations().get(oldName);
                 if (!data.getSavedLocations().containsKey(oldName)) {
                     sender.sendMessage(ChatColor.RED + "No location with that name was found");
