@@ -92,9 +92,8 @@ public class LocCommand implements TabExecutor {
             // /loc rename <old name> <new name>
             case "rename": {
                 if (args.length < 3) {
-                    sender.sendMessage(
-                            ChatColor.RED + "You must include both a location and a new name");
-                    return false;
+                    sender.sendMessage(ChatColor.RED + "/loc rename <old name> <new name>");
+                    break;
                 }
                 String oldName = args[1];
                 String newName = String.join("_", Arrays.copyOfRange(args, 2, args.length));
