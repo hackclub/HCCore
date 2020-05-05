@@ -13,10 +13,7 @@ commands:
     usage: /color <chat|name> [color]
   loc:
     description: Manage your saved locations
-    usage: /loc <del|get|save> <location name>
-    /loc list
-    /loc rename <old name> <new name>
-    /loc share <location name> <player>
+    usage: /loc <del|get|list|save|share> [...args]
   nick:
     description: Sets your nickname
     usage: /nick [nickname]
