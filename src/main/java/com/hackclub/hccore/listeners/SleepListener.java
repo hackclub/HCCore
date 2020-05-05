@@ -1,6 +1,7 @@
 package com.hackclub.hccore.listeners;
 
 import com.hackclub.hccore.HCCorePlugin;
+import com.hackclub.hccore.PlayerData;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.World.Environment;
