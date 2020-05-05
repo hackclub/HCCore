@@ -158,7 +158,15 @@ public class SleepListener implements Listener {
     }
 
     private int getMinSleepingPlayersNeeded(World world) {
+        //Get the number of AFK players
+        int afkSum = 0;
+        for (Player player : world.getPlayers()) {
+            PlayerData playerData = this.plugin.getDataManager().getData(player);
+            if (playerData.isAfk()) {
+                afkSum++;
+            }
+        }
         return (int) Math.ceil(world.getPlayers().size()
-                * this.plugin.getConfig().getDouble("settings.skip-sleep-threshold"));
+                * this.plugin.getConfig().getDouble("settings.skip-sleep-threshold")) - afkSum;
     }
 }
