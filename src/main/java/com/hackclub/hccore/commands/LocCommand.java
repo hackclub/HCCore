@@ -128,7 +128,6 @@ public class LocCommand implements TabExecutor {
                         + currentLocation.getWorld().getName() + " @ " + currentLocation.getBlockX()
                         + ", " + currentLocation.getBlockY() + ", " + currentLocation.getBlockZ()
                         + ") to saved locations");
-
                 break;
             }
             // /loc share <name> <player>
@@ -148,6 +147,7 @@ public class LocCommand implements TabExecutor {
             default:
                 return false;
         }
+
         return true;
     }
 
