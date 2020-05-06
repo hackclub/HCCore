@@ -92,7 +92,7 @@ public class LocCommand implements TabExecutor {
             // /loc rename <old name> <new name>
             case "rename": {
                 if (args.length < 3) {
-                    sender.sendMessage(ChatColor.RED + "/loc rename <old name> <new name>");
+                    sender.sendMessage("/loc rename <old name> <new name>");
                     break;
                 }
                 String oldName = args[1];
