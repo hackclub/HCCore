@@ -162,7 +162,8 @@ public class LocCommand implements TabExecutor {
         switch (args.length) {
             // Complete subcommand
             case 1: {
-                List<String> subcommands = Arrays.asList("del", "get", "list", "save", "share");
+                List<String> subcommands =
+                        Arrays.asList("del", "get", "list", "rename", "save", "share");
                 StringUtil.copyPartialMatches(args[0], subcommands, completions);
                 break;
             }
