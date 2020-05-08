@@ -43,8 +43,9 @@ public class NickCommand implements CommandExecutor {
         }
 
         this.plugin.getDataManager().getData(player).setNickname(newNickname);
-        sender.sendMessage(
-                ChatColor.GREEN + "Your nickname was set to " + ChatColor.AQUA + newNickname);
+        ChatColor nameColor = this.plugin.getDataManager().getData(player).getNameColor();
+        sender.sendMessage(ChatColor.GREEN + "Your nickname was set to "
+                + (nameColor != null ? nameColor : ChatColor.AQUA) + newNickname);
 
         return true;
     }
