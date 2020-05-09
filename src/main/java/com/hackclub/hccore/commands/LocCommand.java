@@ -43,7 +43,7 @@ public class LocCommand implements TabExecutor {
                     sender.sendMessage(ChatColor.RED + "Please specify the location name");
                     break;
                 }
-                
+
                 if (!data.getSavedLocations().containsKey(locationName)) {
                     sender.sendMessage(ChatColor.RED + "No location with that name was found");
                     break;
@@ -87,6 +87,28 @@ public class LocCommand implements TabExecutor {
                             + savedLocation.getWorld().getName() + " @ " + savedLocation.getBlockX()
                             + ", " + savedLocation.getBlockY() + ", " + savedLocation.getBlockZ());
                 }
+                break;
+            }
+            // /loc rename <old name> <new name>
+            case "rename": {
+                if (args.length < 3) {
+                    sender.sendMessage("/loc rename <old name> <new name>");
+                    break;
+                }
+                String oldName = args[1];
+                String newName = String.join("_", Arrays.copyOfRange(args, 2, args.length));
+                Location targetLoc = data.getSavedLocations().get(oldName);
+                if (!data.getSavedLocations().containsKey(oldName)) {
+                    sender.sendMessage(ChatColor.RED + "No location with that name was found");
+                    break;
+                }
+                if (data.getSavedLocations().containsKey(newName)) {
+                    sender.sendMessage(ChatColor.RED + "A location with that name already exists");
+                    break;
+                }
+                data.getSavedLocations().put(newName, targetLoc);
+                data.getSavedLocations().remove(oldName);
+                sender.sendMessage(ChatColor.GREEN + "Renamed from " + oldName + "to " + newName);
                 break;
             }
             // /loc save <name>
@@ -140,7 +162,8 @@ public class LocCommand implements TabExecutor {
         switch (args.length) {
             // Complete subcommand
             case 1: {
-                List<String> subcommands = Arrays.asList("del", "get", "list", "save", "share");
+                List<String> subcommands =
+                        Arrays.asList("del", "get", "list", "rename", "save", "share");
                 StringUtil.copyPartialMatches(args[0], subcommands, completions);
                 break;
             }
