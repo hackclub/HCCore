@@ -108,7 +108,8 @@ public class StatsCommand implements TabExecutor {
                 }
                 break;
             case 2:
-                Collections.addAll(completions, "extended", "only");
+                List<String> subcommands = Arrays.asList("extended", "only");
+                StringUtil.copyPartialMatches(args[1], subcommands, completions);
                 break;
             case 3:
                 // Only send statistic name suggestions in /stats <player> only
