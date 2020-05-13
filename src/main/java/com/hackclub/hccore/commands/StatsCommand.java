@@ -27,10 +27,7 @@ public class StatsCommand implements TabExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String alias, String[] args) {
-
-        // set extended to false by default
         boolean extended = false;
-        // initialize specificStat variable
         Statistic specificStat = null;
 
         ArrayList<String> STATISTIC_NAMES = new ArrayList<String>();
@@ -40,7 +37,7 @@ public class StatsCommand implements TabExecutor {
         }
 
         // /stats
-        if ((args.length == 0)) {
+        if (args.length == 0) {
             extended = false;
             if (sender instanceof Player) {
                 sender.sendMessage("Your stats:");
@@ -53,12 +50,10 @@ public class StatsCommand implements TabExecutor {
 
         if (args.length > 1) {
             switch (args[1]) {
-
                 case "extended": // /stats <player> extended
                     extended = true;
                     break;
-
-                case "only": // /stats <player> only <Statistic>
+                case "only": // /stats <player> only <statistic>
                     if (args.length < 3) {
                         sender.sendMessage(ChatColor.RED
                                 + "You must include both a statistic and a player name");
@@ -86,12 +81,9 @@ public class StatsCommand implements TabExecutor {
                                 ChatColor.RED + "No online player with that name was found");
                     }
                     return true;
-
                 default:
                     return false;
-
             }
-
         } else {
             extended = false;
         }
@@ -107,7 +99,6 @@ public class StatsCommand implements TabExecutor {
         }
 
         return true;
-
     }
 
     @Override
@@ -133,10 +124,8 @@ public class StatsCommand implements TabExecutor {
                         completions.add(statistic.name().toLowerCase());
                     }
                 }
-            default:
-                break;
-
         }
+
         Collections.sort(completions);
         return completions;
     }
@@ -170,27 +159,22 @@ public class StatsCommand implements TabExecutor {
             sender.sendMessage("- Diamonds picked up: "
                     + player.getStatistic(Statistic.PICKUP, Material.DIAMOND));
             sender.sendMessage("Diamonds picked up is not an accurate measure of net worth");
-
         }
     }
-
 
     // converts numbers to their SI prefix laden counterparts
     private static String toSIPrefix(double number) {
         if (number < 100) {
             return (String.valueOf(number) + " c");
-
         } else if (number < 100000) {
             number = Math.round(number / 100);
             return (String.valueOf(number));
-
         } else if (number >= 100000) {
             // Divides by 1000 to allow for two significant digits
             number = Math.round(number / 1000);
             // Divides by 100 to finally get to km
             number = (number / 100);
             return (String.format("%,.2f k", number));
-
         }
         return null;
     }
