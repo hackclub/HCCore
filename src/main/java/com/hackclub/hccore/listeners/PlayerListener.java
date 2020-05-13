@@ -13,6 +13,10 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 
 public class PlayerListener implements Listener {
     private final HCCorePlugin plugin;
@@ -48,13 +52,27 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onAsyncPlayerChat(final AsyncPlayerChatEvent event) {
-        event.setFormat(ChatColor.WHITE + "%s " + ChatColor.GOLD + "» " + ChatColor.GRAY + "%s");
-
-        // Apply the player's chat color to the message and translate color codes
         PlayerData data = this.plugin.getDataManager().getData(event.getPlayer());
-        ChatColor playerColor = data.getMessageColor();
-        event.setMessage(
-                playerColor + ChatColor.translateAlternateColorCodes('&', event.getMessage()));
+        BaseComponent username = new TextComponent(event.getPlayer().getDisplayName());
+        username.setColor(data.getNameColor().asBungee());
+        username.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                new ComponentBuilder(event.getPlayer().getName()).create()));
+
+
+        BaseComponent arrowThing = new TextComponent(" » ");
+        arrowThing.setColor(ChatColor.GOLD.asBungee());
+        arrowThing.setHoverEvent(null);
+
+        BaseComponent text = new TextComponent(event.getMessage());
+        text.setColor(data.getMessageColor().asBungee());
+        text.setHoverEvent(null);
+
+        BaseComponent[] message =
+                new ComponentBuilder(username).append(arrowThing).append(text).create();
+
+
+        event.getPlayer().getServer().spigot().broadcast(username, arrowThing, text);
+        event.setCancelled(true);
     }
 
     @EventHandler
