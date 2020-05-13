@@ -2,6 +2,7 @@ package com.hackclub.hccore.commands;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -123,8 +124,8 @@ public class StatsCommand implements TabExecutor {
                 }
                 break;
             case 2:
-                completions.add("extended");
-                completions.add("only");
+                List<String> subcommands = Arrays.asList("extended", "only");
+                StringUtil.copyPartialMatches(args[1], subcommands, completions);
                 break;
             case 3:
                 for (Statistic statistic : Statistic.values()) {
