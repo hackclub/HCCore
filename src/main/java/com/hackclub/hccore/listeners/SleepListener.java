@@ -1,6 +1,7 @@
 package com.hackclub.hccore.listeners;
 
 import com.hackclub.hccore.HCCorePlugin;
+import com.hackclub.hccore.PlayerData;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.World.Environment;
@@ -158,7 +159,15 @@ public class SleepListener implements Listener {
     }
 
     private int getMinSleepingPlayersNeeded(World world) {
-        return (int) Math.ceil(world.getPlayers().size()
+        // Get the number of AFK players
+        int afkPlayersCount = 0;
+        for (Player player : world.getPlayers()) {
+            PlayerData playerData = this.plugin.getDataManager().getData(player);
+            if (playerData.isAfk()) {
+                afkPlayersCount++;
+            }
+        }
+        return (int) Math.ceil((world.getPlayers().size() - afkPlayersCount)
                 * this.plugin.getConfig().getDouble("settings.skip-sleep-threshold"));
     }
 }
