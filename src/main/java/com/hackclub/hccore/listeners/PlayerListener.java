@@ -5,6 +5,7 @@ import com.hackclub.hccore.PlayerData;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -57,7 +58,7 @@ public class PlayerListener implements Listener {
                 playerColor + ChatColor.translateAlternateColorCodes('&', event.getMessage()));
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST) // Runs foremost
     public void onPlayerJoin(final PlayerJoinEvent event) {
         this.plugin.getDataManager().registerPlayer(event.getPlayer());
         // Set the initial active time
@@ -114,7 +115,7 @@ public class PlayerListener implements Listener {
         this.plugin.getDataManager().getData(event.getPlayer()).setLastDamagedAt(0);
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR) // Runs very last
     public void onPlayerQuit(final PlayerQuitEvent event) {
         // NOTE: Title isn't cleared when the player leaves the server
         // event.getPlayer().resetTitle();
