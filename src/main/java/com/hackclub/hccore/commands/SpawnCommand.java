@@ -55,7 +55,7 @@ public class SpawnCommand implements CommandExecutor {
         Block highestBlock = player.getWorld().getHighestBlockAt(player.getLocation());
         if (player.getLocation().getY() < highestBlock.getY()) {
             sender.sendMessage(
-                    ChatColor.RED + "You need to have direct sky access to use this command");
+                    ChatColor.RED + "You need be directly under the sky to use this command");
             return true;
         }
 
