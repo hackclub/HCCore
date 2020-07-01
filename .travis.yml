@@ -3,7 +3,7 @@ jdk: openjdk8
 install: true
 script:
   - wget -O BuildTools.jar https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar
-  - java -jar BuildTools.jar --rev 1.15.2 > /dev/null
+  - java -jar BuildTools.jar --rev 1.16.1 > /dev/null
   - mvn clean package
 cache:
   directories:
