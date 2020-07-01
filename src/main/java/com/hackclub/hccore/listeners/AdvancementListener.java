@@ -159,31 +159,33 @@ public class AdvancementListener implements Listener {
             switch (frameType.a()) {
                 case "task":
                 default:
-                    args = new Object[] {"made", "advancement", ChatColor.GREEN};
+                    args = new Object[] {"made", "advancement", ChatColor.GREEN.asBungee()};
                     break;
                 case "goal":
-                    args = new Object[] {"reached", "goal", ChatColor.GREEN};
+                    args = new Object[] {"reached", "goal", ChatColor.GREEN.asBungee()};
                     break;
                 case "challenge":
-                    args = new Object[] {"completed", "challenge", ChatColor.DARK_PURPLE};
+                    args = new Object[] {"completed", "challenge",
+                            ChatColor.DARK_PURPLE.asBungee()};
                     break;
             }
 
             // Announce custom advancement message
             BaseComponent nameComponent =
-                    new TextComponent(ChatColor.stripColor(player.getDisplayName()));
+                    TextComponent.fromLegacyText(ChatColor.stripColor(player.getDisplayName()))[0];
             nameComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                    new ComponentBuilder(player.getName()).create()));
-            BaseComponent advancementComponent = new TextComponent(titleComponent.getText());
+                    TextComponent.fromLegacyText(player.getName())));
+            BaseComponent advancementComponent =
+                    TextComponent.fromLegacyText(titleComponent.getText())[0];
             advancementComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                    new ComponentBuilder().color(((ChatColor) args[2]).asBungee())
+                    new ComponentBuilder().color((net.md_5.bungee.api.ChatColor) args[2])
                             .append(titleComponent.getText() + "\n")
                             .append(descriptionComponent.getText()).create()));
 
             BaseComponent[] message = new ComponentBuilder(nameComponent)
                     .append(String.format(" has %s the %s %s[", args),
                             ComponentBuilder.FormatRetention.NONE)
-                    .append(advancementComponent)
+                    .append(advancementComponent).color((net.md_5.bungee.api.ChatColor) args[2])
                     .append("]", ComponentBuilder.FormatRetention.FORMATTING).create();
             player.getServer().spigot().broadcast(message);
         } catch (Exception e) {
