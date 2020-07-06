@@ -7,7 +7,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.Statistic;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.advancement.AdvancementProgress;
-import org.bukkit.craftbukkit.v1_15_R1.advancement.CraftAdvancement;
+import org.bukkit.craftbukkit.v1_16_R1.advancement.CraftAdvancement;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -19,9 +19,9 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.minecraft.server.v1_15_R1.AdvancementDisplay;
-import net.minecraft.server.v1_15_R1.AdvancementFrameType;
-import net.minecraft.server.v1_15_R1.IChatBaseComponent;
+import net.minecraft.server.v1_16_R1.AdvancementDisplay;
+import net.minecraft.server.v1_16_R1.AdvancementFrameType;
+import net.minecraft.server.v1_16_R1.IChatBaseComponent;
 
 public class AdvancementListener implements Listener {
     private final HCCorePlugin plugin;
@@ -137,7 +137,7 @@ public class AdvancementListener implements Listener {
         try {
             // NOTE: We interface with Minecraft's internal code here. It is unlikely, but possible
             // for it to break in the case of a future upgrade.
-            net.minecraft.server.v1_15_R1.Advancement nmsAdvancement =
+            net.minecraft.server.v1_16_R1.Advancement nmsAdvancement =
                     ((CraftAdvancement) advancement).getHandle();
             AdvancementDisplay display = nmsAdvancement.c();
 
@@ -159,31 +159,33 @@ public class AdvancementListener implements Listener {
             switch (frameType.a()) {
                 case "task":
                 default:
-                    args = new Object[] {"made", "advancement", ChatColor.GREEN};
+                    args = new Object[] {"made", "advancement", ChatColor.GREEN.asBungee()};
                     break;
                 case "goal":
-                    args = new Object[] {"reached", "goal", ChatColor.GREEN};
+                    args = new Object[] {"reached", "goal", ChatColor.GREEN.asBungee()};
                     break;
                 case "challenge":
-                    args = new Object[] {"completed", "challenge", ChatColor.DARK_PURPLE};
+                    args = new Object[] {"completed", "challenge",
+                            ChatColor.DARK_PURPLE.asBungee()};
                     break;
             }
 
             // Announce custom advancement message
             BaseComponent nameComponent =
-                    new TextComponent(ChatColor.stripColor(player.getDisplayName()));
+                    TextComponent.fromLegacyText(ChatColor.stripColor(player.getDisplayName()))[0];
             nameComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                    new ComponentBuilder(player.getName()).create()));
-            BaseComponent advancementComponent = new TextComponent(titleComponent.getText());
+                    TextComponent.fromLegacyText(player.getName())));
+            BaseComponent advancementComponent =
+                    TextComponent.fromLegacyText(titleComponent.getText())[0];
             advancementComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                    new ComponentBuilder().color(((ChatColor) args[2]).asBungee())
+                    new ComponentBuilder().color((net.md_5.bungee.api.ChatColor) args[2])
                             .append(titleComponent.getText() + "\n")
                             .append(descriptionComponent.getText()).create()));
 
             BaseComponent[] message = new ComponentBuilder(nameComponent)
                     .append(String.format(" has %s the %s %s[", args),
                             ComponentBuilder.FormatRetention.NONE)
-                    .append(advancementComponent)
+                    .append(advancementComponent).color((net.md_5.bungee.api.ChatColor) args[2])
                     .append("]", ComponentBuilder.FormatRetention.FORMATTING).create();
             player.getServer().spigot().broadcast(message);
         } catch (Exception e) {
