@@ -8,7 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class DownvoteCommand implements CommandExecutor {
-    private static final String DOWNVOTE = "§3§l↓";
+    private static final String DOWNVOTE = ChatColor.AQUA + ChatColor.BOLD + "↓";
 
     private final HCCorePlugin plugin;
 
