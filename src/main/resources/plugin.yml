@@ -44,3 +44,6 @@ commands:
   tutorial:
     description: Greets new users to the server
     usage: /tutorial
+  upvote:
+    description: Appends an upvote to your message
+    usage: /upvote [message]
