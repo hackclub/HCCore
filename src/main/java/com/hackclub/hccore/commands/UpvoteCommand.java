@@ -8,7 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class UpvoteCommand implements CommandExecutor {
-    private static final String UPVOTE = "§4§l↑";
+    private static final String UPVOTE = ChatColor.RED + ChatColor.BOLD.toString() + "↑";
 
     private final HCCorePlugin plugin;
 
