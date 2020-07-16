@@ -11,6 +11,9 @@ commands:
   color:
     description: Sets your chat or name color
     usage: /color <chat|name> [color]
+  downvote:
+    description: Appends a downvote to your message
+    usage: /downvote [message]
   loc:
     description: Manage your saved locations
     usage: /loc <del|get|list|rename|save|share> [...args]
@@ -32,3 +35,6 @@ commands:
   tableflip:
     description: Appends a tableflip to your message
     usage: /tableflip [message]
+  upvote:
+    description: Appends an upvote to your message
+    usage: /upvote [message]
