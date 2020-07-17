@@ -4,6 +4,7 @@ import com.hackclub.hccore.HCCorePlugin;
 import com.hackclub.hccore.PlayerData;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -16,7 +17,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
-import org.bukkit.Server.Spigot;
 
 public class PlayerListener implements Listener {
     private final HCCorePlugin plugin;
@@ -58,8 +58,8 @@ public class PlayerListener implements Listener {
         // This code is terrible, don't @ me
         
         PlayerData data = this.plugin.getDataManager().getData(event.getPlayer());
-        ChatColor messageColor = data.getMessageColor().asBungee();
-        ChatColor nameColor = data.getNameColor().asBungee();
+        org.bukkit.ChatColor messageColor = data.getMessageColor().asBungee();
+        org.bukkit.ChatColor nameColor = data.getNameColor().asBungee();
         
         // [[NAME, color: data.displayColor, hoverText: Player.getName()]] » [[MESSAGE, color: data.messageColor]]
         ComponentBuilder replacementMessage = new ComponentBuilder(
@@ -68,9 +68,10 @@ public class PlayerListener implements Listener {
             .append(ChatColor.translateAlternateColorCodes('&', event.getMessage())).color(messageColor)
             .create();
         
-        //I'm like 99% sure there's some bug somewhere in there but /shrug
+        //WHY Doesn't org.bukkit.chatcolor just work? It tries to convert bungee.chatcolor to bukkit.chatcolor (the one victor uses) but then when it's called at 66, it tries to convert it back??? and line 67 just works?????
+        // help
         
-        Spigot().broadcast(replacementMessage);
+        getServer().spigot().broadcast(replacementMessage);
         
         event.setCancelled(true);
     }
