@@ -122,7 +122,7 @@ public class HCCorePlugin extends JavaPlugin {
                 "Collect every single music disc", Material.JUKEBOX, Material.MUSIC_DISC_11,
                 Material.MUSIC_DISC_13, Material.MUSIC_DISC_BLOCKS, Material.MUSIC_DISC_CAT,
                 Material.MUSIC_DISC_CHIRP, Material.MUSIC_DISC_FAR, Material.MUSIC_DISC_MALL,
-                Material.MUSIC_DISC_MELLOHI, Material.MUSIC_DISC_STAL, Material.MUSIC_DISC_STRAD,
+                Material.MUSIC_DISC_MELLOHI, Material.MUSIC_DISC_PIGSTEP, Material.MUSIC_DISC_STAL, Material.MUSIC_DISC_STRAD,
                 Material.MUSIC_DISC_WAIT, Material.MUSIC_DISC_WARD)
                 .setFrame(Advancement.Frame.CHALLENGE);
 
