@@ -58,8 +58,8 @@ public class PlayerListener implements Listener {
         // This code is terrible, don't @ me
         
         PlayerData data = this.plugin.getDataManager().getData(event.getPlayer());
-        org.bukkit.ChatColor messageColor = data.getMessageColor().asBungee();
-        org.bukkit.ChatColor nameColor = data.getNameColor().asBungee();
+        org.md_5.bungee.api.ChatColor messageColor = data.getMessageColor().asBungee();
+        org.md_5.bunege.api.ChatColor nameColor = data.getNameColor().asBungee();
         
         // [[NAME, color: data.displayColor, hoverText: Player.getName()]] » [[MESSAGE, color: data.messageColor]]
         ComponentBuilder replacementMessage = new ComponentBuilder(
@@ -68,11 +68,7 @@ public class PlayerListener implements Listener {
             .append(ChatColor.translateAlternateColorCodes('&', event.getMessage())).color(messageColor)
             .create();
         
-        //WHY Doesn't org.bukkit.chatcolor just work? It tries to convert bungee.chatcolor to bukkit.chatcolor (the one victor uses) but then when it's called at 66, it tries to convert it back??? and line 67 just works?????
-        // help
-        
-        getServer().spigot().broadcast(replacementMessage);
-        
+        Bukkit.getServer().spigot().broadcast(replacementMessage);
         event.setCancelled(true);
     }
 
