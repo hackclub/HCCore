@@ -2,6 +2,8 @@ package com.hackclub.hccore.listeners;
 
 import com.hackclub.hccore.HCCorePlugin;
 import com.hackclub.hccore.PlayerData;
+import net.md_5.bungee.api.chat.ComponentBuilder
+import net.md_5.bungee.api.chat.HoverEvent;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -14,6 +16,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.Server.Spigot;
 
 public class PlayerListener implements Listener {
     private final HCCorePlugin plugin;
@@ -49,13 +52,27 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onAsyncPlayerChat(final AsyncPlayerChatEvent event) {
-        event.setFormat(ChatColor.WHITE + "%s " + ChatColor.GOLD + "» " + ChatColor.GRAY + "%s");
-
+        //event.setFormat(ChatColor.WHITE + "%s " + ChatColor.GOLD + "» " + ChatColor.GRAY + "%s");
+    
         // Apply the player's chat color to the message and translate color codes
+        // This code is terrible, don't @ me
+        
         PlayerData data = this.plugin.getDataManager().getData(event.getPlayer());
-        ChatColor playerColor = data.getMessageColor();
-        event.setMessage(
-                playerColor + ChatColor.translateAlternateColorCodes('&', event.getMessage()));
+        ChatColor messageColor = data.getMessageColor();
+        ChatColor nameColor = data.getNameColor();
+        
+        // [[NAME, color: data.displayColor, hoverText: Player.getName()]] » [[MESSAGE, color: data.messageColor]]
+        ComponentBuilder replacementMessage = new ComponentBuilder(
+            event.getPlayer().getDisplayName()).color(nameColor).event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(event.getPlayer().getName()).create()))
+            .append(" » ").color(ChatColor.GOLD)
+            .append(playerColor + ChatColor.translateAlternateColorCodes('&', event.getMessage())).color(messageColor)
+            .create();
+        
+        //I'm like 99% sure there's some bug somewhere in there but /shrug
+        
+        Server.Spigot().broadcast(replacementMessage);
+        
+        event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.LOWEST) // Runs foremost
