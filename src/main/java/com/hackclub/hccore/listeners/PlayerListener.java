@@ -2,6 +2,7 @@ package com.hackclub.hccore.listeners;
 
 import com.hackclub.hccore.HCCorePlugin;
 import com.hackclub.hccore.PlayerData;
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import org.bukkit.Bukkit;
@@ -58,11 +59,11 @@ public class PlayerListener implements Listener {
         // This code is terrible, don't @ me
         
         PlayerData data = this.plugin.getDataManager().getData(event.getPlayer());
-        org.md_5.bungee.api.ChatColor messageColor = data.getMessageColor().asBungee();
-        org.md_5.bunege.api.ChatColor nameColor = data.getNameColor().asBungee();
+        net.md_5.bungee.api.ChatColor messageColor = data.getMessageColor().asBungee();
+        net.md_5.bungee.api.ChatColor nameColor = data.getNameColor().asBungee();
         
         // [[NAME, color: data.displayColor, hoverText: Player.getName()]] » [[MESSAGE, color: data.messageColor]]
-        ComponentBuilder replacementMessage = new ComponentBuilder(
+        BaseComponent[] replacementMessage = new ComponentBuilder(
             event.getPlayer().getDisplayName()).color(nameColor).event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(event.getPlayer().getName()).create()))
             .append(" » ").color(ChatColor.GOLD.asBungee())
             .append(ChatColor.translateAlternateColorCodes('&', event.getMessage())).color(messageColor)
