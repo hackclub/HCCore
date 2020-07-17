@@ -58,19 +58,19 @@ public class PlayerListener implements Listener {
         // This code is terrible, don't @ me
         
         PlayerData data = this.plugin.getDataManager().getData(event.getPlayer());
-        ChatColor messageColor = data.getMessageColor();
-        ChatColor nameColor = data.getNameColor();
+        ChatColor messageColor = data.getMessageColor().asBungee();
+        ChatColor nameColor = data.getNameColor().asBungee();
         
         // [[NAME, color: data.displayColor, hoverText: Player.getName()]] » [[MESSAGE, color: data.messageColor]]
         ComponentBuilder replacementMessage = new ComponentBuilder(
             event.getPlayer().getDisplayName()).color(nameColor).event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(event.getPlayer().getName()).create()))
-            .append(" » ").color(ChatColor.GOLD)
-            .append(playerColor + ChatColor.translateAlternateColorCodes('&', event.getMessage())).color(messageColor)
+            .append(" » ").color(ChatColor.GOLD.asBungee())
+            .append(ChatColor.translateAlternateColorCodes('&', event.getMessage())).color(messageColor)
             .create();
         
         //I'm like 99% sure there's some bug somewhere in there but /shrug
         
-        Server.Spigot().broadcast(replacementMessage);
+        Spigot().broadcast(replacementMessage);
         
         event.setCancelled(true);
     }
