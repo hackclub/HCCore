@@ -1,6 +1,8 @@
 package com.hackclub.hccore.listeners;
 
 import com.hackclub.hccore.HCCorePlugin;
+import com.hackclub.hccore.PlayerData;
+import com.hackclub.hccore.events.player.PlayerAFKStatusChangeEvent;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.World.Environment;
@@ -28,9 +30,27 @@ public class SleepListener implements Listener {
     }
 
     @EventHandler
+    public void onPlayerAFKStatusChange(final PlayerAFKStatusChangeEvent event) {
+        // Wake the player up if they become AFK while sleeping
+        Player player = event.getPlayer();
+        if (event.getNewValue() && player.isSleeping()) {
+            player.wakeup(true);
+            player.sendMessage(ChatColor.RED + "You can’t sleep while you’re AFK.");
+        }
+    }
+
+    @EventHandler
     public void onPlayerBedEnter(final PlayerBedEnterEvent event) {
         // Ignore unsuccessful attempts to sleep
         if (event.getBedEnterResult() != PlayerBedEnterEvent.BedEnterResult.OK) {
+            return;
+        }
+
+        // Only allow active players to sleep
+        PlayerData data = this.plugin.getDataManager().getData(event.getPlayer());
+        if (data.isAfk()) {
+            event.setCancelled(true);
+            event.getPlayer().sendMessage(ChatColor.RED + "You can’t sleep while you’re AFK.");
             return;
         }
 
@@ -117,7 +137,7 @@ public class SleepListener implements Listener {
                 .scheduleSyncDelayedTask(this.plugin, new Runnable() {
                     @Override
                     public void run() {
-                        if (world.getPlayers().size() == 0) {
+                        if (world.getPlayers().size() == 0 || getSleepingPlayers(world) == 0) {
                             return;
                         }
 
@@ -158,7 +178,15 @@ public class SleepListener implements Listener {
     }
 
     private int getMinSleepingPlayersNeeded(World world) {
-        return (int) Math.ceil(world.getPlayers().size()
+        // Get the number of AFK players
+        int afkPlayersCount = 0;
+        for (Player player : world.getPlayers()) {
+            PlayerData playerData = this.plugin.getDataManager().getData(player);
+            if (playerData.isAfk()) {
+                afkPlayersCount++;
+            }
+        }
+        return (int) Math.ceil((world.getPlayers().size() - afkPlayersCount)
                 * this.plugin.getConfig().getDouble("settings.skip-sleep-threshold"));
     }
 }
