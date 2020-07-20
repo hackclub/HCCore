@@ -53,16 +53,13 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onAsyncPlayerChat(final AsyncPlayerChatEvent event) {
-        //event.setFormat(ChatColor.WHITE + "%s " + ChatColor.GOLD + "» " + ChatColor.GRAY + "%s");
     
         // Apply the player's chat color to the message and translate color codes
-        // This code is terrible, don't @ me
         
         PlayerData data = this.plugin.getDataManager().getData(event.getPlayer());
         net.md_5.bungee.api.ChatColor messageColor = data.getMessageColor().asBungee();
         net.md_5.bungee.api.ChatColor nameColor = data.getNameColor().asBungee();
         
-        // [[NAME, color: data.displayColor, hoverText: Player.getName()]] » [[MESSAGE, color: data.messageColor]]
         BaseComponent[] replacementMessage = new ComponentBuilder(
             event.getPlayer().getDisplayName()).color(nameColor).event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(event.getPlayer().getName()).create()))
             .append(" » ").color(ChatColor.GOLD.asBungee())
