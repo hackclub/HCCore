@@ -60,13 +60,11 @@ public class PlayerListener implements Listener {
         net.md_5.bungee.api.ChatColor messageColor = data.getMessageColor().asBungee();
         net.md_5.bungee.api.ChatColor nameColor = data.getNameColor().asBungee();
         
-        BaseComponent[] replacementMessage = new ComponentBuilder(
-            event.getPlayer().getDisplayName()).color(nameColor).event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(event.getPlayer().getName()).create()))
-            .append(" » ").color(ChatColor.GOLD.asBungee())
-            .append(ChatColor.translateAlternateColorCodes('&', event.getMessage())).color(messageColor)
-            .create();
+        BaseComponent nameComponent = new BaseComponent(event.getPlayer().getDisplayName()).setColor(nameColor).setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(event.getPlayer().getName()).create()))
+        BaseComponent arrowComponent = new BaseComponent(" » ").setColor(ChatColor.GOLD.asBungee())
+        BaseComponent playerChatComponent = new BaseComponent(ChatColor.translateAlternateColorCode('&', event.getMessage()).color(messageColor))
         
-        Bukkit.getServer().spigot().broadcast(replacementMessage);
+        Bukkit.getServer().spigot().broadcast(nameComponent, arrowComponent, playerChatComponent);
         event.setCancelled(true);
     }
 
