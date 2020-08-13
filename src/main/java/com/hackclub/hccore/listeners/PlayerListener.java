@@ -6,7 +6,6 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.HoverEvent;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -71,7 +70,7 @@ public class PlayerListener implements Listener {
         TextComponent playerChatComponent = new TextComponent(ChatColor.translateAlternateColorCodes('&', event.getMessage()));
         playerChatComponent.setColor(messageColor);
         
-        Bukkit.getServer().spigot().broadcast(nameComponent, arrowComponent, playerChatComponent);
+        this.plugin.getServer().spigot().broadcast(nameComponent, arrowComponent, playerChatComponent);
         event.setCancelled(true);
     }
 
