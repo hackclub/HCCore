@@ -2,6 +2,10 @@ package com.hackclub.hccore.listeners;
 
 import com.hackclub.hccore.HCCorePlugin;
 import com.hackclub.hccore.PlayerData;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -49,13 +53,19 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onAsyncPlayerChat(final AsyncPlayerChatEvent event) {
-        event.setFormat(ChatColor.WHITE + "%s " + ChatColor.GOLD + "» " + ChatColor.GRAY + "%s");
-
+    
         // Apply the player's chat color to the message and translate color codes
+        
         PlayerData data = this.plugin.getDataManager().getData(event.getPlayer());
-        ChatColor playerColor = data.getMessageColor();
-        event.setMessage(
-                playerColor + ChatColor.translateAlternateColorCodes('&', event.getMessage()));
+        net.md_5.bungee.api.ChatColor messageColor = data.getMessageColor().asBungee();
+        net.md_5.bungee.api.ChatColor nameColor = data.getNameColor().asBungee();
+        
+        BaseComponent nameComponent = new BaseComponent(event.getPlayer().getDisplayName()).setColor(nameColor).setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(event.getPlayer().getName()).create()))
+        BaseComponent arrowComponent = new BaseComponent(" » ").setColor(ChatColor.GOLD.asBungee())
+        BaseComponent playerChatComponent = new BaseComponent(ChatColor.translateAlternateColorCode('&', event.getMessage()).color(messageColor))
+        
+        Bukkit.getServer().spigot().broadcast(nameComponent, arrowComponent, playerChatComponent);
+        event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.LOWEST) // Runs foremost
