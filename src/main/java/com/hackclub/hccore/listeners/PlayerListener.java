@@ -2,6 +2,10 @@ package com.hackclub.hccore.listeners;
 
 import com.hackclub.hccore.HCCorePlugin;
 import com.hackclub.hccore.PlayerData;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.HoverEvent;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -49,13 +53,25 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onAsyncPlayerChat(final AsyncPlayerChatEvent event) {
-        event.setFormat(ChatColor.WHITE + "%s " + ChatColor.GOLD + "» " + ChatColor.GRAY + "%s");
-
+    
         // Apply the player's chat color to the message and translate color codes
+        
         PlayerData data = this.plugin.getDataManager().getData(event.getPlayer());
-        ChatColor playerColor = data.getMessageColor();
-        event.setMessage(
-                playerColor + ChatColor.translateAlternateColorCodes('&', event.getMessage()));
+        net.md_5.bungee.api.ChatColor messageColor = data.getMessageColor().asBungee();
+        net.md_5.bungee.api.ChatColor nameColor = data.getNameColor().asBungee();
+        
+        TextComponent nameComponent = new TextComponent(event.getPlayer().getDisplayName());
+        nameComponent.setColor(nameColor);
+        nameComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(event.getPlayer().getName()).create()));
+        
+        TextComponent arrowComponent = new TextComponent(" » ");
+        arrowComponent.setColor(ChatColor.GOLD.asBungee());
+        
+        TextComponent playerChatComponent = new TextComponent(ChatColor.translateAlternateColorCodes('&', event.getMessage()));
+        playerChatComponent.setColor(messageColor);
+        
+        this.plugin.getServer().spigot().broadcast(nameComponent, arrowComponent, playerChatComponent);
+        event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.LOWEST) // Runs foremost
