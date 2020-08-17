@@ -38,3 +38,11 @@ commands:
   upvote:
     description: Appends an upvote to your message
     usage: /upvote [message]
+  thumbsup:
+    description: Appends a Thumbs Up to your message
+    usage: /thumbsup [message]
+  thumbsdown:
+    description: Appends a Thumbs Down to your message
+    usage: /thumbsdown [message]
+  
+
