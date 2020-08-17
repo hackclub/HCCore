@@ -6,14 +6,15 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class ThumbsUpCommand implements CommandExecutor {
-    private static final String thumbsUp = ChatColor.BOLD.toString() + "👍";
+public class AngryCommand implements CommandExecutor {
+    private static final String angry = ChatColor.BOLD.toString() + "ಠ_ಠ";
 
     private final HCCorePlugin plugin;
     
-    public ThumbsUpCommand(HCCorePlugin plugin) {
+    public AngryCommand(HCCorePlugin plugin) {
         this.plugin = plugin;
     }
+
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String alias, String[] args) {
@@ -24,9 +25,9 @@ public class ThumbsUpCommand implements CommandExecutor {
 
         Player player = (Player) sender;
         if (args.length == 0) {
-            player.chat(ThumbsUpCommand.thumbsUp);
+            player.chat(AngryCommand.angry);
         } else {
-            player.chat(String.join(" ", args) + " " + ThumbsUpCommand.thumbsUp);
+            player.chat(String.join(" ", args) + " " + AngryCommand.angry);
         }
 
         return true;

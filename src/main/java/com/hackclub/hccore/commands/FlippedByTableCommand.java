@@ -6,14 +6,15 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class ThumbsDownCommand implements CommandExecutor {
-    private static final String thumbsDown = ChatColor.BOLD.toString() + "👎";
+public class FlippedByTableCommand implements CommandExecutor {
+    private static final String flippedByTable = ChatColor.BOLD.toString() + "ノ┬─┬ノ ︵ (/o°o)/ ";
 
     private final HCCorePlugin plugin;
     
-    public ThumbsDownCommand(HCCorePlugin plugin) {
+    public FlippedByTableCommand(HCCorePlugin plugin) {
         this.plugin = plugin;
     }
+
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String alias, String[] args) {
@@ -24,9 +25,9 @@ public class ThumbsDownCommand implements CommandExecutor {
 
         Player player = (Player) sender;
         if (args.length == 0) {
-            player.chat(ThumbsDownCommand.thumbsDown);
+            player.chat(FlippedByTableCommand.flippedByTable);
         } else {
-            player.chat(String.join(" ", args) + " " + ThumbsDownCommand.thumbsDown);
+            player.chat(String.join(" ", args) + " " + FlippedByTableCommand.flippedByTable);
         }
 
         return true;
