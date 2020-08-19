@@ -7,7 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class FlippedByTableCommand implements CommandExecutor {
-    private static final String flippedByTable = ChatColor.BOLD.toString() + "ノ┬─┬ノ ︵ (/o°o)/ ";
+    private static final String flippedByTable = ChatColor.BOLD.toString() + "ノ┬─┬ノ ︵ (\\o°o)\\";
 
     private final HCCorePlugin plugin;
     
