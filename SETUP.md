@@ -1,10 +1,8 @@
-# SETUP
-
-## Setup
+# Setup
 
 For the purposes of this guide we'll designate the `~/minecraft-server` and `~/HCCore` directories for the locations of the minecraft (paper) server, and the HCCore source code. Of course, you don't have to put the files in the same place
 
-### 1. Start Minecraft Paper Server
+## 1. Start Minecraft Paper Server
 
 [Download Paper](https://papermc.io/downloads) (build #261 at the time of writing) and place the resulting jar to `~/minecraft-server`
 
@@ -24,7 +22,7 @@ You'll notice other files and folders like `folder`, `whitelist.json`, etc. are 
 
 To join the server, launch your Minecraft client, and click `[Direct Connection]` -> and enter `localhost` to 'Server Address'. Notice that the `/color` command doesn't work (it will work once we add the HCCore plugin)
 
-#### 2. Download and Build HCCore
+## 2. Download and Build HCCore
 
 Ensure [maven](https://maven.apache.org/download.cgi) is installed
 
@@ -34,7 +32,7 @@ cd HCCore
 mvn package
 ```
 
-#### 3. Copy the Built HCCore Plugin to the Minecraft Paper Server
+## 3. Copy the Built HCCore Plugin to the Minecraft Paper Server
 
 ```sh
 cp ~/HCCore/target/HCCore.jar ~/minecraft-server/plugins
@@ -69,7 +67,7 @@ BOOM! Now we can connect with our Minecraft client and test/use the plugin
 -> /color <chatlname> [color]
 ```
 
-#### 4. Install BileTools
+## 4. Install BileTools
 
 We can use BileTools to hot-reload our plugin. BileTools looks for changes in the directory, and when it detects that a `.jar` file has changed, it will reload that plugin
 
