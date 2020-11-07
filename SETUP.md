@@ -14,7 +14,7 @@ Start the server and check that it works properly
 java -Xms2G -Xmx2G -jar paper-261.jar --nogui
 ```
 
-Something like the following should be outputed to the console
+Something like the following should be outputted to the console
 
 ```txt
 This server is running Paper version git-Paper-261 (MC: 1.16.4) (Implementing API version 1.16.4-R0.1-SNAPSHOT)
@@ -40,7 +40,7 @@ mvn package
 cp ~/HCCore/target/HCCore.jar ~/minecraft-server/plugins
 ```
 
-On launch, you should recieve an error:
+On launch, you should receive an error:
 
 ```txt
 [00:33:58 ERROR]: Could not load 'plugins/HCCore.jar' in folder 'plugins'
