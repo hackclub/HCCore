@@ -64,7 +64,7 @@ BOOM! Now we can connect with our Minecraft client and test/use the plugin
 ```text
 -> wilde_fox joined the game
 /color
--> /color <chatlname> [color]
+-> /color <chat|name> [color]
 ```
 
 ## 4. Install BileTools
