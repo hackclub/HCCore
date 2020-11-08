@@ -157,16 +157,16 @@ public class AdvancementListener implements Listener {
             AdvancementFrameType frameType = display.e();
             Object[] args = null; // This is bad practice
             switch (frameType.a()) {
-                case "task":
-                default:
-                    args = new Object[] {"made", "advancement", ChatColor.GREEN.asBungee()};
-                    break;
                 case "goal":
                     args = new Object[] {"reached", "goal", ChatColor.GREEN.asBungee()};
                     break;
                 case "challenge":
                     args = new Object[] {"completed", "challenge",
                             ChatColor.DARK_PURPLE.asBungee()};
+                    break;
+                case "task":
+                default:
+                    args = new Object[] {"made", "advancement", ChatColor.GREEN.asBungee()};
                     break;
             }
 

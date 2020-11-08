@@ -141,8 +141,8 @@ public class PlayerData {
             this.dataFile.getParentFile().mkdirs();
 
             if (!this.dataFile.exists()) {
-                this.plugin.getLogger().log(Level.INFO,
-                        "No data file found for " + this.player.getName() + ", creating…");
+                String str = String.format("No data file found for %1$s, creating…", this.player.getName())
+                this.plugin.getLogger().log(Level.INFO, str);
                 this.dataFile.createNewFile();
                 this.save();
             }

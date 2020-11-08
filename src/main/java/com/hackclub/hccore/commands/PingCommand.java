@@ -63,7 +63,7 @@ public class PingCommand implements TabExecutor {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command cmd, String alias,
             String[] args) {
-        List<String> completions = new ArrayList<String>();
+        List<String> completions = new ArrayList<String>(); //NOSONAR
         if (args.length == 1) {
             for (Player player : sender.getServer().getOnlinePlayers()) {
                 if (StringUtil.startsWithIgnoreCase(player.getName(), args[0])) {

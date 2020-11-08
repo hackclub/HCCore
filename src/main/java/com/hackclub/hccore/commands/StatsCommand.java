@@ -97,7 +97,7 @@ public class StatsCommand implements TabExecutor {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command cmd, String alias,
             String[] args) {
-        List<String> completions = new ArrayList<String>();
+        List<String> completions = new ArrayList<String>(); // NOSONAR
 
         switch (args.length) {
             case 1:
@@ -122,6 +122,10 @@ public class StatsCommand implements TabExecutor {
                         completions.add(statistic.name().toLowerCase());
                     }
                 }
+                break;
+            default: { // NOSONAR
+
+            }
         }
 
         Collections.sort(completions);

@@ -38,7 +38,7 @@ public class LocCommand implements TabExecutor {
         String locationName = String.join("_", Arrays.copyOfRange(args, 1, args.length));
         switch (args[0].toLowerCase()) {
             // /loc del <name>
-            case "del": {
+            case "del": { // NOSONAR
                 if (args.length < 2) {
                     sender.sendMessage(ChatColor.RED + "Please specify the location name");
                     break;
@@ -55,7 +55,7 @@ public class LocCommand implements TabExecutor {
                 break;
             }
             // /loc get <name>
-            case "get": {
+            case "get": { // NOSONAR
                 if (args.length < 2) {
                     sender.sendMessage(ChatColor.RED + "Please specify the location name");
                     break;
@@ -112,7 +112,7 @@ public class LocCommand implements TabExecutor {
                 break;
             }
             // /loc save <name>
-            case "save": {
+            case "save": { // NOSONAR
                 if (args.length < 2) {
                     sender.sendMessage(ChatColor.RED + "Please specify the location name");
                     break;
@@ -131,7 +131,7 @@ public class LocCommand implements TabExecutor {
                 break;
             }
             // /loc share <name> <player>
-            case "share": {
+            case "share": { // NOSONAR
                 if (args.length < 3) {
                     sender.sendMessage(ChatColor.RED
                             + "Please specify the location name and the player you want to share it with");
@@ -194,6 +194,9 @@ public class LocCommand implements TabExecutor {
                     }
                 }
                 break;
+            }
+            default: { // NOSONAR
+
             }
         }
 

@@ -2,10 +2,6 @@ package com.hackclub.hccore.listeners;
 
 import com.hackclub.hccore.HCCorePlugin;
 import com.hackclub.hccore.PlayerData;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.chat.HoverEvent;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -18,6 +14,9 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 
 public class PlayerListener implements Listener {
     private final HCCorePlugin plugin;
@@ -53,23 +52,23 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onAsyncPlayerChat(final AsyncPlayerChatEvent event) {
-    
+
         // Apply the player's chat color to the message and translate color codes
-        
+
         PlayerData data = this.plugin.getDataManager().getData(event.getPlayer());
         net.md_5.bungee.api.ChatColor messageColor = data.getMessageColor().asBungee();
         net.md_5.bungee.api.ChatColor nameColor = data.getNameColor().asBungee();
-        
+
         TextComponent nameComponent = new TextComponent(event.getPlayer().getDisplayName());
         nameComponent.setColor(nameColor);
         nameComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(event.getPlayer().getName()).create()));
-        
+
         TextComponent arrowComponent = new TextComponent(" » ");
         arrowComponent.setColor(ChatColor.GOLD.asBungee());
-        
+
         TextComponent playerChatComponent = new TextComponent(ChatColor.translateAlternateColorCodes('&', event.getMessage()));
         playerChatComponent.setColor(messageColor);
-        
+
         this.plugin.getServer().spigot().broadcast(nameComponent, arrowComponent, playerChatComponent);
         event.setCancelled(true);
     }
