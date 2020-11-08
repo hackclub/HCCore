@@ -2,9 +2,20 @@ plugins {
     id 'java'
     id 'application'
     id 'com.github.johnrengelman.shadow' version '6.1.0'
+
+    // NullAway
+    // id 'net.ltgt.errorprone' version '1.3.0'
+
+    // id 'pmd'
+
+    // id 'com.github.spotbugs' version "4.6.0"
+
+    // id 'com.uber.infer.java'
+
+    // id 'checkstyle'
 }
 
-mainClassName = "com.hackclub.hccore.HCCorePluginJava"
+mainClassName = 'com.hackclub.hccore.HCCorePluginJava'
 
 shadowJar {
    archiveBaseName.set('HCCore-Shadow')
@@ -13,23 +24,35 @@ shadowJar {
 }
 
 processResources {
-    expand(name: rootProject.name, version: "1.0.0")
+    expand(name: rootProject.name, version: '1.0.0')
 }
+
+// import net.ltgt.gradle.errorprone.CheckSeverity
+
+// tasks.withType(JavaCompile) {
+//   // remove the if condition if you want to run NullAway on test code
+//   if (!name.toLowerCase().contains("test")) {
+//     options.errorprone {
+//       check("NullAway", CheckSeverity.ERROR)
+//       option("NullAway:AnnotatedPackages", "com.uber")
+//     }
+//   }
+// }
 
 repositories {
     jcenter()
 
     // AdvancementCreator
-    maven { url "https://jitpack.io" }
+    maven { url 'https://jitpack.io' }
 
     // Bukkit
     maven { url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
 
     // NBT-API
-    maven { url "https://repo.codemc.org/repository/maven-public/" }
+    maven { url 'https://repo.codemc.org/repository/maven-public/' }
 
     // ProtoLib, org.spigotmc:spigot:1.16
-    maven { url "https://repo.dmulloy2.net/nexus/repository/public/" }
+    maven { url 'https://repo.dmulloy2.net/nexus/repository/public/' }
 }
 
 dependencies {
@@ -40,4 +63,10 @@ dependencies {
     compileOnly 'com.comphenix.protocol:ProtocolLib:4.5.1'
     compileOnly 'org.spigotmc:spigot-api:1.16.1-R0.1-SNAPSHOT'
     compileOnly 'org.spigotmc:spigot:1.16.1-R0.1-SNAPSHOT'
+
+    // NullAway
+    // annotationProcessor 'com.uber.nullaway:nullaway:0.8.0'
+    // compileOnly "com.google.code.findbugs:jsr305:3.0.2"
+    // errorprone "com.google.errorprone:error_prone_core:2.4.0"
+    // errorproneJavac "com.google.errorprone:javac:9+181-r4173-1"
 }
