@@ -1,0 +1,50 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build plugin",
+      "type": "shell",
+      "command": "mvn -B install",
+      "group": "build",
+      "presentation": {
+        "group": "dev"
+      }
+    },
+    {
+      "label": "Copy built plugin to server",
+      "type": "shell",
+      "command": "cp",
+      "args": [
+        "${workspaceRoot}/target/HCCore.jar",
+        "$HOME/server/plugins"
+      ],
+      "group": "build",
+      "presentation": {
+        "group": "dev"
+      }
+    },
+    {
+      "label": "Install",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "Build plugin",
+        "Copy built plugin to server"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "Start server",
+      "type": "shell",
+      "command": "./start.sh",
+      "options": {
+        "cwd": "${env:HOME}/server/"
+      },
+      "presentation": {
+        "group": "dev"
+      }
+    }
+  ]
+}

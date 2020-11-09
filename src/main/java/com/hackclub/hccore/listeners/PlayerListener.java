@@ -2,9 +2,14 @@ package com.hackclub.hccore.listeners;
 
 import com.hackclub.hccore.HCCorePlugin;
 import com.hackclub.hccore.PlayerData;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.HoverEvent;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -48,16 +53,28 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onAsyncPlayerChat(final AsyncPlayerChatEvent event) {
-        event.setFormat(ChatColor.WHITE + "%s " + ChatColor.GOLD + "» " + ChatColor.GRAY + "%s");
-
+    
         // Apply the player's chat color to the message and translate color codes
+        
         PlayerData data = this.plugin.getDataManager().getData(event.getPlayer());
-        ChatColor playerColor = data.getMessageColor();
-        event.setMessage(
-                playerColor + ChatColor.translateAlternateColorCodes('&', event.getMessage()));
+        net.md_5.bungee.api.ChatColor messageColor = data.getMessageColor().asBungee();
+        net.md_5.bungee.api.ChatColor nameColor = data.getNameColor().asBungee();
+        
+        TextComponent nameComponent = new TextComponent(event.getPlayer().getDisplayName());
+        nameComponent.setColor(nameColor);
+        nameComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(event.getPlayer().getName()).create()));
+        
+        TextComponent arrowComponent = new TextComponent(" » ");
+        arrowComponent.setColor(ChatColor.GOLD.asBungee());
+        
+        TextComponent playerChatComponent = new TextComponent(ChatColor.translateAlternateColorCodes('&', event.getMessage()));
+        playerChatComponent.setColor(messageColor);
+        
+        this.plugin.getServer().spigot().broadcast(nameComponent, arrowComponent, playerChatComponent);
+        event.setCancelled(true);
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST) // Runs foremost
     public void onPlayerJoin(final PlayerJoinEvent event) {
         this.plugin.getDataManager().registerPlayer(event.getPlayer());
         // Set the initial active time
@@ -110,7 +127,7 @@ public class PlayerListener implements Listener {
         this.plugin.getDataManager().getData(event.getPlayer()).setLastDamagedAt(0);
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR) // Runs very last
     public void onPlayerQuit(final PlayerQuitEvent event) {
         // NOTE: Title isn't cleared when the player leaves the server
         // event.getPlayer().resetTitle();
