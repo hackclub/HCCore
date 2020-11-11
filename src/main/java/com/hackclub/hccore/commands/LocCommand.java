@@ -137,11 +137,45 @@ public class LocCommand implements TabExecutor {
                             + "Please specify the location name and the player you want to share it with");
                     break;
                 }
+                locationName = args[1];
+                String recipientName = args[2];
+
                 if (!data.getSavedLocations().containsKey(locationName)) {
                     sender.sendMessage(ChatColor.RED + "No location with that name was found");
                     break;
                 }
-                // TODO: Add share functionality
+                Location sendLocation = data.getSavedLocations().get(locationName);
+                // Get the player we're sending to
+                Player recipient = sender.getServer().getPlayer(recipientName);
+                if (recipient == null) {
+                    sender.sendMessage(ChatColor.RED + "No online player with that name was found");
+                    break;
+                }
+                if (recipientName.equals(player.getName())) {
+                    sender.sendMessage(ChatColor.RED + "You can’t share a location with yourself!");
+                    break;
+                }
+                PlayerData recipData = this.plugin.getDataManager().getData(recipient);
+                String shareLocName = player.getName() + " " + locationName;
+
+                if (recipData.getSavedLocations()
+                        .containsKey(player.getName() + ":" + shareLocName)) {
+                    sender.sendMessage(ChatColor.RED + recipientName
+                            + " already has a location called " + shareLocName);
+                    break;
+                }
+
+                String locationString = "(" + sendLocation.getWorld().getName() + " @ "
+                        + sendLocation.getBlockX() + ", " + sendLocation.getBlockY() + ", "
+                        + sendLocation.getBlockZ() + ")";
+
+                player.sendMessage(ChatColor.GREEN
+                        + String.format("Shared %s with %s", locationName, recipientName));
+                recipient.sendMessage(
+                        ChatColor.GREEN + String.format("%s has shared a location: %s (%s)",
+                                player.getName(), locationName, locationString));
+                recipData.getSavedLocations().put(player.getName() + ":" + locationName,
+                        sendLocation);
                 break;
             }
             default:
