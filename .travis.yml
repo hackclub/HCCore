@@ -4,10 +4,10 @@ install: true
 script:
   - wget -O BuildTools.jar https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar
   - java -jar BuildTools.jar --rev 1.16.1 > /dev/null
-  - mvn clean package
+  - gradle build
 cache:
   directories:
-    - "$HOME/.m2"
+    - "$HOME/.gradle"
     - "$HOME/BuildData"
     - "$HOME/Bukkit"
     - "$HOME/CraftBukkit"
