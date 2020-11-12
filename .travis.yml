@@ -4,7 +4,7 @@ install: true
 script:
   - wget -O BuildTools.jar https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar
   - java -jar BuildTools.jar --rev 1.16.1 > /dev/null
-  - ./gradlew build --scan -s
+  - yes | ./gradlew build -s
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
