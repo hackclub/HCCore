@@ -18,6 +18,7 @@ processResources {
 
 repositories {
     jcenter()
+    mavenCentral()
 
     // AdvancementCreator
     maven { url "https://jitpack.io" }
