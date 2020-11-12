@@ -2,10 +2,6 @@ package com.hackclub.hccore.listeners;
 
 import com.hackclub.hccore.HCCorePlugin;
 import com.hackclub.hccore.PlayerData;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.chat.HoverEvent;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -18,6 +14,9 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 
 public class PlayerListener implements Listener {
     private final HCCorePlugin plugin;
@@ -53,24 +52,27 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onAsyncPlayerChat(final AsyncPlayerChatEvent event) {
-    
+
         // Apply the player's chat color to the message and translate color codes
-        
+
         PlayerData data = this.plugin.getDataManager().getData(event.getPlayer());
         net.md_5.bungee.api.ChatColor messageColor = data.getMessageColor().asBungee();
         net.md_5.bungee.api.ChatColor nameColor = data.getNameColor().asBungee();
-        
+
         TextComponent nameComponent = new TextComponent(event.getPlayer().getDisplayName());
         nameComponent.setColor(nameColor);
-        nameComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(event.getPlayer().getName()).create()));
-        
+        nameComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                new ComponentBuilder(event.getPlayer().getName()).create()));
+
         TextComponent arrowComponent = new TextComponent(" » ");
         arrowComponent.setColor(ChatColor.GOLD.asBungee());
-        
-        TextComponent playerChatComponent = new TextComponent(ChatColor.translateAlternateColorCodes('&', event.getMessage()));
+
+        TextComponent playerChatComponent =
+                new TextComponent(ChatColor.translateAlternateColorCodes('&', event.getMessage()));
         playerChatComponent.setColor(messageColor);
-        
-        this.plugin.getServer().spigot().broadcast(nameComponent, arrowComponent, playerChatComponent);
+
+        this.plugin.getServer().spigot().broadcast(nameComponent, arrowComponent,
+                playerChatComponent);
         event.setCancelled(true);
     }
 
@@ -104,8 +106,7 @@ public class PlayerListener implements Listener {
                 message = ChatColor.RED + ChatColor.BOLD.toString() + "You’ve been banned :(\n\n"
                         + ChatColor.RESET + ChatColor.WHITE
                         + "If you believe this was a mistake, please DM " + ChatColor.AQUA
-                        + "@ifvictr " + ChatColor.WHITE + "or " + ChatColor.AQUA + "@Luke "
-                        + ChatColor.WHITE + "on Slack.";
+                        + "@zane " + ChatColor.WHITE + "on Slack.";
                 break;
             case KICK_FULL:
                 message = ChatColor.RED + ChatColor.BOLD.toString() + "The server is full!\n\n"
@@ -116,8 +117,7 @@ public class PlayerListener implements Listener {
                 message = ChatColor.RED + ChatColor.BOLD.toString() + "You’re not whitelisted!\n\n"
                         + ChatColor.RESET + ChatColor.WHITE + "Join " + ChatColor.AQUA
                         + "#minecraft " + ChatColor.WHITE + "on Slack and ping " + ChatColor.AQUA
-                        + "@ifvictr " + ChatColor.WHITE + "or " + ChatColor.AQUA + "@Luke "
-                        + ChatColor.WHITE + "to be added.";
+                        + "@zane " + ChatColor.WHITE + "to be added.";
                 break;
             default:
                 break;
