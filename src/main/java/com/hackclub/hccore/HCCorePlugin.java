@@ -51,10 +51,6 @@ public class HCCorePlugin extends JavaPlugin {
         // Create config
         this.saveDefaultConfig();
 
-
-
-
-
         // Load managers
         this.dataManager = new DataManager(this);
         this.protocolManager = ProtocolLibrary.getProtocolManager();

@@ -133,11 +133,7 @@ public class PlayerListener implements Listener {
                     ChatColor.WHITE +
                     "If you believe this was a mistake, please DM " +
                     ChatColor.AQUA +
-                    "@ifvictr " +
-                    ChatColor.WHITE +
-                    "or " +
-                    ChatColor.AQUA +
-                    "@Luke " +
+                    "@zane " +
                     ChatColor.WHITE +
                     "on Slack.";
                 break;
@@ -163,11 +159,7 @@ public class PlayerListener implements Listener {
                     ChatColor.WHITE +
                     "on Slack and ping " +
                     ChatColor.AQUA +
-                    "@ifvictr " +
-                    ChatColor.WHITE +
-                    "or " +
-                    ChatColor.AQUA +
-                    "@Luke " +
+                    "@zane " +
                     ChatColor.WHITE +
                     "to be added.";
                 break;
