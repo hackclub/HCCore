@@ -35,6 +35,7 @@ public class ChatListener implements Listener {
 
     @EventHandler
     public void onChatChange(final AsyncPlayerChatEvent event) {
+        // TODO: 'player' includes tokens for changing color, etc.
         String player = event.getPlayer().getDisplayName();
         String text = event.getMessage();
 
