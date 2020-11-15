@@ -20,6 +20,7 @@ import com.hackclub.hccore.commands.UpvoteCommand;
 import com.hackclub.hccore.listeners.AFKListener;
 import com.hackclub.hccore.listeners.AdvancementListener;
 import com.hackclub.hccore.listeners.BeehiveInteractionListener;
+import com.hackclub.hccore.listeners.ChatListener;
 import com.hackclub.hccore.listeners.NameChangeListener;
 import com.hackclub.hccore.listeners.PlayerListener;
 import com.hackclub.hccore.listeners.SleepListener;
@@ -36,6 +37,8 @@ import hu.trigary.advancementcreator.Advancement;
 import hu.trigary.advancementcreator.AdvancementFactory;
 import hu.trigary.advancementcreator.shared.ItemObject;
 import net.md_5.bungee.api.chat.TextComponent;
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
 
 public class HCCorePlugin extends JavaPlugin {
     private DataManager dataManager;
@@ -43,6 +46,24 @@ public class HCCorePlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        String target = "localhost:50051";
+        ManagedChannel channel = ManagedChannelBuilder.forTarget(target)
+            .usePlaintext()
+            .build();
+
+        GrpcClient grpcClient = new GrpcClient(channel);
+
+        grpcClient.greet("AWOOOO :P");
+
+
+
+
+
+
+
+
+
+
         // Disable default advancement announcements
         for (World world : this.getServer().getWorlds()) {
             world.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
@@ -73,6 +94,7 @@ public class HCCorePlugin extends JavaPlugin {
         this.getServer().getPluginManager().registerEvents(new AFKListener(this), this);
         this.getServer().getPluginManager().registerEvents(new BeehiveInteractionListener(this),
                 this);
+        this.getServer().getPluginManager().registerEvents(new ChatListener(this), this);
         this.getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
         this.getServer().getPluginManager().registerEvents(new SleepListener(this), this);
 
