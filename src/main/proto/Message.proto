@@ -7,12 +7,16 @@ option java_outer_classname = "HelloWorldProto";
 package helloworld;
 
 service Messenger {
-  // Sends a greeting
-  rpc SendMessage(HelloRequest) returns (HelloReply) {}
+  rpc SendSlackMessage(SlackMessageRequest) returns (SlackMessageReply) {}
 }
 
-// The request message containing the user's name.
-message HelloRequest { string name = 1; }
+message SlackMessageRequest {
+  string name = 1;
+  string player = 2;
+  string text = 3;
+}
 
-// The response message containing the greetings
-message HelloReply { string message = 1; }
+message SlackMessageReply {
+  string message = 1;
+  int32 status = 2;
+}

@@ -58,14 +58,33 @@ public class GrpcClient {
   }
 
   public void greet(String name) {
-    HelloRequest request = HelloRequest.newBuilder().setName(name).build();
-    HelloReply response;
+    SlackMessageRequest request = SlackMessageRequest.newBuilder().setName(name).build();
+    SlackMessageReply response;
     try {
-      response = blockingStub.sendMessage(request);
+      response = blockingStub.sendSlackMessage(request);
     } catch (StatusRuntimeException e) {
       logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
       return;
     }
     logger.info("Greeting: " + response.getMessage());
+  }
+
+  //
+  public void sendToSlackWrapper(String username, String text) {
+     SlackMessageRequest request = SlackMessageRequest
+      .newBuilder()
+      .setPlayer(username)
+      .setText(text)
+      .build();
+
+      SlackMessageReply response;
+
+      try {
+        response = blockingStub.sendSlackMessage(request);
+
+
+      } catch (StatusRuntimeException e) {
+         logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
+      }
   }
 }

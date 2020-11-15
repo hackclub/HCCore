@@ -23,17 +23,18 @@ public class ChatListener implements Listener {
             .usePlaintext()
             .build();
 
-        GrpcClient client = new GrpcClient(channel);
-        this.grpcClient = client;
+        this.grpcClient = new GrpcClient(channel);
     }
 
     @EventHandler
     public void onChatChange(final AsyncPlayerChatEvent event) {
-        String msg = event.getMessage();
         String player = event.getPlayer().getDisplayName();
+        String text = event.getMessage();
 
-        this.grpcClient.greet(player + ": '" + msg + "'");
+        // this.grpcClient.greet(player + ": '" + msg + "'");
 
-        this.plugin.getLogger().info(player + ": '" + msg + "'");
+        this.plugin.getLogger().info(player + ": '" + text + "'");
+
+        this.grpcClient.sendToSlackWrapper(player, text);
     }
 }

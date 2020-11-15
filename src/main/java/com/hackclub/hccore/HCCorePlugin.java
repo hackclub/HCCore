@@ -46,24 +46,6 @@ public class HCCorePlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        String target = "localhost:50051";
-        ManagedChannel channel = ManagedChannelBuilder.forTarget(target)
-            .usePlaintext()
-            .build();
-
-        GrpcClient grpcClient = new GrpcClient(channel);
-
-        grpcClient.greet("AWOOOO :P");
-
-
-
-
-
-
-
-
-
-
         // Disable default advancement announcements
         for (World world : this.getServer().getWorlds()) {
             world.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
