@@ -54,6 +54,7 @@ dependencies {
     implementation 'com.github.Trigary:AdvancementCreator:v2.0'
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'de.tr7zw:item-nbt-api:2.6.0'
+    implementation 'io.github.cdimascio:dotenv-java:2.2.0'
 
     compileOnly 'com.comphenix.protocol:ProtocolLib:4.5.1'
     compileOnly 'org.spigotmc:spigot-api:1.16.4-R0.1-SNAPSHOT'

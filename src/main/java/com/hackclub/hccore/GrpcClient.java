@@ -46,30 +46,17 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class GrpcClient {
-  private static final Logger logger =
-      Logger.getLogger(GrpcClient.class.getName());
-
+  private final HCCorePlugin plugin;
   private final MessengerGrpc.MessengerBlockingStub blockingStub;
 
-  public GrpcClient(Channel channel) {
-    // 'channel' here is a Channel, not a ManagedChannel, so it is not this
-    // code's responsibility to shut it down.
+  public GrpcClient(HCCorePlugin plugin, Channel channel) {
+    this.plugin = plugin;
+    
+    // 'channel' here is a Channel, not a ManagedChannel
+    // so it is not this code's responsibility to shut it down.
     blockingStub = MessengerGrpc.newBlockingStub(channel);
   }
 
-  public void greet(String name) {
-    SlackMessageRequest request = SlackMessageRequest.newBuilder().setName(name).build();
-    SlackMessageReply response;
-    try {
-      response = blockingStub.sendSlackMessage(request);
-    } catch (StatusRuntimeException e) {
-      logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
-      return;
-    }
-    logger.info("Greeting: " + response.getMessage());
-  }
-
-  //
   public void sendToSlackWrapper(String username, String text) {
      SlackMessageRequest request = SlackMessageRequest
       .newBuilder()
@@ -82,9 +69,9 @@ public class GrpcClient {
       try {
         response = blockingStub.sendSlackMessage(request);
 
-
+        // TODO: check to see if response contains success
       } catch (StatusRuntimeException e) {
-         logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
+         this.plugin.getLogger().log(Level.WARNING, "RPC failed: {0}", e.getStatus());
       }
   }
 }
