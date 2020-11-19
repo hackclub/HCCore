@@ -1,20 +1,13 @@
 package com.hackclub.hccore.listeners;
 
 import com.hackclub.hccore.HCCorePlugin;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.minecraft.server.v1_16_R1.AdvancementDisplay;
-import net.minecraft.server.v1_16_R1.AdvancementFrameType;
-import net.minecraft.server.v1_16_R1.IChatBaseComponent;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Statistic;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.advancement.AdvancementProgress;
-import org.bukkit.craftbukkit.v1_16_R1.advancement.CraftAdvancement;
+import org.bukkit.craftbukkit.v1_16_R3.advancement.CraftAdvancement;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -22,6 +15,13 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityToggleGlideEvent;
 import org.bukkit.event.player.PlayerAdvancementDoneEvent;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.minecraft.server.v1_16_R3.AdvancementDisplay;
+import net.minecraft.server.v1_16_R3.AdvancementFrameType;
+import net.minecraft.server.v1_16_R3.IChatBaseComponent;
 
 public class AdvancementListener implements Listener {
     private final HCCorePlugin plugin;
@@ -175,8 +175,9 @@ public class AdvancementListener implements Listener {
             // NOTE: We interface with Minecraft's internal code here. It is unlikely, but
             // possible
             // for it to break in the case of a future upgrade.
-            net.minecraft.server.v1_16_R1.Advancement nmsAdvancement =
-                ((CraftAdvancement) advancement).getHandle();
+            net.minecraft.server.v1_16_R3.Advancement nmsAdvancement =
+                    ((CraftAdvancement) advancement).getHandle();
+
             AdvancementDisplay display = nmsAdvancement.c();
 
             // Ignore hidden advancements (i.e. recipes)
