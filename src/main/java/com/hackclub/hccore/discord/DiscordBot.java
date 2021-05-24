@@ -17,6 +17,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.craftbukkit.v1_16_R3.advancement.CraftAdvancement;
 import org.bukkit.entity.Player;
 import org.bukkit.event.*;
 import org.bukkit.event.Event;

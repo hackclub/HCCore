@@ -22,6 +22,7 @@ import com.hackclub.hccore.commands.StatsCommand;
 import com.hackclub.hccore.commands.TableflipCommand;
 import com.hackclub.hccore.commands.TutorialCommand;
 import com.hackclub.hccore.commands.UpvoteCommand;
+
 import com.hackclub.hccore.listeners.AFKListener;
 import com.hackclub.hccore.listeners.AdvancementListener;
 import com.hackclub.hccore.listeners.BeehiveInteractionListener;
@@ -85,7 +86,7 @@ public class HCCorePlugin extends JavaPlugin {
         this.getCommand("tutorial").setExecutor(new TutorialCommand(this));
         this.getCommand("upvote").setExecutor(new UpvoteCommand(this));
         this.getCommand("discord").setExecutor(new DiscordCommand(this));
-
+        
         // Register event listeners
         this.getServer().getPluginManager().registerEvents(new AdvancementListener(this), this);
         this.getServer().getPluginManager().registerEvents(new AFKListener(this), this);

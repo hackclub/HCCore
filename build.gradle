@@ -51,6 +51,9 @@ dependencies {
     implementation 'net.dv8tion:JDA:4.2.1_265'
 
     compileOnly 'com.comphenix.protocol:ProtocolLib:4.5.1'
-    compileOnly 'org.spigotmc:spigot-api:1.17-R0.1-SNAPSHOT'
-    compileOnly 'org.spigotmc:spigot:1.17-R0.1-SNAPSHOT'
+
+    compileOnly 'org.spigotmc:spigot-api:1.16.4-R0.1-SNAPSHOT'
+    compileOnly 'org.spigotmc:spigot:1.16.4-R0.1-SNAPSHOT'
+
+    compile 'net.dv8tion:JDA:4.2.1_265'
 }
