@@ -1,5 +1,6 @@
 # URL to request form to claim exclusive Hack Club stickers
 claim-stickers-url: "https://example.com/claim-stickers"
+discord-invite-url: "discord.gg/example"
 settings:
   # Time in seconds after which a player will be automatically set to AFK
   auto-afk-time: 600
@@ -9,3 +10,8 @@ settings:
     allowed-radius: 2000
     # Time in seconds a player has to wait before being able to use the command again
     damage-cooldown: 10
+  discord-link:
+    enabled: false
+    bot-token: ""
+    channel-id: 00000000000000
+    bot-prefix: "/"
