@@ -1,13 +1,16 @@
 package com.hackclub.hccore.listeners;
 
 import com.hackclub.hccore.HCCorePlugin;
+import net.minecraft.advancements.AdvancementDisplay;
+import net.minecraft.advancements.AdvancementFrameType;
+import net.minecraft.network.chat.IChatBaseComponent;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Statistic;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.advancement.AdvancementProgress;
-import org.bukkit.craftbukkit.v1_16_R3.advancement.CraftAdvancement;
+import org.bukkit.craftbukkit.v1_17_R1.advancement.CraftAdvancement;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -19,9 +22,6 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.minecraft.server.v1_16_R3.AdvancementDisplay;
-import net.minecraft.server.v1_16_R3.AdvancementFrameType;
-import net.minecraft.server.v1_16_R3.IChatBaseComponent;
 
 public class AdvancementListener implements Listener {
     private final HCCorePlugin plugin;
@@ -101,7 +101,8 @@ public class AdvancementListener implements Listener {
 
         Player player = (Player) event.getEntity();
 
-        // Check the player has flown over 1m miles (1,609,344 km)
+        // Check the player has flown over 1m miles (1,609,344 km)import org.bukkit.craftbukkit.v1_17_R1.advancement.CraftAdvancement;
+
         final int CM_PER_MILE = 160934;
         if (player.getStatistic(Statistic.AVIATE_ONE_CM) <= (1000000 * CM_PER_MILE)) {
             return;
@@ -137,7 +138,7 @@ public class AdvancementListener implements Listener {
         try {
             // NOTE: We interface with Minecraft's internal code here. It is unlikely, but possible
             // for it to break in the case of a future upgrade.
-            net.minecraft.server.v1_16_R3.Advancement nmsAdvancement =
+            net.minecraft.advancements.Advancement nmsAdvancement =
                     ((CraftAdvancement) advancement).getHandle();
             AdvancementDisplay display = nmsAdvancement.c();
 
