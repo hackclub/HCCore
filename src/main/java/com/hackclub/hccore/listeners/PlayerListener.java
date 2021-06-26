@@ -117,7 +117,7 @@ public class PlayerListener implements Listener {
                 message = ChatColor.RED + ChatColor.BOLD.toString() + "You’re not whitelisted!\n\n"
                         + ChatColor.RESET + ChatColor.WHITE + "Join " + ChatColor.AQUA
                         + "#minecraft " + ChatColor.WHITE + "on Slack and ping " + ChatColor.AQUA
-                        + "@zane " + ChatColor.WHITE + "to be added.";
+                        + "@alx or @eli " + ChatColor.WHITE + "to be added.";
                 break;
             default:
                 break;
