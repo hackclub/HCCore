@@ -8,7 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class TutorialCommand implements CommandExecutor {
-    private static final String[] MESSAGE = {ChatColor.RED + "Greetings! Welcome to the Hack Club vanilla Minecraft server!", "You can use /nick to set your nick name and /color to set your chat and name colors", ChatColor.RED + "Rules:", "Be nice.",  "No griefing.", "Don't build within 1000 blocks of spawn.", "If you want to contribute to plugin development head on over to the GitHub: " + ChatColor.RED + "https://github.com/hackclub/HCCore/. ", "Type /tutorial to see this at any time."};
+    private static final String[] MESSAGE = {ChatColor.RED + "Greetings! Welcome to the Hack Club vanilla Minecraft server!", "You can use /nick to set your nick name and /color to set your chat and name colors", ChatColor.RED + "Rules:", "Be nice.",  "No griefing or stealing", "No mods that give an unfair advantage", "Follow Hackclub CoC", "If you want to contribute to plugin development head on over to the GitHub: " + ChatColor.RED + "https://github.com/hackclub/HCCore/. ", "Type /tutorial to see this at any time and /discord to join the Discord!" + ChatColor.BLUE + ChatColor.BOLD + "Also checkout the modded server!"};
 
     private final HCCorePlugin plugin;
 
