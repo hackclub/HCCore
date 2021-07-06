@@ -6,6 +6,12 @@ plugins {
 
 mainClassName = "com.hackclub.hccore.HCCorePluginJava"
 
+compileJava.options.encoding = 'UTF-8'
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
 shadowJar {
    archiveBaseName.set('HCCore-Shadow')
    archiveClassifier.set('')
@@ -31,14 +37,20 @@ repositories {
 
     // ProtoLib, org.spigotmc:spigot:1.16
     maven { url "https://repo.dmulloy2.net/nexus/repository/public/" }
+
+    maven {
+        name 'm2-dv8tion'
+        url 'https://m2.dv8tion.net/releases'
+    }
 }
 
 dependencies {
     implementation 'com.github.Trigary:AdvancementCreator:v2.0'
     implementation 'com.google.code.gson:gson:2.8.6'
-    implementation 'de.tr7zw:item-nbt-api:2.6.0'
+    implementation 'de.tr7zw:item-nbt-api:2.8.0'
+    implementation 'net.dv8tion:JDA:4.2.1_265'
 
     compileOnly 'com.comphenix.protocol:ProtocolLib:4.5.1'
-    compileOnly 'org.spigotmc:spigot-api:1.16.4-R0.1-SNAPSHOT'
-    compileOnly 'org.spigotmc:spigot:1.16.4-R0.1-SNAPSHOT'
+    compileOnly 'org.spigotmc:spigot-api:1.17-R0.1-SNAPSHOT'
+    compileOnly 'org.spigotmc:spigot:1.17-R0.1-SNAPSHOT'
 }
