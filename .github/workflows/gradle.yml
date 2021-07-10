@@ -26,9 +26,9 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew build
     - name: Cache
-    uses: actions/cache@v2.1.6
-    with:
-      # A list of files, directories, and wildcard patterns to cache and restore
-      path: HCCore-Shadow.jar
-      # An explicit key for restoring and saving the cache
-      key: HCCore-Build
+      uses: actions/cache@v2.1.6
+      with:
+        # A list of files, directories, and wildcard patterns to cache and restore
+        path: HCCore-Shadow.jar
+        # An explicit key for restoring and saving the cache
+        key: HCCore-Build
