@@ -36,9 +36,9 @@ import java.util.logging.Level;
 
 public class DiscordBot extends ListenerAdapter implements Listener {
     private JDA jda;
-    private HCCorePlugin plugin;
+    private final HCCorePlugin plugin;
     private TextChannel channel;
-    private String prefix;
+    private final String prefix;
 
     public DiscordBot(HCCorePlugin plugin) {
         this.plugin = plugin;

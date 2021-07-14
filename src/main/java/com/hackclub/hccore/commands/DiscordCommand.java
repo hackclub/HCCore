@@ -20,7 +20,7 @@ import java.util.List;
 
 
 public class DiscordCommand implements CommandExecutor {
-    private HCCorePlugin plugin;
+    private final HCCorePlugin plugin;
 
     public DiscordCommand(HCCorePlugin plugin) {
         this.plugin = plugin;
