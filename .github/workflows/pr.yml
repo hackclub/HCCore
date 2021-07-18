@@ -26,7 +26,7 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew build
     - name: Add SSH key
-      run: mkdir $HOME/.ssh && echo "${{ secrets.SSH_PRIVATE_KEY }}" > $HOME/.ssh/id_rsa
+      run: mkdir $HOME/.ssh && echo "${{ secrets.SSH_PRIVATE_KEY }}" > $HOME/.ssh/id_rsa && ssh-keyscan -H mc.hackclub.com >> ~/.ssh/known_hosts
     - name: Copy jar
       run: scp build/libs/HCCore-Shadow.jar mc.hackclub.com:/home/ubuntu/HCCore-Shadow.jar
     - name: Run reboot script

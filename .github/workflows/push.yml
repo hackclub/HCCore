@@ -1,4 +1,4 @@
-# This workflow will build a Java project with Gradle
+\# This workflow will build a Java project with Gradle
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
 
 name: Java CI with Gradle
@@ -26,7 +26,7 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew build
     - name: Add SSH key
-      run: mkdir $HOME/.ssh && echo "${{ secrets.SSH_PRIVATE_KEY }}" > $HOME/.ssh/id_rsa
+      run: mkdir $HOME/.ssh && echo "${{ secrets.SSH_PRIVATE_KEY }}" > $HOME/.ssh/id_rsa && ssh-keyscan -H mc.hackclub.com >> ~/.ssh/known_hosts
     - name: Copy jar
       run: scp build/libs/HCCore-Shadow.jar mc.hackclub.com:/home/ubuntu/home/minecraft/vanilla/plugins/HCCore-Shadow.jar
     - name: Run reboot script
