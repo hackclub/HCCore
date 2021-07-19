@@ -31,4 +31,9 @@ jobs:
       run: scp build/libs/HCCore-Shadow.jar ubuntu@mc.hackclub.com:/home/ubuntu/home/minecraft/vanilla/plugins/HCCore-Shadow.jar
     - name: Run reboot script
       run: ssh ubuntu@mc.hackclub.com /home/ubuntu/script/reboot-vanilla.sh
+    - name: Upload jar to build artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: HCCore-Shadow.jar
+        path: build/libs/HCCore-Shadow.jar
 
