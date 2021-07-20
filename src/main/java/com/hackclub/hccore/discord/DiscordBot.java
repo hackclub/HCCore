@@ -148,7 +148,7 @@ public class DiscordBot extends ListenerAdapter implements Listener {
     }*/
 
     private String getAvatarUrl(Player player) {
-        return "https://cravatar.eu/helmavatar/" + player.getUniqueId() + ".png";
+        return "https://cravatar.eu/avatar/" + player.getUniqueId() + ".png";
     }
 
     public void close() {
