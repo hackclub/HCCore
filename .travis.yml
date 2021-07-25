@@ -1,29 +1,20 @@
+dist: focal
 language: java
-jdk: openjdk8
+jdk: openjdk16
 install: true
 script:
   - wget -O BuildTools.jar https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar
-  - java -jar BuildTools.jar --rev 1.16.1 > /dev/null
-  - mvn clean package
+  - java -jar BuildTools.jar --rev 1.17 > /dev/null
+  - ./gradlew build -s
+before_cache:
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
 cache:
   directories:
-    - "$HOME/.m2"
+    - "$HOME/.gradle/caches"
+    - "$HOME/.gradle/wrapper"
     - "$HOME/BuildData"
     - "$HOME/Bukkit"
     - "$HOME/CraftBukkit"
     - "$HOME/Spigot"
     - "$HOME/work"
-deploy:
-  - provider: releases
-    api_key:
-      secure: ErgchoYWtI7M7RMpPoH9tAS4p6cznME8YIbJEo4kfjD5d0/BCmocejg6aIY0qb7TdwxrYJua8re07HWOTDB4Glr12sQNnL6sDeQs1deXPPmpplPm8/8yA7fck9elPKTdAuvlZu/f7rBxNCXF+Zpz6b+K0m5ICrKbalBkwnqH6xgSH3Lu91zzkt+ChaWkD9dgwlBPc8KqWwMwXVutOqszHDnqhp14chUpR+KcBz+xYNrMkTbikUl745d6InvAQ3TjfQpxeouYBoOE0WxNi0Wbml+EeO8LGtns1uZQQv1YeLBc8DSdkR7VfJXoWSFjgzfcn0sCPYnvraFIRKflXBH8bJl15LS3FB/8iGjXSX0ea6W4bEWOMya+PiBlEJu2XajaS5bhn/2xSnD+28Umk/9f31mXRBxG9dM/2GNRgiQS+Q8V7ISOPVHk4hVyzcjGNbm962J6nt6FDLDV7la0nQsodecWHDKa4FF9SjhXu3YX017MvzDkFms9nlJE2BI0FWI7TfObZIlLTyJ1p1BvZy6W3nvWuNnOWvwUv5/QExFnOj56sraQJVJnOwJhpkxHtj7aJ8LMeSDzOjwB7V3OaxHcjTrDY2Eua0iayh7O6Tfi8jM59+ucaoffNWpmsNdEQZ+8602258dtV+r/R0LASx2+AP6aVFSte61dvZgoU2eIbnY=
-    file: target/HCCore.jar
-    skip_cleanup: true
-    on:
-      branch: master
-      tags: true
-  - provider: script
-    script: bash scripts/deploy.sh
-    skip_cleanup: true
-    on:
-      branch: master

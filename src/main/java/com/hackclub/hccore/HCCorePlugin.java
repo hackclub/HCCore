@@ -2,6 +2,8 @@ package com.hackclub.hccore;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
@@ -19,6 +21,8 @@ import com.hackclub.hccore.commands.TableflipCommand;
 import com.hackclub.hccore.commands.UpvoteCommand;
 import com.hackclub.hccore.commands.AngryCommand;
 import com.hackclub.hccore.commands.FlippedByTableCommand;
+import com.hackclub.hccore.commands.*;
+import com.hackclub.hccore.discord.DiscordBot;
 import com.hackclub.hccore.listeners.AFKListener;
 import com.hackclub.hccore.listeners.AdvancementListener;
 import com.hackclub.hccore.listeners.BeehiveInteractionListener;
@@ -28,6 +32,9 @@ import com.hackclub.hccore.listeners.SleepListener;
 import com.hackclub.hccore.tasks.AutoAFKTask;
 import com.hackclub.hccore.tasks.CheckAdAstraTask;
 import com.hackclub.hccore.utils.TimeUtil;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.entities.Activity;
 import org.bukkit.GameRule;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -39,9 +46,12 @@ import hu.trigary.advancementcreator.AdvancementFactory;
 import hu.trigary.advancementcreator.shared.ItemObject;
 import net.md_5.bungee.api.chat.TextComponent;
 
+import javax.security.auth.login.LoginException;
+
 public class HCCorePlugin extends JavaPlugin {
     private DataManager dataManager;
     private ProtocolManager protocolManager;
+    private DiscordBot bot;
 
     @Override
     public void onEnable() {
@@ -57,6 +67,11 @@ public class HCCorePlugin extends JavaPlugin {
         this.dataManager = new DataManager(this);
         this.protocolManager = ProtocolLibrary.getProtocolManager();
 
+
+        if (this.getConfig().getBoolean("settings.discord-link.enabled")) {
+            this.bot = new DiscordBot(this);
+        }
+
         // Register commands
         this.getCommand("afk").setExecutor(new AFKCommand(this));
         this.getCommand("color").setExecutor(new ColorCommand(this));
@@ -71,6 +86,7 @@ public class HCCorePlugin extends JavaPlugin {
         this.getCommand("upvote").setExecutor(new UpvoteCommand(this));
         this.getCommand("angry").setExecutor(new AngryCommand(this));
         this.getCommand("flippedbytable").setExecutor(new FlippedByTableCommand(this));
+        this.getCommand("discord").setExecutor(new DiscordCommand(this));
 
         // Register event listeners
         this.getServer().getPluginManager().registerEvents(new AdvancementListener(this), this);
@@ -101,6 +117,8 @@ public class HCCorePlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         this.getDataManager().unregisterAll();
+        this.bot.close();
+        this.bot = null;
     }
 
     public DataManager getDataManager() {
