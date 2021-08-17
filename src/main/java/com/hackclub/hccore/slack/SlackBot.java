@@ -25,16 +25,17 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
-public class SlackBot {
+public class SlackBot implements Listener {
     private HCCorePlugin plugin;
     private SocketModeApp socket;
 
-    public SlackBot(HCCorePlugin plugin) throws IOException, Exception {
+    public SlackBot(HCCorePlugin plugin) throws  Exception {
         this.plugin = plugin;
         App app = new App();
 
@@ -58,7 +59,7 @@ public class SlackBot {
             // System.out.println(text);
             // System.out.println(displayName);
 
-            TextComponent prefixComponent = new TextComponent("[Discord] ");
+            TextComponent prefixComponent = new TextComponent("[Slack] ");
             prefixComponent.setColor(ChatColor.BLUE.asBungee());
 
             TextComponent nameComponent = new TextComponent(displayName);
