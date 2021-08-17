@@ -48,7 +48,13 @@ dependencies {
     implementation 'com.github.Trigary:AdvancementCreator:v2.0'
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'de.tr7zw:item-nbt-api:2.8.0'
-    implementation 'net.dv8tion:JDA:4.2.1_265'
+    // implementation 'net.dv8tion:JDA:4.2.1_265'
+
+    // Slack Java SDK
+    implementation("com.slack.api:bolt-socket-mode:1.10.0")
+    implementation("javax.websocket:javax.websocket-api:1.1")
+    implementation("org.glassfish.tyrus.bundles:tyrus-standalone-client:1.17")
+    implementation("org.slf4j:slf4j-simple:1.7.32")
 
     compileOnly 'com.comphenix.protocol:ProtocolLib:4.5.1'
     compileOnly 'org.spigotmc:spigot-api:1.17-R0.1-SNAPSHOT'

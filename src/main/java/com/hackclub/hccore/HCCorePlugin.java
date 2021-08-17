@@ -22,7 +22,8 @@ import com.hackclub.hccore.commands.UpvoteCommand;
 import com.hackclub.hccore.commands.AngryCommand;
 import com.hackclub.hccore.commands.FlippedByTableCommand;
 import com.hackclub.hccore.commands.*;
-import com.hackclub.hccore.discord.DiscordBot;
+// import com.hackclub.hccore.discord.DiscordBot;
+import com.hackclub.hccore.slack.SlackBot;
 import com.hackclub.hccore.listeners.AFKListener;
 import com.hackclub.hccore.listeners.AdvancementListener;
 import com.hackclub.hccore.listeners.BeehiveInteractionListener;
@@ -32,9 +33,9 @@ import com.hackclub.hccore.listeners.SleepListener;
 import com.hackclub.hccore.tasks.AutoAFKTask;
 import com.hackclub.hccore.tasks.CheckAdAstraTask;
 import com.hackclub.hccore.utils.TimeUtil;
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.entities.Activity;
+//import net.dv8tion.jda.api.JDA;
+//import net.dv8tion.jda.api.JDABuilder;
+//import net.dv8tion.jda.api.entities.Activity;
 import org.bukkit.GameRule;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -51,7 +52,8 @@ import javax.security.auth.login.LoginException;
 public class HCCorePlugin extends JavaPlugin {
     private DataManager dataManager;
     private ProtocolManager protocolManager;
-    private DiscordBot bot;
+    // private DiscordBot bot;
+    private SlackBot bot;
 
     @Override
     public void onEnable() {
@@ -69,7 +71,11 @@ public class HCCorePlugin extends JavaPlugin {
 
 
         if (this.getConfig().getBoolean("settings.discord-link.enabled")) {
-            this.bot = new DiscordBot(this);
+            try {
+                this.bot = new SlackBot(this);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         // Register commands
@@ -117,7 +123,12 @@ public class HCCorePlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         this.getDataManager().unregisterAll();
-        this.bot.close();
+        // this.bot.close();
+        try {
+            this.bot.disconnect();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         this.bot = null;
     }
 
@@ -137,7 +148,7 @@ public class HCCorePlugin extends JavaPlugin {
                 "{BlockEntityTag:{Patterns:[{Color:0,Pattern:\"rs\"},{Color:14,Pattern:\"hh\"},{Color:0,Pattern:\"ls\"},{Color:0,Pattern:\"ms\"},{Color:14,Pattern:\"bo\"}]}}");
         Advancement root = new Advancement(new NamespacedKey(this, "root"), hackClubBanner,
                 new TextComponent("Hack Club"), new TextComponent("Beep boop beep beep boop"))
-                        .makeRoot("block/coal_block", true).setFrame(Advancement.Frame.TASK);
+                .makeRoot("block/coal_block", true).setFrame(Advancement.Frame.TASK);
 
         // Create regular advancements
         Advancement allMusicDiscs = factory.getAllItems("all_music_discs", root, "Musicophile",
