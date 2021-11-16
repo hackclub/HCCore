@@ -8,6 +8,19 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.ListenerPriority;
+import com.hackclub.hccore.commands.AFKCommand;
+import com.hackclub.hccore.commands.ColorCommand;
+import com.hackclub.hccore.commands.DownvoteCommand;
+import com.hackclub.hccore.commands.LocCommand;
+import com.hackclub.hccore.commands.NickCommand;
+import com.hackclub.hccore.commands.PingCommand;
+import com.hackclub.hccore.commands.ShrugCommand;
+import com.hackclub.hccore.commands.SpawnCommand;
+import com.hackclub.hccore.commands.StatsCommand;
+import com.hackclub.hccore.commands.TableflipCommand;
+import com.hackclub.hccore.commands.UpvoteCommand;
+import com.hackclub.hccore.commands.AngryCommand;
+import com.hackclub.hccore.commands.FlippedByTableCommand;
 import com.hackclub.hccore.commands.*;
 import com.hackclub.hccore.discord.DiscordBot;
 import com.hackclub.hccore.listeners.AFKListener;
@@ -71,6 +84,8 @@ public class HCCorePlugin extends JavaPlugin {
         this.getCommand("stats").setExecutor(new StatsCommand(this));
         this.getCommand("tableflip").setExecutor(new TableflipCommand(this));
         this.getCommand("upvote").setExecutor(new UpvoteCommand(this));
+        this.getCommand("angry").setExecutor(new AngryCommand(this));
+        this.getCommand("flippedbytable").setExecutor(new FlippedByTableCommand(this));
         this.getCommand("discord").setExecutor(new DiscordCommand(this));
 
         // Register event listeners
