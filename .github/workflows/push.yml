@@ -6,34 +6,41 @@ name: Push - Java CI with Gradle
 on:
   push:
     branches: [ master ]
-#  pull_request:
-#    branches: [ master ]
+  pull_request:
+    branches: [ master ]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v2
-    - name: Set up JDK 16
+    - name: Set up JDK 17
       uses: actions/setup-java@v2
       with:
-        java-version: '16'
-        distribution: 'adopt'
+        java-version: '17'
+        distribution: 'adopt-openj9'
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build with Gradle
       run: ./gradlew build
-    - name: Add SSH key
-      run: mkdir $HOME/.ssh && echo "${{ secrets.SSH_PRIVATE_KEY }}" > $HOME/.ssh/id_rsa && chmod 400 $HOME/.ssh/id_rsa && ssh-keyscan -H mc.hackclub.com >> ~/.ssh/known_hosts
-    - name: Copy jar
-      run: scp build/libs/HCCore-Shadow.jar ubuntu@mc.hackclub.com:/home/ubuntu/home/minecraft/vanilla/plugins/HCCore-Shadow.jar
-    - name: Run reboot script
-      run: ssh ubuntu@mc.hackclub.com /home/ubuntu/script/reboot-vanilla.sh
     - name: Upload jar to build artifacts
       uses: actions/upload-artifact@v2
       with:
         name: HCCore-Shadow.jar
         path: build/libs/HCCore-Shadow.jar
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/master'
+    steps:
+    - name: Download jar
+      uses: actions/download-artifact@v2
+      with:
+        name: HCCore-Shadow.jar
+    - name: Add SSH key
+      run: mkdir $HOME/.ssh && echo "${{ secrets.SSH_PRIVATE_KEY }}" > $HOME/.ssh/id_rsa && chmod 400 $HOME/.ssh/id_rsa && ssh-keyscan -H mc.hackclub.com >> ~/.ssh/known_hosts
+    - name: Copy jar
+      run: scp HCCore-Shadow.jar deploy@mc.hackclub.com:/opt/minecraft/server/plugins/HCCore-Shadow.jar
+    - name: Run reboot script
+      run: ssh deploy@mc.hackclub.com /opt/minecraft/reboot.sh
 
