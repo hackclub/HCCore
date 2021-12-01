@@ -1,9 +1,6 @@
 package com.hackclub.hccore.listeners;
 
 import com.hackclub.hccore.HCCorePlugin;
-import net.minecraft.advancements.AdvancementDisplay;
-import net.minecraft.advancements.AdvancementFrameType;
-import net.minecraft.network.chat.IChatBaseComponent;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -22,6 +19,9 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.minecraft.advancements.AdvancementDisplay;
+import net.minecraft.advancements.AdvancementFrameType;
+import net.minecraft.network.chat.IChatBaseComponent;
 
 public class AdvancementListener implements Listener {
     private final HCCorePlugin plugin;
@@ -33,7 +33,8 @@ public class AdvancementListener implements Listener {
     @EventHandler
     public void onBlockBreak(final BlockBreakEvent event) {
         // Check if it's a diamond ore
-        if (event.getBlock().getType() != Material.DIAMOND_ORE) {
+        Material blockType = event.getBlock().getType();
+        if (blockType != Material.DIAMOND_ORE && blockType != Material.DEEPSLATE_DIAMOND_ORE) {
             return;
         }
 
