@@ -2,15 +2,15 @@ package com.hackclub.hccore;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.hackclub.hccore.commands.AFKCommand;
+import com.hackclub.hccore.commands.AngryCommand;
 import com.hackclub.hccore.commands.ColorCommand;
 import com.hackclub.hccore.commands.DownvoteCommand;
+import com.hackclub.hccore.commands.FlippedByTableCommand;
 import com.hackclub.hccore.commands.LocCommand;
 import com.hackclub.hccore.commands.NickCommand;
 import com.hackclub.hccore.commands.PingCommand;
@@ -19,9 +19,6 @@ import com.hackclub.hccore.commands.SpawnCommand;
 import com.hackclub.hccore.commands.StatsCommand;
 import com.hackclub.hccore.commands.TableflipCommand;
 import com.hackclub.hccore.commands.UpvoteCommand;
-import com.hackclub.hccore.commands.AngryCommand;
-import com.hackclub.hccore.commands.FlippedByTableCommand;
-import com.hackclub.hccore.commands.*;
 import com.hackclub.hccore.listeners.AFKListener;
 import com.hackclub.hccore.listeners.AdvancementListener;
 import com.hackclub.hccore.listeners.BeehiveInteractionListener;
@@ -41,8 +38,6 @@ import hu.trigary.advancementcreator.Advancement;
 import hu.trigary.advancementcreator.AdvancementFactory;
 import hu.trigary.advancementcreator.shared.ItemObject;
 import net.md_5.bungee.api.chat.TextComponent;
-
-import javax.security.auth.login.LoginException;
 
 public class HCCorePlugin extends JavaPlugin {
     private DataManager dataManager;

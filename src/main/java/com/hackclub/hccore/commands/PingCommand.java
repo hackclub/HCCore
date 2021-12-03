@@ -29,7 +29,7 @@ public class PingCommand implements TabExecutor {
             }
 
             Player player = (Player) sender;
-            int ping = this.getPing(player);
+            int ping = player.getPing();
             // Failed for some reason
             if (ping == -1) {
                 sender.sendMessage(ChatColor.RED + "Failed to get your ping");
@@ -44,7 +44,7 @@ public class PingCommand implements TabExecutor {
         Player targetPlayer = sender.getServer().getPlayerExact(args[0]);
         if (targetPlayer != null) {
             PlayerData data = this.plugin.getDataManager().getData(targetPlayer);
-            int ping = this.getPing(targetPlayer);
+            int ping = targetPlayer.getPing();
             // Failed for some reason
             if (ping == -1) {
                 sender.sendMessage(
@@ -74,18 +74,5 @@ public class PingCommand implements TabExecutor {
 
         Collections.sort(completions);
         return completions;
-    }
-
-    private int getPing(Player player) {
-        int ping = -1;
-        try {
-            // Use reflection because there's no Player#getPing method
-            Object entityPlayer = player.getClass().getMethod("getHandle").invoke(player);
-            ping = (int) entityPlayer.getClass().getField("ping").get(entityPlayer);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return ping;
     }
 }

@@ -26,8 +26,8 @@ jobs:
     - name: Upload jar to build artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: HCCore-Shadow.jar
-        path: build/libs/HCCore-Shadow.jar
+        name: HCCore-1.0.0.jar
+        path: build/libs/HCCore-1.0.0.jar
   deploy:
     runs-on: ubuntu-latest
     needs: build
@@ -36,7 +36,7 @@ jobs:
     - name: Download jar
       uses: actions/download-artifact@v2
       with:
-        name: HCCore-Shadow.jar
+        name: HCCore-1.0.0.jar
     - name: Add SSH key
       run: mkdir $HOME/.ssh && echo "${{ secrets.SSH_PRIVATE_KEY }}" > $HOME/.ssh/id_rsa && chmod 400 $HOME/.ssh/id_rsa && ssh-keyscan -H mc.hackclub.com >> ~/.ssh/known_hosts
     - name: Copy jar
