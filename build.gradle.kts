@@ -38,7 +38,7 @@ tasks {
 
   processResources {
     filteringCharset = Charsets.UTF_8.name()
-      expand("name" to rootProject.name)
+      expand("name" to rootProject.name, "version" to version)
   }
 
   shadowJar {
