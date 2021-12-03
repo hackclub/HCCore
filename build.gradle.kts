@@ -4,6 +4,10 @@ plugins {
   id("io.papermc.paperweight.userdev") version "1.3.0"
 }
 
+group = "com.hackclub.hccore"
+version = "1.0.0"
+description = "Main plugin for the Hack Club Minecraft server."
+
 java {
   toolchain.languageVersion.set(JavaLanguageVersion.of(17))
 }
@@ -34,7 +38,7 @@ tasks {
 
   processResources {
     filteringCharset = Charsets.UTF_8.name()
-      expand("name" to rootProject.name, "version" to "1.0.0")
+      expand("name" to rootProject.name)
   }
 
   shadowJar {
