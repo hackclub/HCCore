@@ -7,7 +7,6 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.Statistic;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.advancement.AdvancementProgress;
-import org.bukkit.craftbukkit.v1_17_R1.advancement.CraftAdvancement;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -15,13 +14,10 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityToggleGlideEvent;
 import org.bukkit.event.player.PlayerAdvancementDoneEvent;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.minecraft.advancements.AdvancementDisplay;
-import net.minecraft.advancements.AdvancementFrameType;
-import net.minecraft.network.chat.IChatBaseComponent;
+import io.papermc.paper.advancement.AdvancementDisplay;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 
 public class AdvancementListener implements Listener {
     private final HCCorePlugin plugin;
@@ -136,63 +132,43 @@ public class AdvancementListener implements Listener {
                     + "You will only see this message once.");
         }
 
-        try {
-            // NOTE: We interface with Minecraft's internal code here. It is unlikely, but possible
-            // for it to break in the case of a future upgrade.
-            net.minecraft.advancements.Advancement nmsAdvancement =
-                    ((CraftAdvancement) advancement).getHandle();
-            AdvancementDisplay display = nmsAdvancement.c();
+        AdvancementDisplay display = advancement.getDisplay();
 
-            // Ignore hidden advancements (i.e. recipes)
-            if (display == null) {
-                return;
-            }
+        // Ignore hidden advancements (i.e. recipes)
+        if (display == null) return;
+        if (!display.doesAnnounceToChat()) return;
 
-            boolean announceToChat = display.i();
-            if (!announceToChat) {
-                return;
-            }
+        Component titleComponent = Component.text("[")
+            .append(display.title())
+            .append(Component.text("]"));
+        Component descriptionComponent = display.title()
+            .append(Component.text("\n"))
+            .append(display.description());
+        Component frameSpecificComponent;
+        TextColor frameSpecificColor;
 
-            // Get frame type-specific wording + formatting
-            IChatBaseComponent titleComponent = display.a();
-            IChatBaseComponent descriptionComponent = display.b();
-            AdvancementFrameType frameType = display.e();
-            Object[] args = null; // This is bad practice
-            switch (frameType.a()) {
-                case "task":
-                default:
-                    args = new Object[] {"made", "advancement", ChatColor.GREEN.asBungee()};
-                    break;
-                case "goal":
-                    args = new Object[] {"reached", "goal", ChatColor.GREEN.asBungee()};
-                    break;
-                case "challenge":
-                    args = new Object[] {"completed", "challenge",
-                            ChatColor.DARK_PURPLE.asBungee()};
-                    break;
-            }
-
-            // Announce custom advancement message
-            BaseComponent nameComponent =
-                    TextComponent.fromLegacyText(ChatColor.stripColor(player.getDisplayName()))[0];
-            nameComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                    TextComponent.fromLegacyText(player.getName())));
-            BaseComponent advancementComponent =
-                    TextComponent.fromLegacyText(titleComponent.getText())[0];
-            advancementComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                    new ComponentBuilder().color((net.md_5.bungee.api.ChatColor) args[2])
-                            .append(titleComponent.getText() + "\n")
-                            .append(descriptionComponent.getText()).create()));
-
-            BaseComponent[] message = new ComponentBuilder(nameComponent)
-                    .append(String.format(" has %s the %s %s[", args),
-                            ComponentBuilder.FormatRetention.NONE)
-                    .append(advancementComponent).color((net.md_5.bungee.api.ChatColor) args[2])
-                    .append("]", ComponentBuilder.FormatRetention.FORMATTING).create();
-            player.getServer().spigot().broadcast(message);
-        } catch (Exception e) {
-            e.printStackTrace();
+        switch (display.frame()) {
+            case TASK:
+            default:
+                frameSpecificComponent = Component.text(" has made the advancement ");
+                frameSpecificColor = NamedTextColor.GREEN;
+                break;
+            case GOAL:
+                frameSpecificComponent = Component.text(" has reached the goal ");
+                frameSpecificColor = NamedTextColor.GREEN;
+                break;
+            case CHALLENGE:
+                frameSpecificComponent = Component.text(" has completed the challenge ");
+                frameSpecificColor = NamedTextColor.DARK_PURPLE;
+                break;
         }
+
+        player.getServer().broadcast(player.displayName()
+            .append(frameSpecificComponent)
+            .append(titleComponent
+                .color(frameSpecificColor)
+                .hoverEvent(descriptionComponent
+                    .color(frameSpecificColor))));
     }
 
     private void grantAdvancement(Player player, NamespacedKey key) {
