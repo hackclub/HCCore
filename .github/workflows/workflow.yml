@@ -40,7 +40,7 @@ jobs:
     - name: Add SSH key
       run: mkdir $HOME/.ssh && echo "${{ secrets.SSH_PRIVATE_KEY }}" > $HOME/.ssh/id_rsa && chmod 400 $HOME/.ssh/id_rsa && ssh-keyscan -H mc.hackclub.com >> ~/.ssh/known_hosts
     - name: Copy jar
-      run: scp HCCore-1.0.0.jar deploy@mc.hackclub.com:/opt/minecraft/server/plugins/HCCore-1.0.0.jar
+      run: scp HCCore-1.0.0.jar minecraft@mc.hackclub.com:/opt/minecraft/server/plugins/HCCore-1.0.0.jar
     - name: Run reboot script
-      run: ssh deploy@mc.hackclub.com /opt/minecraft/restart.sh
+      run: ssh minecraft@mc.hackclub.com /opt/minecraft/restart.sh
 
