@@ -164,6 +164,7 @@ public class AdvancementListener implements Listener {
         }
 
         player.getServer().broadcast(player.displayName()
+            .color(NamedTextColor.WHITE)
             .append(frameSpecificComponent)
             .append(titleComponent
                 .color(frameSpecificColor)
