@@ -1,6 +1,6 @@
 name: ${name}
 version: ${version}
-api-version: 1.18
+api-version: 1.19
 main: com.hackclub.hccore.HCCorePlugin
 depend: [ProtocolLib]
 commands:
