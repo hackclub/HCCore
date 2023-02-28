@@ -1,43 +1,27 @@
 package com.hackclub.hccore;
 
-import java.util.ArrayList;
-import java.util.List;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.ListenerPriority;
-import com.hackclub.hccore.commands.AFKCommand;
-import com.hackclub.hccore.commands.AngryCommand;
-import com.hackclub.hccore.commands.ColorCommand;
-import com.hackclub.hccore.commands.DownvoteCommand;
-import com.hackclub.hccore.commands.FlippedByTableCommand;
-import com.hackclub.hccore.commands.LocCommand;
-import com.hackclub.hccore.commands.NickCommand;
-import com.hackclub.hccore.commands.PingCommand;
-import com.hackclub.hccore.commands.ShrugCommand;
-import com.hackclub.hccore.commands.SpawnCommand;
-import com.hackclub.hccore.commands.StatsCommand;
-import com.hackclub.hccore.commands.TableflipCommand;
-import com.hackclub.hccore.commands.UpvoteCommand;
-import com.hackclub.hccore.listeners.AFKListener;
-import com.hackclub.hccore.listeners.AdvancementListener;
-import com.hackclub.hccore.listeners.BeehiveInteractionListener;
-import com.hackclub.hccore.listeners.NameChangeListener;
-import com.hackclub.hccore.listeners.PlayerListener;
-import com.hackclub.hccore.listeners.SleepListener;
+import com.hackclub.hccore.commands.*;
+import com.hackclub.hccore.listeners.*;
 import com.hackclub.hccore.tasks.AutoAFKTask;
 import com.hackclub.hccore.tasks.CheckAdAstraTask;
 import com.hackclub.hccore.utils.TimeUtil;
+import hu.trigary.advancementcreator.Advancement;
+import hu.trigary.advancementcreator.AdvancementFactory;
+import hu.trigary.advancementcreator.shared.ItemObject;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.GameRule;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.entity.EntityType;
 import org.bukkit.plugin.java.JavaPlugin;
-import hu.trigary.advancementcreator.Advancement;
-import hu.trigary.advancementcreator.AdvancementFactory;
-import hu.trigary.advancementcreator.shared.ItemObject;
-import net.md_5.bungee.api.chat.TextComponent;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class HCCorePlugin extends JavaPlugin {
     private DataManager dataManager;
@@ -60,17 +44,19 @@ public class HCCorePlugin extends JavaPlugin {
         // Register commands
         this.getCommand("afk").setExecutor(new AFKCommand(this));
         this.getCommand("color").setExecutor(new ColorCommand(this));
-        this.getCommand("downvote").setExecutor(new DownvoteCommand(this));
         this.getCommand("loc").setExecutor(new LocCommand(this));
         this.getCommand("nick").setExecutor(new NickCommand(this));
         this.getCommand("ping").setExecutor(new PingCommand(this));
-        this.getCommand("shrug").setExecutor(new ShrugCommand(this));
         this.getCommand("spawn").setExecutor(new SpawnCommand(this));
         this.getCommand("stats").setExecutor(new StatsCommand(this));
-        this.getCommand("tableflip").setExecutor(new TableflipCommand(this));
-        this.getCommand("upvote").setExecutor(new UpvoteCommand(this));
-        this.getCommand("angry").setExecutor(new AngryCommand(this));
-        this.getCommand("flippedbytable").setExecutor(new FlippedByTableCommand(this));
+        // disable emote commands due to Player#chat not working with colours on (recent) paper
+        // current behavior is being kicked, which while funny the first time, gets old fast
+//        this.getCommand("downvote").setExecutor(new DownvoteCommand(this));
+//        this.getCommand("shrug").setExecutor(new ShrugCommand(this));
+//        this.getCommand("tableflip").setExecutor(new TableflipCommand(this));
+//        this.getCommand("upvote").setExecutor(new UpvoteCommand(this));
+//        this.getCommand("angry").setExecutor(new AngryCommand(this));
+//        this.getCommand("flippedbytable").setExecutor(new FlippedByTableCommand(this));
 
         // Register event listeners
         this.getServer().getPluginManager().registerEvents(new AdvancementListener(this), this);
@@ -119,15 +105,15 @@ public class HCCorePlugin extends JavaPlugin {
                 "{BlockEntityTag:{Patterns:[{Color:0,Pattern:\"rs\"},{Color:14,Pattern:\"hh\"},{Color:0,Pattern:\"ls\"},{Color:0,Pattern:\"ms\"},{Color:14,Pattern:\"bo\"}]}}");
         Advancement root = new Advancement(new NamespacedKey(this, "root"), hackClubBanner,
                 new TextComponent("Hack Club"), new TextComponent("Beep boop beep beep boop"))
-                        .makeRoot("block/coal_block", true).setFrame(Advancement.Frame.TASK);
+                .makeRoot("block/coal_block", true).setFrame(Advancement.Frame.TASK);
 
         // Create regular advancements
         Advancement allMusicDiscs = factory.getAllItems("all_music_discs", root, "Musicophile",
-                "Collect every single music disc", Material.JUKEBOX, Material.MUSIC_DISC_11,
-                Material.MUSIC_DISC_13, Material.MUSIC_DISC_BLOCKS, Material.MUSIC_DISC_CAT,
-                Material.MUSIC_DISC_CHIRP, Material.MUSIC_DISC_FAR, Material.MUSIC_DISC_MALL,
-                Material.MUSIC_DISC_MELLOHI, Material.MUSIC_DISC_PIGSTEP, Material.MUSIC_DISC_STAL, Material.MUSIC_DISC_STRAD,
-                Material.MUSIC_DISC_WAIT, Material.MUSIC_DISC_WARD)
+                        "Collect every single music disc", Material.JUKEBOX, Material.MUSIC_DISC_11,
+                        Material.MUSIC_DISC_13, Material.MUSIC_DISC_BLOCKS, Material.MUSIC_DISC_CAT,
+                        Material.MUSIC_DISC_CHIRP, Material.MUSIC_DISC_FAR, Material.MUSIC_DISC_MALL,
+                        Material.MUSIC_DISC_MELLOHI, Material.MUSIC_DISC_PIGSTEP, Material.MUSIC_DISC_STAL, Material.MUSIC_DISC_STRAD,
+                        Material.MUSIC_DISC_WAIT, Material.MUSIC_DISC_WARD)
                 .setFrame(Advancement.Frame.CHALLENGE);
 
         Advancement findBug = factory.getImpossible("find_bug", root, "Bug Squasher",
