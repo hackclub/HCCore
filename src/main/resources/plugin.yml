@@ -2,7 +2,9 @@ name: ${name}
 version: ${version}
 api-version: 1.19
 main: com.hackclub.hccore.HCCorePlugin
-depend: [ ProtocolLib ]
+depend:
+  - UltimateAdvancementAPI
+  - ProtocolLib
 commands:
   afk:
     description: Toggles your AFK status
