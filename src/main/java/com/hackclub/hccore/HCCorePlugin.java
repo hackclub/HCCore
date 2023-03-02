@@ -9,7 +9,9 @@ import com.fren_gor.ultimateAdvancementAPI.UltimateAdvancementAPI;
 import com.fren_gor.ultimateAdvancementAPI.advancement.RootAdvancement;
 import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementDisplay;
 import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementFrameType;
-import com.hackclub.hccore.advancements.MusicophileAdv;
+import com.fren_gor.ultimateAdvancementAPI.util.AdvancementKey;
+import com.fren_gor.ultimateAdvancementAPI.util.CoordAdapter;
+import com.hackclub.hccore.advancements.*;
 import com.hackclub.hccore.commands.*;
 import com.hackclub.hccore.listeners.*;
 import com.hackclub.hccore.tasks.AutoAFKTask;
@@ -102,83 +104,6 @@ public class HCCorePlugin extends JavaPlugin {
     public RootAdvancement root;
 
     private void registerAdvancements() {
-        //        // Create regular advancements
-        //        Advancement allMusicDiscs = factory.getAllItems("all_music_discs", root, "Musicophile",
-        //                        "Collect every single music disc", Material.JUKEBOX, Material.MUSIC_DISC_11,
-        //                        Material.MUSIC_DISC_13, Material.MUSIC_DISC_BLOCKS, Material.MUSIC_DISC_CAT,
-        //                        Material.MUSIC_DISC_CHIRP, Material.MUSIC_DISC_FAR, Material.MUSIC_DISC_MALL,
-        //                        Material.MUSIC_DISC_MELLOHI, Material.MUSIC_DISC_PIGSTEP, Material.MUSIC_DISC_STAL,
-        //                        Material.MUSIC_DISC_STRAD,
-        //                        Material.MUSIC_DISC_WAIT, Material.MUSIC_DISC_WARD)
-        //                .setFrame(Advancement.Frame.CHALLENGE);
-        //
-        //        Advancement findBug = factory.getImpossible("find_bug", root, "Bug Squasher",
-        //                "Find and report a bug", Material.IRON_BOOTS);
-        //        Advancement contribute = factory.getImpossible("contribute", findBug, "pairsOfHands++",
-        //                "Contribute to the server’s codebase on GitHub", Material.COMMAND_BLOCK);
-        //
-        //        Advancement mineDiamondOre = factory.getImpossible("mine_diamond_ore", root,
-        //                "Look Ma, Diamonds!", "Find your first diamond while mining", Material.DIAMOND_ORE);
-        //        Advancement connectToNetherHub = factory
-        //                .getImpossible("connect_to_nether_hub", mineDiamondOre, "Linked Up",
-        //                        "Connect your base to the Nether hub", Material.POWERED_RAIL)
-        //                .setFrame(Advancement.Frame.GOAL);
-        //        Advancement killDragonInsane = factory
-        //                .getCountedImpossible("kill_dragon_insane", connectToNetherHub, "Dragon Master",
-        //                        "Kill the Ender Dragon 10 times", Material.DRAGON_HEAD, 10)
-        //                .setFrame(Advancement.Frame.CHALLENGE).setHidden(false);
-        //        Advancement killWitherInsane = factory
-        //                .getCountedImpossible("kill_wither_insane", killDragonInsane, "Are You Insane?!",
-        //                        "Kill the Wither 20 times", Material.WITHER_SKELETON_SKULL, 20)
-        //                .setFrame(Advancement.Frame.CHALLENGE);
-        //        Advancement killElderGuardian = factory.getKill("kill_elder_guardian", mineDiamondOre,
-        //                "The Deep End", "Defeat an Elder Guardian", Material.PRISMARINE_SHARD,
-        //                EntityType.ELDER_GUARDIAN).setFrame(Advancement.Frame.GOAL);
-        //        Advancement killWolf =
-        //                factory.getKill("kill_wolf", mineDiamondOre, "You Monster!", "Slaughter a doggo",
-        //                        Material.BONE, EntityType.WOLF).setFrame(Advancement.Frame.TASK);
-        //        Advancement killIronGolem = factory
-        //                .getKill("kill_iron_golem", killWolf, "Well That’s IRONic…",
-        //                        "Kill an Iron Golem", Material.IRON_INGOT, EntityType.IRON_GOLEM)
-        //                .setFrame(Advancement.Frame.TASK);
-        //        Advancement millionMiler = factory
-        //                .getImpossible("million_miler", mineDiamondOre, "Million Miler",
-        //                        "Fly one million miles (1,609,344 km) with an elytra", Material.ELYTRA)
-        //                .setFrame(Advancement.Frame.CHALLENGE);
-        //        Advancement adAstra = factory
-        //                .getImpossible("ad_astra", millionMiler, "Ad Astra",
-        //                        "Reach outer space and touch the stars", Material.FIREWORK_ROCKET)
-        //                .setFrame(Advancement.Frame.CHALLENGE);
-        //
-        //        // Activate all the advancements
-        //        List<Advancement> advancements = new ArrayList<Advancement>() {
-        //            private static final long serialVersionUID = 0L;
-        //
-        //            {
-        //                add(root);
-        //                add(allMusicDiscs);
-        //                add(findBug);
-        //                add(contribute);
-        //                add(mineDiamondOre);
-        //                add(connectToNetherHub);
-        //                add(killDragonInsane);
-        //                add(killWitherInsane);
-        //                add(killElderGuardian);
-        //                add(killWolf);
-        //                add(killIronGolem);
-        //                add(millionMiler);
-        //                add(adAstra);
-        //            }
-        //        };
-        //        for (Advancement advancement : advancements) {
-        //            if (this.getServer().getAdvancement(advancement.getId()) == null) {
-        //                advancement.activate(false);
-        //            }
-        //        }
-        //
-        //        // Reload the data cache after all advancements have been added
-        //        this.getServer().reloadData();
-
         // Initialize advancement api
         UltimateAdvancementAPI api = UltimateAdvancementAPI.getInstance(this);
         tab = api.createAdvancementTab("hack_club");
@@ -200,9 +125,49 @@ public class HCCorePlugin extends JavaPlugin {
                 AdvancementFrameType.TASK, false, false, 0, 0, "Beep boop beep beep boop");
         root = new RootAdvancement(tab, "root", rootDisplay, "textures/block/coal_block.png");
 
-        MusicophileAdv musicophile = new MusicophileAdv(this);
+        AdvancementKey astraKey = new AdvancementKey(this, "astra");
+        AdvancementKey bugKey = new AdvancementKey(this, "bug");
+        AdvancementKey contributeKey = new AdvancementKey(this, "contribute");
+        AdvancementKey diamondsKey = new AdvancementKey(this, "diamonds");
+        AdvancementKey dragonKey = new AdvancementKey(this, "dragon");
+        AdvancementKey elderKey = new AdvancementKey(this, "elder");
+        AdvancementKey hubKey = new AdvancementKey(this, "hub");
+        AdvancementKey ironGolemKey = new AdvancementKey(this, "iron_golem");
+        AdvancementKey millionKey = new AdvancementKey(this, "million");
+        AdvancementKey musicophileKey = new AdvancementKey(this, "musicophile");
+        AdvancementKey witherKey = new AdvancementKey(this, "wither");
+        AdvancementKey wolfKey = new AdvancementKey(this, "wolf");
+
+        CoordAdapter adapter = CoordAdapter.builder()
+                .add(astraKey, 3, -4)
+                .add(bugKey, 1, 1)
+                .add(contributeKey, 2, 1)
+                .add(diamondsKey, 1, -1)
+                .add(dragonKey, 3, -1)
+                .add(elderKey, 2, -2)
+                .add(hubKey, 2, -1)
+                .add(ironGolemKey, 3, -3)
+                .add(millionKey, 2, -4)
+                .add(musicophileKey, 1, 0)
+                .add(witherKey, 4, -1)
+                .add(wolfKey, 2, -3)
+                .build();
+
+        MusicophileAdv musicophile = new MusicophileAdv(this, root, musicophileKey, adapter);
+        BugAdv bug = new BugAdv(this, root, bugKey, adapter);
+        ContributeAdv contribute = new ContributeAdv(this, bug, contributeKey, adapter);
+        DiamondsAdv diamonds = new DiamondsAdv(this, root, diamondsKey, adapter);
+        HubAdv hub = new HubAdv(this, diamonds, hubKey, adapter);
+        DragonAdv dragon = new DragonAdv(this, hub, dragonKey, adapter);
+        WitherAdv wither = new WitherAdv(this, dragon, witherKey, adapter);
+        ElderAdv elder = new ElderAdv(this, diamonds, elderKey, adapter);
+        WolfAdv wolf = new WolfAdv(this, diamonds, wolfKey, adapter);
+        IronGolemAdv ironGolem = new IronGolemAdv(this, wolf, ironGolemKey, adapter);
+        MillionAdv million = new MillionAdv(this, diamonds, millionKey, adapter);
+        AstraAdv astra = new AstraAdv(this, million, astraKey, adapter);
 
         // Register all advancements
-        tab.registerAdvancements(root, musicophile);
+        tab.registerAdvancements(root, musicophile, bug, contribute, diamonds, hub, dragon, wither, elder, wolf,
+                ironGolem, million, astra);
     }
 }
