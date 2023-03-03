@@ -15,7 +15,6 @@ import com.hackclub.hccore.advancements.*;
 import com.hackclub.hccore.commands.*;
 import com.hackclub.hccore.listeners.*;
 import com.hackclub.hccore.tasks.AutoAFKTask;
-import com.hackclub.hccore.tasks.CheckAdAstraTask;
 import com.hackclub.hccore.utils.TimeUtil;
 import org.bukkit.*;
 import org.bukkit.block.banner.Pattern;
@@ -80,7 +79,6 @@ public class HCCorePlugin extends JavaPlugin {
         new AutoAFKTask(this).runTaskTimer(this,
                 (long) this.getConfig().getInt("settings.auto-afk-time") * TimeUtil.TICKS_PER_SECOND,
                 30 * TimeUtil.TICKS_PER_SECOND);
-        new CheckAdAstraTask(this).runTaskTimer(this, 0, 10 * TimeUtil.TICKS_PER_SECOND);
 
         // Register all the players that were online before this plugin was enabled (example
         // scenario: plugin reload) to prevent null pointer errors.
