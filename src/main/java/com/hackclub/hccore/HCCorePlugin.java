@@ -131,7 +131,7 @@ public class HCCorePlugin extends JavaPlugin {
         AdvancementKey elderKey = new AdvancementKey(this, "elder");
         AdvancementKey hubKey = new AdvancementKey(this, "hub");
         AdvancementKey ironGolemKey = new AdvancementKey(this, "iron_golem");
-        AdvancementKey millionKey = new AdvancementKey(this, "million");
+        AdvancementKey mileKey = new AdvancementKey(this, "mile");
         AdvancementKey musicophileKey = new AdvancementKey(this, "musicophile");
         AdvancementKey witherKey = new AdvancementKey(this, "wither");
         AdvancementKey wolfKey = new AdvancementKey(this, "wolf");
@@ -145,7 +145,7 @@ public class HCCorePlugin extends JavaPlugin {
                 .add(elderKey, 2, -2)
                 .add(hubKey, 2, -1)
                 .add(ironGolemKey, 3, -3)
-                .add(millionKey, 2, -4)
+                .add(mileKey, 2, -4)
                 .add(musicophileKey, 1, 0)
                 .add(witherKey, 4, -1)
                 .add(wolfKey, 2, -3)
@@ -161,11 +161,11 @@ public class HCCorePlugin extends JavaPlugin {
         ElderAdv elder = new ElderAdv(this, diamonds, elderKey, adapter);
         WolfAdv wolf = new WolfAdv(this, diamonds, wolfKey, adapter);
         IronGolemAdv ironGolem = new IronGolemAdv(this, wolf, ironGolemKey, adapter);
-        MillionAdv million = new MillionAdv(this, diamonds, millionKey, adapter);
-        AstraAdv astra = new AstraAdv(this, million, astraKey, adapter);
+        MileAdv mile = new MileAdv(this, diamonds, mileKey, adapter);
+        AstraAdv astra = new AstraAdv(this, mile, astraKey, adapter);
 
         // Register all advancements
         tab.registerAdvancements(root, musicophile, bug, contribute, diamonds, hub, dragon, wither, elder, wolf,
-                ironGolem, million, astra);
+                ironGolem, mile, astra);
     }
 }
