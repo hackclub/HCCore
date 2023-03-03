@@ -141,13 +141,13 @@ public class HCCorePlugin extends JavaPlugin {
                 .add(bugKey, 1, 1)
                 .add(contributeKey, 2, 1)
                 .add(diamondsKey, 1, -1)
-                .add(dragonKey, 3, -1)
+                .add(dragonKey, 2, -1)
                 .add(elderKey, 2, -2)
-                .add(hubKey, 2, -1)
+                .add(hubKey, 2, 0)
                 .add(ironGolemKey, 3, -3)
                 .add(mileKey, 2, -4)
                 .add(musicophileKey, 1, 0)
-                .add(witherKey, 4, -1)
+                .add(witherKey, 3, -1)
                 .add(wolfKey, 2, -3)
                 .build();
 
@@ -156,7 +156,7 @@ public class HCCorePlugin extends JavaPlugin {
         ContributeAdv contribute = new ContributeAdv(this, bug, contributeKey, adapter);
         DiamondsAdv diamonds = new DiamondsAdv(this, root, diamondsKey, adapter);
         HubAdv hub = new HubAdv(this, diamonds, hubKey, adapter);
-        DragonAdv dragon = new DragonAdv(this, hub, dragonKey, adapter);
+        DragonAdv dragon = new DragonAdv(this, diamonds, dragonKey, adapter);
         WitherAdv wither = new WitherAdv(this, dragon, witherKey, adapter);
         ElderAdv elder = new ElderAdv(this, diamonds, elderKey, adapter);
         WolfAdv wolf = new WolfAdv(this, diamonds, wolfKey, adapter);

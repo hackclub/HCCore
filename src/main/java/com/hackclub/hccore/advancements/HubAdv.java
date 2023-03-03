@@ -6,10 +6,11 @@ import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementDispla
 import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementDisplayBuilder;
 import com.fren_gor.ultimateAdvancementAPI.util.AdvancementKey;
 import com.fren_gor.ultimateAdvancementAPI.util.CoordAdapter;
+import com.fren_gor.ultimateAdvancementAPI.visibilities.HiddenVisibility;
 import com.hackclub.hccore.HCCorePlugin;
 import org.bukkit.Material;
 
-public class HubAdv extends BaseAdvancement {
+public class HubAdv extends BaseAdvancement implements HiddenVisibility {
     static AdvancementDisplayBuilder<AdvancementDisplay.Builder, AdvancementDisplay> displayBuilder = new AdvancementDisplay.Builder(Material.POWERED_RAIL, "Linked Up")
             .goalFrame()
             .announceChat()
