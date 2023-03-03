@@ -8,6 +8,7 @@ import com.fren_gor.ultimateAdvancementAPI.util.AdvancementKey;
 import com.fren_gor.ultimateAdvancementAPI.util.CoordAdapter;
 import com.hackclub.hccore.HCCorePlugin;
 import org.bukkit.Material;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.EntityPickupItemEvent;
@@ -38,6 +39,8 @@ public class MusicophileAdv extends BaseAdvancement {
                 if (e.getCurrentItem().getType() == disc) {
                     HumanEntity entity = e.getWhoClicked();
 
+                    if (entity.getType() != EntityType.PLAYER) return;
+
                     List<String> metadataDiscs;
                     if (entity.hasMetadata("hccore_discs")) {
                         metadataDiscs = (List<String>)entity.getMetadata("hccore_discs").get(0).value();
@@ -50,13 +53,16 @@ public class MusicophileAdv extends BaseAdvancement {
 
                     entity.setMetadata("hccore_discs",
                            new FixedMetadataValue(plugin, metadataDiscs));
-                    incrementProgression(e.getWhoClicked().getUniqueId());
+
+                    incrementProgression(entity.getUniqueId());
                 }
             });
 
             registerEvent(EntityPickupItemEvent.class, e -> {
                 if (e.getItem().getItemStack().getType() == disc) {
                     LivingEntity entity = e.getEntity();
+
+                    if (entity.getType() != EntityType.PLAYER) return;
 
                     List<String> metadataDiscs;
                     if (entity.hasMetadata("hccore_discs")) {
