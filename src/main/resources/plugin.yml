@@ -13,6 +13,9 @@ commands:
   color:
     description: Sets your chat or name color
     usage: /color <chat|name> [color]
+  hcadvancement:
+    description: Manages Hack Club advancements
+    usage: /hcadvancement [grant|revoke] [player] [advancement]
   loc:
     description: Manage your saved locations
     usage: /loc <del|get|list|rename|save|share> [...args]
