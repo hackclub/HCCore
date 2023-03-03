@@ -120,7 +120,7 @@ public class HCCorePlugin extends JavaPlugin {
 
         // Create root display
         AdvancementDisplay rootDisplay = new AdvancementDisplay(bannerStack, "Hack Club",
-                AdvancementFrameType.TASK, false, false, 0, 0, "Beep boop beep beep boop");
+                AdvancementFrameType.TASK, false, false, 0, 3, "Beep boop beep beep boop");
         root = new RootAdvancement(tab, "root", rootDisplay, "textures/block/coal_block.png");
 
         AdvancementKey astraKey = new AdvancementKey(this, "astra");
@@ -137,18 +137,18 @@ public class HCCorePlugin extends JavaPlugin {
         AdvancementKey wolfKey = new AdvancementKey(this, "wolf");
 
         CoordAdapter adapter = CoordAdapter.builder()
-                .add(astraKey, 3, -4)
-                .add(bugKey, 1, 1)
-                .add(contributeKey, 2, 1)
-                .add(diamondsKey, 1, -1)
-                .add(dragonKey, 2, -1)
-                .add(elderKey, 2, -2)
-                .add(hubKey, 2, 0)
-                .add(ironGolemKey, 3, -3)
-                .add(mileKey, 2, -4)
-                .add(musicophileKey, 1, 0)
-                .add(witherKey, 3, -1)
-                .add(wolfKey, 2, -3)
+                .add(astraKey, 5, 3)
+                .add(bugKey, 1, 2)
+                .add(contributeKey, 2, 2)
+                .add(diamondsKey, 1, 4)
+                .add(dragonKey, 3, 4)
+                .add(elderKey, 4, 4)
+                .add(hubKey, 6, 4)
+                .add(ironGolemKey, 2, 5)
+                .add(mileKey, 5, 4)
+                .add(musicophileKey, 1, 3)
+                .add(witherKey, 3, 3)
+                .add(wolfKey, 2, 4)
                 .build();
 
         MusicophileAdv musicophile = new MusicophileAdv(this, root, musicophileKey, adapter);
