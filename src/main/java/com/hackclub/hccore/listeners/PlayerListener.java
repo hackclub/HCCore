@@ -87,6 +87,8 @@ public class PlayerListener implements Listener {
         event.getPlayer().resetTitle();
         event.setJoinMessage(ChatColor.YELLOW
                 + ChatColor.stripColor(event.getPlayer().getDisplayName()) + " joined the game");
+
+        plugin.tab.showTab(event.getPlayer());
     }
 
     @EventHandler

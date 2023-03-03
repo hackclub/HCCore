@@ -4,20 +4,23 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.ListenerPriority;
+import com.fren_gor.ultimateAdvancementAPI.AdvancementTab;
+import com.fren_gor.ultimateAdvancementAPI.UltimateAdvancementAPI;
+import com.fren_gor.ultimateAdvancementAPI.advancement.RootAdvancement;
+import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementDisplay;
+import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementFrameType;
+import com.fren_gor.ultimateAdvancementAPI.util.AdvancementKey;
+import com.fren_gor.ultimateAdvancementAPI.util.CoordAdapter;
+import com.hackclub.hccore.advancements.*;
 import com.hackclub.hccore.commands.*;
 import com.hackclub.hccore.listeners.*;
 import com.hackclub.hccore.tasks.AutoAFKTask;
-import com.hackclub.hccore.tasks.CheckAdAstraTask;
 import com.hackclub.hccore.utils.TimeUtil;
-import hu.trigary.advancementcreator.Advancement;
-import hu.trigary.advancementcreator.AdvancementFactory;
-import hu.trigary.advancementcreator.shared.ItemObject;
-import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.GameRule;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-import org.bukkit.World;
-import org.bukkit.entity.EntityType;
+import org.bukkit.*;
+import org.bukkit.block.banner.Pattern;
+import org.bukkit.block.banner.PatternType;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BannerMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
@@ -51,33 +54,31 @@ public class HCCorePlugin extends JavaPlugin {
         this.getCommand("stats").setExecutor(new StatsCommand(this));
         // disable emote commands due to Player#chat not working with colours on (recent) paper
         // current behavior is being kicked, which while funny the first time, gets old fast
-//        this.getCommand("downvote").setExecutor(new DownvoteCommand(this));
-//        this.getCommand("shrug").setExecutor(new ShrugCommand(this));
-//        this.getCommand("tableflip").setExecutor(new TableflipCommand(this));
-//        this.getCommand("upvote").setExecutor(new UpvoteCommand(this));
-//        this.getCommand("angry").setExecutor(new AngryCommand(this));
-//        this.getCommand("flippedbytable").setExecutor(new FlippedByTableCommand(this));
+        //        this.getCommand("downvote").setExecutor(new DownvoteCommand(this));
+        //        this.getCommand("shrug").setExecutor(new ShrugCommand(this));
+        //        this.getCommand("tableflip").setExecutor(new TableflipCommand(this));
+        //        this.getCommand("upvote").setExecutor(new UpvoteCommand(this));
+        //        this.getCommand("angry").setExecutor(new AngryCommand(this));
+        //        this.getCommand("flippedbytable").setExecutor(new FlippedByTableCommand(this));
+
+        // Register advancements
+        this.registerAdvancements();
 
         // Register event listeners
         this.getServer().getPluginManager().registerEvents(new AdvancementListener(this), this);
         this.getServer().getPluginManager().registerEvents(new AFKListener(this), this);
-        this.getServer().getPluginManager().registerEvents(new BeehiveInteractionListener(this),
-                this);
+        this.getServer().getPluginManager().registerEvents(new BeehiveInteractionListener(this), this);
         this.getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
         this.getServer().getPluginManager().registerEvents(new SleepListener(this), this);
 
         // Register packet listeners
-        this.getProtocolManager().addPacketListener(new NameChangeListener(this,
-                ListenerPriority.NORMAL, PacketType.Play.Server.PLAYER_INFO));
+        this.getProtocolManager().addPacketListener(new NameChangeListener(this, ListenerPriority.NORMAL,
+                PacketType.Play.Server.PLAYER_INFO));
 
         // Register tasks
         new AutoAFKTask(this).runTaskTimer(this,
-                this.getConfig().getInt("settings.auto-afk-time") * TimeUtil.TICKS_PER_SECOND,
+                (long) this.getConfig().getInt("settings.auto-afk-time") * TimeUtil.TICKS_PER_SECOND,
                 30 * TimeUtil.TICKS_PER_SECOND);
-        new CheckAdAstraTask(this).runTaskTimer(this, 0, 10 * TimeUtil.TICKS_PER_SECOND);
-
-        // Register advancements
-        this.registerAdvancements();
 
         // Register all the players that were online before this plugin was enabled (example
         // scenario: plugin reload) to prevent null pointer errors.
@@ -97,90 +98,74 @@ public class HCCorePlugin extends JavaPlugin {
         return this.protocolManager;
     }
 
+    public AdvancementTab tab;
+    public RootAdvancement root;
+
     private void registerAdvancements() {
-        AdvancementFactory factory = new AdvancementFactory(this, false, false);
+        // Initialize advancement api
+        UltimateAdvancementAPI api = UltimateAdvancementAPI.getInstance(this);
+        tab = api.createAdvancementTab("hack_club");
 
-        // Create root advancement
-        ItemObject hackClubBanner = new ItemObject().setItem(Material.RED_BANNER).setNbt(
-                "{BlockEntityTag:{Patterns:[{Color:0,Pattern:\"rs\"},{Color:14,Pattern:\"hh\"},{Color:0,Pattern:\"ls\"},{Color:0,Pattern:\"ms\"},{Color:14,Pattern:\"bo\"}]}}");
-        Advancement root = new Advancement(new NamespacedKey(this, "root"), hackClubBanner,
-                new TextComponent("Hack Club"), new TextComponent("Beep boop beep beep boop"))
-                .makeRoot("block/coal_block", true).setFrame(Advancement.Frame.TASK);
+        // Create root display banner
+        ItemStack bannerStack = new ItemStack(Material.RED_BANNER);
+        BannerMeta bannerMeta = (BannerMeta) bannerStack.getItemMeta();
+        List<Pattern> patterns = new ArrayList<>();
+        patterns.add(new Pattern(DyeColor.WHITE, PatternType.STRIPE_RIGHT));
+        patterns.add(new Pattern(DyeColor.RED, PatternType.HALF_HORIZONTAL));
+        patterns.add(new Pattern(DyeColor.WHITE, PatternType.STRIPE_LEFT));
+        patterns.add(new Pattern(DyeColor.WHITE, PatternType.STRIPE_MIDDLE));
+        patterns.add(new Pattern(DyeColor.RED, PatternType.BORDER));
+        bannerMeta.setPatterns(patterns);
+        bannerStack.setItemMeta(bannerMeta);
 
-        // Create regular advancements
-        Advancement allMusicDiscs = factory.getAllItems("all_music_discs", root, "Musicophile",
-                        "Collect every single music disc", Material.JUKEBOX, Material.MUSIC_DISC_11,
-                        Material.MUSIC_DISC_13, Material.MUSIC_DISC_BLOCKS, Material.MUSIC_DISC_CAT,
-                        Material.MUSIC_DISC_CHIRP, Material.MUSIC_DISC_FAR, Material.MUSIC_DISC_MALL,
-                        Material.MUSIC_DISC_MELLOHI, Material.MUSIC_DISC_PIGSTEP, Material.MUSIC_DISC_STAL, Material.MUSIC_DISC_STRAD,
-                        Material.MUSIC_DISC_WAIT, Material.MUSIC_DISC_WARD)
-                .setFrame(Advancement.Frame.CHALLENGE);
+        // Create root display
+        AdvancementDisplay rootDisplay = new AdvancementDisplay(bannerStack, "Hack Club",
+                AdvancementFrameType.TASK, false, false, 0, 3, "Beep boop beep beep boop");
+        root = new RootAdvancement(tab, "root", rootDisplay, "textures/block/coal_block.png");
 
-        Advancement findBug = factory.getImpossible("find_bug", root, "Bug Squasher",
-                "Find and report a bug", Material.IRON_BOOTS);
-        Advancement contribute = factory.getImpossible("contribute", findBug, "pairsOfHands++",
-                "Contribute to the server’s codebase on GitHub", Material.COMMAND_BLOCK);
+        AdvancementKey astraKey = new AdvancementKey(this, "astra");
+        AdvancementKey bugKey = new AdvancementKey(this, "bug");
+        AdvancementKey contributeKey = new AdvancementKey(this, "contribute");
+        AdvancementKey diamondsKey = new AdvancementKey(this, "diamonds");
+        AdvancementKey dragonKey = new AdvancementKey(this, "dragon");
+        AdvancementKey elderKey = new AdvancementKey(this, "elder");
+        AdvancementKey hubKey = new AdvancementKey(this, "hub");
+        AdvancementKey ironGolemKey = new AdvancementKey(this, "iron_golem");
+        AdvancementKey mileKey = new AdvancementKey(this, "mile");
+        AdvancementKey musicophileKey = new AdvancementKey(this, "musicophile");
+        AdvancementKey witherKey = new AdvancementKey(this, "wither");
+        AdvancementKey wolfKey = new AdvancementKey(this, "wolf");
 
-        Advancement mineDiamondOre = factory.getImpossible("mine_diamond_ore", root,
-                "Look Ma, Diamonds!", "Find your first diamond while mining", Material.DIAMOND_ORE);
-        Advancement connectToNetherHub = factory
-                .getImpossible("connect_to_nether_hub", mineDiamondOre, "Linked Up",
-                        "Connect your base to the Nether hub", Material.POWERED_RAIL)
-                .setFrame(Advancement.Frame.GOAL);
-        Advancement killDragonInsane = factory
-                .getCountedImpossible("kill_dragon_insane", connectToNetherHub, "Dragon Master",
-                        "Kill the Ender Dragon 10 times", Material.DRAGON_HEAD, 10)
-                .setFrame(Advancement.Frame.CHALLENGE).setHidden(false);
-        Advancement killWitherInsane = factory
-                .getCountedImpossible("kill_wither_insane", killDragonInsane, "Are You Insane?!",
-                        "Kill the Wither 20 times", Material.WITHER_SKELETON_SKULL, 20)
-                .setFrame(Advancement.Frame.CHALLENGE);
-        Advancement killElderGuardian = factory.getKill("kill_elder_guardian", mineDiamondOre,
-                "The Deep End", "Defeat an Elder Guardian", Material.PRISMARINE_SHARD,
-                EntityType.ELDER_GUARDIAN).setFrame(Advancement.Frame.GOAL);
-        Advancement killWolf =
-                factory.getKill("kill_wolf", mineDiamondOre, "You Monster!", "Slaughter a doggo",
-                        Material.BONE, EntityType.WOLF).setFrame(Advancement.Frame.TASK);
-        Advancement killIronGolem = factory
-                .getKill("kill_iron_golem", killWolf, "Well That’s IRONic…",
-                        "Kill an Iron Golem", Material.IRON_INGOT, EntityType.IRON_GOLEM)
-                .setFrame(Advancement.Frame.TASK);
-        Advancement millionMiler = factory
-                .getImpossible("million_miler", mineDiamondOre, "Million Miler",
-                        "Fly one million miles (1,609,344 km) with an elytra", Material.ELYTRA)
-                .setFrame(Advancement.Frame.CHALLENGE);
-        Advancement adAstra = factory
-                .getImpossible("ad_astra", millionMiler, "Ad Astra",
-                        "Reach outer space and touch the stars", Material.FIREWORK_ROCKET)
-                .setFrame(Advancement.Frame.CHALLENGE);
+        CoordAdapter adapter = CoordAdapter.builder()
+                .add(astraKey, 5, 3)
+                .add(bugKey, 1, 2)
+                .add(contributeKey, 2, 2)
+                .add(diamondsKey, 1, 4)
+                .add(dragonKey, 3, 4)
+                .add(elderKey, 4, 4)
+                .add(hubKey, 6, 4)
+                .add(ironGolemKey, 2, 5)
+                .add(mileKey, 5, 4)
+                .add(musicophileKey, 1, 3)
+                .add(witherKey, 3, 3)
+                .add(wolfKey, 2, 4)
+                .build();
 
-        // Activate all the advancements
-        List<Advancement> advancements = new ArrayList<Advancement>() {
-            private static final long serialVersionUID = 0L;
+        MusicophileAdv musicophile = new MusicophileAdv(this, root, musicophileKey, adapter);
+        BugAdv bug = new BugAdv(this, root, bugKey, adapter);
+        ContributeAdv contribute = new ContributeAdv(this, bug, contributeKey, adapter);
+        DiamondsAdv diamonds = new DiamondsAdv(this, root, diamondsKey, adapter);
+        HubAdv hub = new HubAdv(this, diamonds, hubKey, adapter);
+        DragonAdv dragon = new DragonAdv(this, diamonds, dragonKey, adapter);
+        WitherAdv wither = new WitherAdv(this, dragon, witherKey, adapter);
+        ElderAdv elder = new ElderAdv(this, diamonds, elderKey, adapter);
+        WolfAdv wolf = new WolfAdv(this, diamonds, wolfKey, adapter);
+        IronGolemAdv ironGolem = new IronGolemAdv(this, wolf, ironGolemKey, adapter);
+        MileAdv mile = new MileAdv(this, diamonds, mileKey, adapter);
+        AstraAdv astra = new AstraAdv(this, mile, astraKey, adapter);
 
-            {
-                add(root);
-                add(allMusicDiscs);
-                add(findBug);
-                add(contribute);
-                add(mineDiamondOre);
-                add(connectToNetherHub);
-                add(killDragonInsane);
-                add(killWitherInsane);
-                add(killElderGuardian);
-                add(killWolf);
-                add(killIronGolem);
-                add(millionMiler);
-                add(adAstra);
-            }
-        };
-        for (Advancement advancement : advancements) {
-            if (this.getServer().getAdvancement(advancement.getId()) == null) {
-                advancement.activate(false);
-            }
-        }
-
-        // Reload the data cache after all advancements have been added
-        this.getServer().reloadData();
+        // Register all advancements
+        tab.registerAdvancements(root, musicophile, bug, contribute, diamonds, hub, dragon, wither, elder, wolf,
+                ironGolem, mile, astra);
     }
 }

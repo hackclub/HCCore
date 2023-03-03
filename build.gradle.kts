@@ -13,10 +13,10 @@ java {
 }
 
 dependencies {
-    implementation("com.github.Trigary:AdvancementCreator:v2.0")
     implementation("com.google.code.gson:gson:2.8.9")
     implementation("de.tr7zw:item-nbt-api:2.8.0")
 
+    compileOnly("com.frengor:ultimateadvancementapi:2.2.2")
     compileOnly("com.comphenix.protocol:ProtocolLib:5.0.0-SNAPSHOT")
     compileOnly("io.papermc.paper:paper-api:1.19.3-R0.1-SNAPSHOT")
 }
@@ -58,8 +58,8 @@ tasks {
 repositories {
     mavenCentral()
 
-    // AdvancementCreator
-    maven("https://jitpack.io")
+    // UltimateAdvancementAPI
+    maven("https://nexus.frengor.com/repository/public/")
 
     // NBT-API
     maven("https://repo.codemc.org/repository/maven-public/")
@@ -68,5 +68,5 @@ repositories {
     maven("https://repo.dmulloy2.net/nexus/repository/public/")
 
     // Papermc
-    maven { url = uri("https://repo.papermc.io/repository/maven-public/") }
+    maven("https://repo.papermc.io/repository/maven-public/")
 }

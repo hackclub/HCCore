@@ -42,24 +42,15 @@ cd HCCore
 ```sh
 cp ~/HCCore/build/libs/HCCore-1.0.0.jar ~/minecraft-server/plugins
 ```
+## 4. Install Dependencies
 
-On launch, you should receive an error:
-
-```txt
-[00:33:58 ERROR]: Could not load 'plugins/HCCore-1.0.0.jar' in folder 'plugins'
-org.bukkit.plugin.UnknownDependencyException: Unknown dependency ProtocolLib. Please download and install ProtocolLib to run this plugin.
-	at org.bukkit.plugin.SimplePluginManager.loadPlugins(SimplePluginManager.java:272) ~[patched_1.16.4.jar:git-Paper-261]
-	at org.bukkit.craftbukkit.v1_16_R3.CraftServer.loadPlugins(CraftServer.java:389) ~[patched_1.16.4.jar:git-Paper-261]
-	at net.minecraft.server.v1_16_R3.DedicatedServer.init(DedicatedServer.java:206) ~[patched_1.16.4.jar:git-Paper-261]
-	at net.minecraft.server.v1_16_R3.MinecraftServer.w(MinecraftServer.java:939) ~[patched_1.16.4.jar:git-Paper-261]
-	at net.minecraft.server.v1_16_R3.MinecraftServer.lambda$a$0(MinecraftServer.java:177) ~[patched_1.16.4.jar:git-Paper-261]
-	at java.lang.Thread.run(Thread.java:834) [?:?]
-```
-
-We fix this by [installing ProtocolLib](https://www.spigotmc.org/resources/protocollib.1997/)
+Download:
+- [ProtocolLib](https://www.spigotmc.org/resources/protocollib.1997/)
+- [UltimateAdvancementAPI](https://www.spigotmc.org/resources/ultimateadvancementapi-1-15-1-19-3.95585/)
 
 ```sh
 mv ~/Downloads/ProtocolLib.jar ~/minecraft-server/plugins
+mv ~/Downloads/UltimateAdvancementAPI-2.2.2-(1.15-1.19.3).jar ~/minecraft-server/plugins
 ```
 
 Note: Make sure you stop the server and restart it for the plugins to properly load
@@ -72,7 +63,9 @@ BOOM! Now we can connect with our Minecraft client and test/use the plugin
 -> /color <chat|name> [color]
 ```
 
-## 4. Install BileTools
+## 5. Install BileTools
+
+> Note: As of writing, BileTools is not working properly with the latest Paper version. See this issue for details: https://github.com/VolmitSoftware/BileTools/issues/8
 
 We can use BileTools to hot-reload our plugin. BileTools looks for changes in the directory, and when it detects that a `.jar` file has changed, it will reload that plugin
 

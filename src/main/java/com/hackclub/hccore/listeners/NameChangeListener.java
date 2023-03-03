@@ -26,7 +26,7 @@ public class NameChangeListener extends PacketAdapter {
     public void onPacketSending(final PacketEvent event) {
         // Only intercept packets that add players to the list
         if (event.getPacket().getPlayerInfoAction()
-                .read(0) != EnumWrappers.PlayerInfoAction.ADD_PLAYER) {
+                .readSafely(0) != EnumWrappers.PlayerInfoAction.ADD_PLAYER) {
             return;
         }
 
@@ -38,7 +38,7 @@ public class NameChangeListener extends PacketAdapter {
                     event.getPlayer().getServer().getPlayer(playerInfoData.getProfile().getUUID());
             // If any of this doesn't exist but it's in the list, just add it to the new one
             // and forget about it.
-            if (playerInfoData == null || playerInfoData.getProfile() == null || player == null) {
+            if (playerInfoData.getProfile() == null || player == null) {
                 newPlayerInfoDataList.add(playerInfoData);
                 continue;
             }
