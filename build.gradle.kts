@@ -61,9 +61,6 @@ repositories {
     // UltimateAdvancementAPI
     maven("https://nexus.frengor.com/repository/public/")
 
-    // AdvancementCreator
-    maven("https://jitpack.io")
-
     // NBT-API
     maven("https://repo.codemc.org/repository/maven-public/")
 
