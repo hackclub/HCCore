@@ -13,7 +13,7 @@ import org.bukkit.event.player.PlayerStatisticIncrementEvent;
 
 public class MileAdv extends BaseAdvancement {
     static AdvancementDisplayBuilder<AdvancementDisplay.Builder, AdvancementDisplay> displayBuilder =
-            new AdvancementDisplay.Builder(Material.ELYTRA, "I'm Gonna Be")
+            new AdvancementDisplay.Builder(Material.DIAMOND_BOOTS, "I'm Gonna Be")
             .challengeFrame()
             .announceChat()
             .showToast()
@@ -25,7 +25,7 @@ public class MileAdv extends BaseAdvancement {
 
         registerEvent(PlayerStatisticIncrementEvent.class, e -> {
             if (e.getStatistic() == Statistic.WALK_ONE_CM) {
-                if (e.getNewValue() >= 160934.4 * 1000) {
+                if (e.getNewValue() >= 1609.344 * 100 * 1000) {
                     grant(e.getPlayer());
                 }
             }
