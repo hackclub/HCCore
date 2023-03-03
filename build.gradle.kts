@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.hackclub.hccore"
-version = "1.0.0"
+version = "1.1.0"
 description = "Main plugin for the Hack Club Minecraft server."
 
 java {
