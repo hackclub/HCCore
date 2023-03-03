@@ -13,10 +13,10 @@ java {
 }
 
 dependencies {
-    implementation("com.frengor:ultimateadvancementapi:2.2.2")
     implementation("com.google.code.gson:gson:2.8.9")
     implementation("de.tr7zw:item-nbt-api:2.8.0")
 
+    compileOnly("com.frengor:ultimateadvancementapi:2.2.2")
     compileOnly("com.comphenix.protocol:ProtocolLib:5.0.0-SNAPSHOT")
     compileOnly("io.papermc.paper:paper-api:1.19.3-R0.1-SNAPSHOT")
 }
