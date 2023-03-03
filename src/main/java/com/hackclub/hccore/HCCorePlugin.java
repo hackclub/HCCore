@@ -30,8 +30,6 @@ import java.util.List;
 public class HCCorePlugin extends JavaPlugin {
     private DataManager dataManager;
     private ProtocolManager protocolManager;
-    public AdvancementTab tab;
-    public RootAdvancement root;
 
     @Override
     public void onEnable() {
@@ -47,13 +45,9 @@ public class HCCorePlugin extends JavaPlugin {
         this.dataManager = new DataManager(this);
         this.protocolManager = ProtocolLibrary.getProtocolManager();
 
-        // Register advancements
-        this.registerAdvancements();
-
         // Register commands
         this.getCommand("afk").setExecutor(new AFKCommand(this));
         this.getCommand("color").setExecutor(new ColorCommand(this));
-        this.getCommand("hcadvancement").setExecutor(new HCAdvancementCommand(this));
         this.getCommand("loc").setExecutor(new LocCommand(this));
         this.getCommand("nick").setExecutor(new NickCommand(this));
         this.getCommand("ping").setExecutor(new PingCommand(this));
@@ -67,6 +61,9 @@ public class HCCorePlugin extends JavaPlugin {
         //        this.getCommand("upvote").setExecutor(new UpvoteCommand(this));
         //        this.getCommand("angry").setExecutor(new AngryCommand(this));
         //        this.getCommand("flippedbytable").setExecutor(new FlippedByTableCommand(this));
+
+        // Register advancements
+        this.registerAdvancements();
 
         // Register event listeners
         this.getServer().getPluginManager().registerEvents(new AdvancementListener(this), this);
@@ -103,10 +100,13 @@ public class HCCorePlugin extends JavaPlugin {
         return this.protocolManager;
     }
 
+    public AdvancementTab tab;
+    public RootAdvancement root;
+
     private void registerAdvancements() {
         // Initialize advancement api
         UltimateAdvancementAPI api = UltimateAdvancementAPI.getInstance(this);
-        tab = api.createAdvancementTab("hccore");
+        tab = api.createAdvancementTab("hack_club");
 
         // Create root display banner
         ItemStack bannerStack = new ItemStack(Material.RED_BANNER);
