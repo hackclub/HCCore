@@ -8,28 +8,28 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class UpvoteCommand implements CommandExecutor {
-    private static final String UPVOTE = ChatColor.RED + ChatColor.BOLD.toString() + "↑";
 
-    private final HCCorePlugin plugin;
+  private static final String UPVOTE = ChatColor.RED + ChatColor.BOLD.toString() + "↑";
 
-    public UpvoteCommand(HCCorePlugin plugin) {
-        this.plugin = plugin;
+  private final HCCorePlugin plugin;
+
+  public UpvoteCommand(HCCorePlugin plugin) {
+    this.plugin = plugin;
+  }
+
+  @Override
+  public boolean onCommand(CommandSender sender, Command cmd, String alias, String[] args) {
+    if (!(sender instanceof Player player)) {
+      sender.sendMessage(ChatColor.RED + "You must be a player to use this");
+      return true;
     }
 
-    @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String alias, String[] args) {
-        if (!(sender instanceof Player)) {
-            sender.sendMessage(ChatColor.RED + "You must be a player to use this");
-            return true;
-        }
-
-        Player player = (Player) sender;
-        if (args.length == 0) {
-            player.chat(UpvoteCommand.UPVOTE);
-        } else {
-            player.chat(String.join(" ", args) + " " + UpvoteCommand.UPVOTE);
-        }
-
-        return true;
+    if (args.length == 0) {
+      player.chat(UpvoteCommand.UPVOTE);
+    } else {
+      player.chat(String.join(" ", args) + " " + UpvoteCommand.UPVOTE);
     }
+
+    return true;
+  }
 }

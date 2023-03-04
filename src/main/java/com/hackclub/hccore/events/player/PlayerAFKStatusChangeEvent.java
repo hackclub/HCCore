@@ -5,25 +5,26 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerEvent;
 
 public class PlayerAFKStatusChangeEvent extends PlayerEvent {
-    private static final HandlerList handlers = new HandlerList();
 
-    private boolean isAfk;
+  private static final HandlerList handlers = new HandlerList();
 
-    public PlayerAFKStatusChangeEvent(Player player, boolean isAfk) {
-        super(player);
-        this.player = player;
-        this.isAfk = isAfk;
-    }
+  private final boolean isAfk;
 
-    public boolean getNewValue() {
-        return this.isAfk;
-    }
+  public PlayerAFKStatusChangeEvent(Player player, boolean isAfk) {
+    super(player);
+    this.player = player;
+    this.isAfk = isAfk;
+  }
 
-    public HandlerList getHandlers() {
-        return handlers;
-    }
+  public boolean getNewValue() {
+    return this.isAfk;
+  }
 
-    public static HandlerList getHandlerList() {
-        return handlers;
-    }
+  public HandlerList getHandlers() {
+    return handlers;
+  }
+
+  public static HandlerList getHandlerList() {
+    return handlers;
+  }
 }
