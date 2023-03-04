@@ -31,7 +31,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class HCCorePlugin extends JavaPlugin {
     private DataManager dataManager;
@@ -180,6 +179,8 @@ public class HCCorePlugin extends JavaPlugin {
 
     private void announceAdvancement(AdvancementProgressionUpdateEvent event) {
         Advancement advancement = event.getAdvancement();
+
+        if (event.getNewProgression() < advancement.getMaxProgression()) return;
 
         AdvancementDisplay display = advancement.getDisplay();
 
