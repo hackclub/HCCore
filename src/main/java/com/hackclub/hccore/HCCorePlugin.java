@@ -6,9 +6,11 @@ import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.fren_gor.ultimateAdvancementAPI.AdvancementTab;
 import com.fren_gor.ultimateAdvancementAPI.UltimateAdvancementAPI;
+import com.fren_gor.ultimateAdvancementAPI.advancement.Advancement;
 import com.fren_gor.ultimateAdvancementAPI.advancement.RootAdvancement;
 import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementDisplay;
 import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementFrameType;
+import com.fren_gor.ultimateAdvancementAPI.events.advancement.AdvancementProgressionUpdateEvent;
 import com.fren_gor.ultimateAdvancementAPI.util.AdvancementKey;
 import com.fren_gor.ultimateAdvancementAPI.util.CoordAdapter;
 import com.hackclub.hccore.advancements.*;
@@ -16,15 +18,20 @@ import com.hackclub.hccore.commands.*;
 import com.hackclub.hccore.listeners.*;
 import com.hackclub.hccore.tasks.AutoAFKTask;
 import com.hackclub.hccore.utils.TimeUtil;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.*;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.block.banner.PatternType;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BannerMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class HCCorePlugin extends JavaPlugin {
     private DataManager dataManager;
@@ -65,7 +72,9 @@ public class HCCorePlugin extends JavaPlugin {
         this.registerAdvancements();
 
         // Register event listeners
-        this.getServer().getPluginManager().registerEvents(new AdvancementListener(), this);
+        this.tab.getEventManager().register("announce_adv", AdvancementProgressionUpdateEvent.class,
+                this::announceAdvancement);
+
         this.getServer().getPluginManager().registerEvents(new AFKListener(this), this);
         this.getServer().getPluginManager().registerEvents(new BeehiveInteractionListener(this), this);
         this.getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
@@ -167,5 +176,50 @@ public class HCCorePlugin extends JavaPlugin {
         // Register all advancements
         tab.registerAdvancements(root, musicophile, bug, contribute, diamonds, hub, dragon, wither, elder, wolf,
                 ironGolem, mile, astra);
+    }
+
+    private void announceAdvancement(AdvancementProgressionUpdateEvent event) {
+        Advancement advancement = event.getAdvancement();
+
+        AdvancementDisplay display = advancement.getDisplay();
+
+        // Ignore hidden advancements (i.e. recipes)
+        if (!display.doesAnnounceToChat()) return;
+
+        Component titleComponent = Component.text("[")
+                .append(Component.text(display.getTitle()))
+                .append(Component.text("]"));
+        Component descriptionComponent = Component.text(display.getTitle())
+                .append(Component.text("\n"))
+                .append(Component.text(String.join(" ", display.getDescription())));
+        Component frameSpecificComponent;
+        TextColor frameSpecificColor;
+
+        switch (display.getFrame()) {
+            case TASK:
+            default:
+                frameSpecificComponent = Component.text(" has made the advancement ");
+                frameSpecificColor = NamedTextColor.GREEN;
+                break;
+            case GOAL:
+                frameSpecificComponent = Component.text(" has reached the goal ");
+                frameSpecificColor = NamedTextColor.GREEN;
+                break;
+            case CHALLENGE:
+                frameSpecificComponent = Component.text(" has completed the challenge ");
+                frameSpecificColor = NamedTextColor.DARK_PURPLE;
+                break;
+        }
+
+        event.getTeamProgression().forEachMember(uuid -> {
+            Player player = Bukkit.getPlayer(uuid);
+            player.getServer().broadcast(player.displayName()
+                    .color(NamedTextColor.WHITE)
+                    .append(frameSpecificComponent)
+                    .append(titleComponent
+                            .color(frameSpecificColor)
+                            .hoverEvent(descriptionComponent
+                                    .color(frameSpecificColor))));
+        });
     }
 }
