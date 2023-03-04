@@ -9,25 +9,26 @@ import com.fren_gor.ultimateAdvancementAPI.util.CoordAdapter;
 import com.hackclub.hccore.HCCorePlugin;
 import org.bukkit.Material;
 import org.bukkit.Statistic;
-import org.bukkit.event.player.PlayerStatisticIncrementEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 
 public class MileAdv extends BaseAdvancement {
+
     static AdvancementDisplayBuilder<AdvancementDisplay.Builder, AdvancementDisplay> displayBuilder =
-            new AdvancementDisplay.Builder(Material.DIAMOND_BOOTS, "I'm Gonna Be")
+        new AdvancementDisplay.Builder(Material.DIAMOND_BOOTS, "I'm Gonna Be")
             .challengeFrame()
             .announceChat()
             .showToast()
-            .description("Just to be the man who walked a thousand miles (1609.344 km) to fall down at your door");
+            .description(
+                "Just to be the man who walked a thousand miles (1609.344 km) to fall down at your door");
     static int maxProgression = 1;
 
-    public MileAdv(HCCorePlugin plugin, Advancement root, AdvancementKey key, CoordAdapter adapter) {
+    public MileAdv(HCCorePlugin plugin, Advancement root, AdvancementKey key,
+        CoordAdapter adapter) {
         super(key.getKey(), displayBuilder.coords(adapter, key).build(), root, maxProgression);
 
-        registerEvent(PlayerStatisticIncrementEvent.class, e -> {
-            if (e.getStatistic() == Statistic.WALK_ONE_CM) {
-                if (e.getNewValue() >= 1609.344 * 100 * 1000) {
-                    grant(e.getPlayer());
-                }
+        registerEvent(PlayerMoveEvent.class, e -> {
+            if (e.getPlayer().getStatistic(Statistic.WALK_ONE_CM) >= 1609.344 * 100 * 1000) {
+                grant(e.getPlayer());
             }
         });
     }
