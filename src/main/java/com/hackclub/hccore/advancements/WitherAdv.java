@@ -12,24 +12,27 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.event.entity.EntityDeathEvent;
 
 public class WitherAdv extends BaseAdvancement {
-    static AdvancementDisplayBuilder<AdvancementDisplay.Builder, AdvancementDisplay> displayBuilder = new AdvancementDisplay.Builder(Material.WITHER_SKELETON_SKULL,
-            "Are You" +
-            " Insane?!")
-            .challengeFrame()
-            .announceChat()
-            .showToast()
-            .description("Kill the Wither 20 times");
-    static int maxProgression = 20;
 
-    public WitherAdv(HCCorePlugin plugin, Advancement root, AdvancementKey key, CoordAdapter adapter) {
-        super(key.getKey(), displayBuilder.coords(adapter, key).build(), root, maxProgression);
+  static AdvancementDisplayBuilder<AdvancementDisplay.Builder, AdvancementDisplay> displayBuilder = new AdvancementDisplay.Builder(
+      Material.WITHER_SKELETON_SKULL,
+      "Are You" +
+          " Insane?!")
+      .challengeFrame()
+      .announceChat()
+      .showToast()
+      .description("Kill the Wither 20 times");
+  static int maxProgression = 20;
 
-        registerEvent(EntityDeathEvent.class, e -> {
-            if (e.getEntityType() == EntityType.WITHER) {
-                if (e.getEntity().getKiller() != null) {
-                    incrementProgression(e.getEntity().getKiller());
-                }
-            }
-        });
-    }
+  public WitherAdv(HCCorePlugin plugin, Advancement root, AdvancementKey key,
+      CoordAdapter adapter) {
+    super(key.getKey(), displayBuilder.coords(adapter, key).build(), root, maxProgression);
+
+    registerEvent(EntityDeathEvent.class, e -> {
+      if (e.getEntityType() == EntityType.WITHER) {
+        if (e.getEntity().getKiller() != null) {
+          incrementProgression(e.getEntity().getKiller());
+        }
+      }
+    });
+  }
 }

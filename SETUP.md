@@ -1,10 +1,13 @@
 # Setup
 
-For the purposes of this guide we'll designate the `~/minecraft-server` and `~/HCCore` directories for the locations of the minecraft (paper) server, and the HCCore source code. Of course, you don't have to put the files in the same place
+For the purposes of this guide we'll designate the `~/minecraft-server` and `~/HCCore` directories
+for the locations of the minecraft (paper) server, and the HCCore source code. Of course, you don't
+have to put the files in the same place
 
 ## 1. Start Minecraft Paper Server
 
-[Download Paper](https://papermc.io/downloads) (build #261 at the time of writing) and place the resulting jar to `~/minecraft-server`
+[Download Paper](https://papermc.io/downloads) (build #261 at the time of writing) and place the
+resulting jar to `~/minecraft-server`
 
 Start the server and check that it works properly
 
@@ -20,7 +23,9 @@ This server is running Paper version git-Paper-261 (MC: 1.16.4) (Implementing AP
 
 You'll notice other files and folders like `folder`, `whitelist.json`, etc. are created
 
-To join the server, launch your Minecraft client, and click `[Direct Connection]` -> and enter `localhost` to 'Server Address'. Notice that the `/color` command doesn't work (it will work once we add the HCCore plugin)
+To join the server, launch your Minecraft client, and click `[Direct Connection]` -> and
+enter `localhost` to 'Server Address'. Notice that the `/color` command doesn't work (it will work
+once we add the HCCore plugin)
 
 ## 2. Download and Build HCCore
 
@@ -42,9 +47,11 @@ cd HCCore
 ```sh
 cp ~/HCCore/build/libs/HCCore-1.0.0.jar ~/minecraft-server/plugins
 ```
+
 ## 4. Install Dependencies
 
 Download:
+
 - [ProtocolLib](https://www.spigotmc.org/resources/protocollib.1997/)
 - [UltimateAdvancementAPI](https://www.spigotmc.org/resources/ultimateadvancementapi-1-15-1-19-3.95585/)
 
@@ -65,11 +72,14 @@ BOOM! Now we can connect with our Minecraft client and test/use the plugin
 
 ## 5. Install BileTools
 
-> Note: As of writing, BileTools is not working properly with the latest Paper version. See this issue for details: https://github.com/VolmitSoftware/BileTools/issues/8
+> Note: As of writing, BileTools is not working properly with the latest Paper version. See this
+> issue for details: https://github.com/VolmitSoftware/BileTools/issues/8
 
-We can use BileTools to hot-reload our plugin. BileTools looks for changes in the directory, and when it detects that a `.jar` file has changed, it will reload that plugin
+We can use BileTools to hot-reload our plugin. BileTools looks for changes in the directory, and
+when it detects that a `.jar` file has changed, it will reload that plugin
 
-You can test this out by modifying the strings in `player.getServer().broadcastMessage()` in `src/main/java/com/hackclub/hccore/listeners/AFKListener.java`
+You can test this out by modifying the strings in `player.getServer().broadcastMessage()`
+in `src/main/java/com/hackclub/hccore/listeners/AFKListener.java`
 
 Once you have made your modifications, rebuild
 
