@@ -8,17 +8,23 @@ depend:
 commands:
   afk:
     description: Toggles your AFK status
-    usage: /afk
+    usage: /<command>
     aliases: [ a, away ]
   color:
     description: Sets your chat or name color
-    usage: /color <chat|name> [color]
+    usage: /<command> <chat|name> [color]
+    aliases:
+      - colour
   loc:
     description: Manage your saved locations
-    usage: /loc <del|get|list|rename|save|share> [...args]
+    usage: /<command> <del|get|list|rename|save|share> [...args]
+    aliases:
+      - locations
   nick:
     description: Sets your nickname
-    usage: /nick [nickname]
+    usage: /<command> [nickname]
+    aliases:
+      - nickname
   ping:
     description: Gets the ping of you or a specified player
     usage: /ping [player]
