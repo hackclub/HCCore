@@ -65,7 +65,7 @@ public class HCCorePlugin extends JavaPlugin {
         this.registerAdvancements();
 
         // Register event listeners
-        this.getServer().getPluginManager().registerEvents(new AdvancementListener(this), this);
+        this.getServer().getPluginManager().registerEvents(new AdvancementListener(), this);
         this.getServer().getPluginManager().registerEvents(new AFKListener(this), this);
         this.getServer().getPluginManager().registerEvents(new BeehiveInteractionListener(this), this);
         this.getServer().getPluginManager().registerEvents(new PlayerListener(this), this);

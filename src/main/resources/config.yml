@@ -1,5 +1,5 @@
 # URL to request form to claim exclusive Hack Club stickers
-claim-stickers-url: "https://example.com/claim-stickers"
+claim-stickers-url: "http://hack.af/mc-stickers"
 settings:
   # Time in seconds after which a player will be automatically set to AFK
   auto-afk-time: 600
