@@ -7,7 +7,10 @@ import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementDispla
 import com.fren_gor.ultimateAdvancementAPI.util.AdvancementKey;
 import com.fren_gor.ultimateAdvancementAPI.util.CoordAdapter;
 import com.hackclub.hccore.HCCorePlugin;
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -37,13 +40,22 @@ public class DiamondsAdv extends BaseAdvancement {
 
     @Override
     public void giveReward(@NotNull Player player) {
-        player.sendMessage(ChatColor.GREEN
-                + "Congrats, you’ve found your very first diamond! You are now eligible for the exclusive (and limited edition!) Hack Club Minecraft stickers. Head over to "
-                + ChatColor.UNDERLINE + this.plugin.getConfig().getString("claim-stickers-url")
-                + ChatColor.RESET + ChatColor.GREEN + " to claim them!*");
-        player.sendMessage(ChatColor.GRAY + ChatColor.ITALIC.toString()
-                + "*This offer only applies to players who have never received the stickers before. If you have, please do not fill out the form again!");
-        player.sendMessage(ChatColor.GRAY + ChatColor.ITALIC.toString()
-                + "You will only see this message once.");
+        Component congratsComponent = Component.text("Congrats, you’ve found your very first diamond! You are now eligible for the exclusive (and limited edition!) Hack Club Minecraft stickers. Head over to ")
+                .color(NamedTextColor.GREEN);
+        Component linkComponent = Component.text(this.plugin.getConfig().getString("claim-stickers-url"))
+                .color(NamedTextColor.GREEN)
+                .decorate(TextDecoration.UNDERLINED)
+                .hoverEvent(Component.text("Click here to claim your stickers!"))
+                .clickEvent(ClickEvent.openUrl(this.plugin.getConfig().getString("claim-stickers-url")));
+        Component claimComponent = Component.text(" to claim them!")
+                .decoration(TextDecoration.UNDERLINED, false)
+                .color(NamedTextColor.GREEN);
+        Component italicComponent = Component.text("""
+
+                        This offer only applies to players who have never received the stickers before. If you have, please do not fill out the form again!
+                        You will only see this message once.""")
+                .color(NamedTextColor.GRAY)
+                .decorate(TextDecoration.ITALIC);
+        player.sendMessage(congratsComponent.append(linkComponent.append(claimComponent.append(italicComponent))));
     }
 }
