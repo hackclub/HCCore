@@ -34,7 +34,6 @@ import com.hackclub.hccore.listeners.AFKListener;
 import com.hackclub.hccore.listeners.BeehiveInteractionListener;
 import com.hackclub.hccore.listeners.NameChangeListener;
 import com.hackclub.hccore.listeners.PlayerListener;
-import com.hackclub.hccore.listeners.SleepListener;
 import com.hackclub.hccore.tasks.AutoAFKTask;
 import com.hackclub.hccore.utils.TimeUtil;
 import java.util.ArrayList;
@@ -92,7 +91,6 @@ public class HCCorePlugin extends JavaPlugin {
     this.getServer().getPluginManager().registerEvents(new AFKListener(this), this);
     this.getServer().getPluginManager().registerEvents(new BeehiveInteractionListener(this), this);
     this.getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
-    this.getServer().getPluginManager().registerEvents(new SleepListener(this), this);
 
     // Register packet listeners
     this.getProtocolManager()
