@@ -28,21 +28,3 @@ commands:
   stats:
     description: Gets the stats of you or a specified player
     usage: /stats [player] [extended|only] <statistic>
-  downvote:
-    description: Appends a downvote to your message
-    usage: /downvote [message]
-  shrug:
-    description: Shrug, just like /shrug in Slack
-    usage: /shrug [message]
-  tableflip:
-    description: Appends a tableflip to your message
-    usage: /tableflip [message]
-  upvote:
-    description: Appends an upvote to your message
-    usage: /upvote [message]
-  angry:
-    description: Appends a angry face to your message
-    usage: /angry [message]
-  flippedbytable:
-    description: Appends ノ┬─┬ノ ︵ (/o°o)/  to your message
-    usage: /flippedbytable [message]
