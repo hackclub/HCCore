@@ -45,7 +45,7 @@ jobs:
           restore-keys: |
             - ${{ runner.os }}-gradlewrapper-
       - name: Gradle build
-        run: ./gradlew --info --stacktrace build
+        run: ./gradlew --info --stacktrace build -Prelease.state=dev
       - name: Upload jar to build artifacts
         uses: actions/upload-artifact@v3
         with:
