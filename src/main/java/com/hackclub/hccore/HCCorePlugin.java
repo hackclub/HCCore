@@ -31,11 +31,9 @@ import com.hackclub.hccore.commands.PingCommand;
 import com.hackclub.hccore.commands.SpawnCommand;
 import com.hackclub.hccore.commands.StatsCommand;
 import com.hackclub.hccore.listeners.AFKListener;
-import com.hackclub.hccore.listeners.AdvancementListener;
 import com.hackclub.hccore.listeners.BeehiveInteractionListener;
 import com.hackclub.hccore.listeners.NameChangeListener;
 import com.hackclub.hccore.listeners.PlayerListener;
-import com.hackclub.hccore.listeners.SleepListener;
 import com.hackclub.hccore.tasks.AutoAFKTask;
 import com.hackclub.hccore.utils.TimeUtil;
 import java.util.ArrayList;
@@ -57,9 +55,9 @@ public class HCCorePlugin extends JavaPlugin {
 
   @Override
   public void onEnable() {
-    // Disable default advancement announcements
+    // enable default advancement announcements, should probably leave default, but removes need to reenable on each server
     for (World world : this.getServer().getWorlds()) {
-      world.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
+      world.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, true);
     }
 
     // Create config
@@ -90,11 +88,9 @@ public class HCCorePlugin extends JavaPlugin {
     this.registerAdvancements();
 
     // Register event listeners
-    this.getServer().getPluginManager().registerEvents(new AdvancementListener(this), this);
     this.getServer().getPluginManager().registerEvents(new AFKListener(this), this);
     this.getServer().getPluginManager().registerEvents(new BeehiveInteractionListener(this), this);
     this.getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
-    this.getServer().getPluginManager().registerEvents(new SleepListener(this), this);
 
     // Register packet listeners
     this.getProtocolManager()
@@ -192,6 +188,9 @@ public class HCCorePlugin extends JavaPlugin {
 
     // Register all advancements
     tab.registerAdvancements(root, musicophile, bug, contribute, diamonds, hub, dragon, wither,
-        elder, wolf, ironGolem, mile, astra);
+        elder, wolf,
+        ironGolem, mile, astra);
   }
+
+
 }
