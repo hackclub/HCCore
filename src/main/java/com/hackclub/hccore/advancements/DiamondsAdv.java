@@ -48,7 +48,6 @@ public class DiamondsAdv extends BaseAdvancement {
                 .hoverEvent(Component.text("Click here to claim your stickers!"))
                 .clickEvent(ClickEvent.openUrl(this.plugin.getConfig().getString("claim-stickers-url")));
         Component claimComponent = Component.text(" to claim them!")
-                .decoration(TextDecoration.UNDERLINED, false)
                 .color(NamedTextColor.GREEN);
         Component italicComponent = Component.text("""
 
@@ -56,6 +55,6 @@ public class DiamondsAdv extends BaseAdvancement {
                         You will only see this message once.""")
                 .color(NamedTextColor.GRAY)
                 .decorate(TextDecoration.ITALIC);
-        player.sendMessage(congratsComponent.append(linkComponent.append(claimComponent.append(italicComponent))));
+        player.sendMessage(congratsComponent.append(linkComponent).append(claimComponent).append(italicComponent));
     }
 }
