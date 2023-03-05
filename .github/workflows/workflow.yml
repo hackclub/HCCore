@@ -124,8 +124,7 @@ jobs:
         run: |
           echo -ne "$DEPLOY_SSH_PRIVATE_KEY" > ./hackclub_minecraft_deploy
           chmod 600 ./hackclub_minecraft_deploy
-          ls -Alhr
       - name: SCP Deploy
-        run: "echo 'put built-plugin/HCCore-Shadow-*.jar /plugins/update/' | sftp -i ./hackclub_minecraft_deploy -b - -oStrictHostKeyChecking=false sftp://mc-hc-deployker.89c06257@hebra.365hosts.network:60022"
+        run: "echo 'put HCCore-Shadow-*.jar /plugins/update/' | sftp -i ./hackclub_minecraft_deploy -b - -oStrictHostKeyChecking=false sftp://mc-hc-deployker.89c06257@hebra.365hosts.network:60022"
 
 
