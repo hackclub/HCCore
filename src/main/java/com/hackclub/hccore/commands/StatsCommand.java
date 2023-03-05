@@ -17,6 +17,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
+import org.jetbrains.annotations.NotNull;
 
 public class StatsCommand implements TabExecutor {
 
@@ -30,7 +31,8 @@ public class StatsCommand implements TabExecutor {
   }
 
   @Override
-  public boolean onCommand(CommandSender sender, Command cmd, String alias, String[] args) {
+  public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd,
+      @NotNull String alias, String[] args) {
     boolean extended = false;
 
     // /stats
@@ -95,7 +97,8 @@ public class StatsCommand implements TabExecutor {
   }
 
   @Override
-  public List<String> onTabComplete(CommandSender sender, Command cmd, String alias,
+  public List<String> onTabComplete(
+      @NotNull CommandSender sender, @NotNull Command cmd, @NotNull String alias,
       String[] args) {
     List<String> completions = new ArrayList<>();
 
