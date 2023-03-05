@@ -37,7 +37,7 @@ public class NameChangeListener extends PacketAdapter {
     for (PlayerInfoData playerInfoData : playerInfoDataList) {
       Player player =
           event.getPlayer().getServer().getPlayer(playerInfoData.getProfile().getUUID());
-      // If any of this doesn't exist but it's in the list, just add it to the new one
+      // If any of this doesn't exist,but it's in the list, just add it to the new one
       // and forget about it.
       if (playerInfoData.getProfile() == null || player == null) {
         newPlayerInfoDataList.add(playerInfoData);
@@ -51,9 +51,9 @@ public class NameChangeListener extends PacketAdapter {
       newProfile.getProperties().putAll(playerInfoData.getProfile().getProperties());
 
       // Put all the info from the old profile into the new one
-      PlayerInfoData newPlayerInfoData = new PlayerInfoData(newProfile, playerInfoData.getLatency(),
-          playerInfoData.getGameMode(), playerInfoData.getDisplayName(),
-          playerInfoData.getProfileKeyData());
+      PlayerInfoData newPlayerInfoData =
+          new PlayerInfoData(newProfile, playerInfoData.getLatency(),
+              playerInfoData.getGameMode(), playerInfoData.getDisplayName());
 
       newPlayerInfoDataList.add(newPlayerInfoData);
     }

@@ -11,10 +11,7 @@ public class UpvoteCommand implements CommandExecutor {
 
   private static final String UPVOTE = ChatColor.RED + ChatColor.BOLD.toString() + "↑";
 
-  private final HCCorePlugin plugin;
-
   public UpvoteCommand(HCCorePlugin plugin) {
-    this.plugin = plugin;
   }
 
   @Override

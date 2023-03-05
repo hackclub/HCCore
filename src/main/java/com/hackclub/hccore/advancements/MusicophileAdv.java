@@ -15,17 +15,18 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
 public class MusicophileAdv extends BaseAdvancement {
 
-  static AdvancementDisplayBuilder<AdvancementDisplay.Builder, AdvancementDisplay> displayBuilder =
+  static final AdvancementDisplayBuilder<AdvancementDisplay.Builder, AdvancementDisplay> displayBuilder =
       new AdvancementDisplay.Builder(Material.JUKEBOX, "Musicophile")
           .challengeFrame()
           .announceChat()
           .showToast()
           .description("Collect every single music disc");
-  static Material[] musicDiscs = {Material.MUSIC_DISC_13, Material.MUSIC_DISC_CAT,
+  static final Material[] musicDiscs = {Material.MUSIC_DISC_13, Material.MUSIC_DISC_CAT,
       Material.MUSIC_DISC_BLOCKS,
       Material.MUSIC_DISC_CHIRP, Material.MUSIC_DISC_FAR, Material.MUSIC_DISC_MALL,
       Material.MUSIC_DISC_MELLOHI
@@ -41,17 +42,23 @@ public class MusicophileAdv extends BaseAdvancement {
 
     for (Material disc : musicDiscs) {
       registerEvent(InventoryClickEvent.class, e -> {
-        if (e.getCurrentItem().getType() == disc) {
+        ItemStack currentItem = e.getCurrentItem();
+        if (currentItem == null) {
+          return;
+        }
+        if (currentItem.getType() == disc) {
           HumanEntity entity = e.getWhoClicked();
 
           if (!(entity instanceof Player)) {
             return;
           }
 
-          List<String> metadataDiscs;
+          List<String> metadataDiscs = null;
           if (entity.hasMetadata("hccore_discs")) {
             metadataDiscs = (List<String>) entity.getMetadata("hccore_discs").get(0).value();
-          } else {
+          }
+
+          if (metadataDiscs == null) {
             metadataDiscs = new ArrayList<>();
           }
 
@@ -75,10 +82,12 @@ public class MusicophileAdv extends BaseAdvancement {
             return;
           }
 
-          List<String> metadataDiscs;
+          List<String> metadataDiscs = null;
           if (entity.hasMetadata("hccore_discs")) {
             metadataDiscs = (List<String>) entity.getMetadata("hccore_discs").get(0).value();
-          } else {
+          }
+
+          if (metadataDiscs == null) {
             metadataDiscs = new ArrayList<>();
           }
 

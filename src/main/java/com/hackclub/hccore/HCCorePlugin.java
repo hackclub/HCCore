@@ -45,10 +45,11 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.block.banner.PatternType;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BannerMeta;
 import org.bukkit.plugin.java.JavaPlugin;
-
 
 public class HCCorePlugin extends JavaPlugin {
 
@@ -58,7 +59,7 @@ public class HCCorePlugin extends JavaPlugin {
 
   @Override
   public void onEnable() {
-    // enable default advancement announcements, should probably leave default, but removes need to reenable on each server
+    // enable default advancement announcements, should probably leave default, but removes need to re-enable on each server
     for (World world : this.getServer().getWorlds()) {
       world.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, true);
     }
@@ -78,13 +79,14 @@ public class HCCorePlugin extends JavaPlugin {
       }
     }
     // Register commands
-    this.getCommand("afk").setExecutor(new AFKCommand(this));
-    this.getCommand("color").setExecutor(new ColorCommand(this));
-    this.getCommand("loc").setExecutor(new LocCommand(this));
-    this.getCommand("nick").setExecutor(new NickCommand(this));
-    this.getCommand("ping").setExecutor(new PingCommand(this));
-    this.getCommand("spawn").setExecutor(new SpawnCommand(this));
-    this.getCommand("stats").setExecutor(new StatsCommand(this));
+
+    registerCommand("afk", new AFKCommand(this));
+    registerCommand("color", new ColorCommand(this));
+    registerCommand("loc", new LocCommand(this));
+    registerCommand("nick", new NickCommand(this));
+    registerCommand("ping", new PingCommand(this));
+    registerCommand("spawn", new SpawnCommand(this));
+    registerCommand("stats", new StatsCommand(this));
     // disable emote commands due to Player#chat not working with colours on (recent) paper
     // current behavior is being kicked, which while funny the first time, gets old fast
     //        this.getCommand("downvote").setExecutor(new DownvoteCommand(this));
@@ -101,7 +103,7 @@ public class HCCorePlugin extends JavaPlugin {
     if (this.bot != null) {
       this.getServer().getPluginManager().registerEvents(this.bot, this);
     }
-    // Register event listeners
+
     this.getServer().getPluginManager().registerEvents(new AFKListener(this), this);
     this.getServer().getPluginManager().registerEvents(new BeehiveInteractionListener(this), this);
     this.getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
@@ -144,13 +146,13 @@ public class HCCorePlugin extends JavaPlugin {
     return this.protocolManager;
   }
 
-  public AdvancementTab tab;
+  public AdvancementTab advancementTab;
   public RootAdvancement root;
 
   private void registerAdvancements() {
     // Initialize advancement api
     UltimateAdvancementAPI api = UltimateAdvancementAPI.getInstance(this);
-    tab = api.createAdvancementTab("hack_club");
+    advancementTab = api.createAdvancementTab("hack_club");
 
     // Create root display banner
     ItemStack bannerStack = new ItemStack(Material.RED_BANNER);
@@ -167,7 +169,8 @@ public class HCCorePlugin extends JavaPlugin {
     // Create root display
     AdvancementDisplay rootDisplay = new AdvancementDisplay(bannerStack, "Hack Club",
         AdvancementFrameType.TASK, false, false, 0, 3, "Beep boop beep beep boop");
-    root = new RootAdvancement(tab, "root", rootDisplay, "textures/block/coal_block.png");
+    root = new RootAdvancement(advancementTab, "root", rootDisplay,
+        "textures/block/coal_block.png");
 
     AdvancementKey astraKey = new AdvancementKey(this, "astra");
     AdvancementKey bugKey = new AdvancementKey(this, "bug");
@@ -211,8 +214,19 @@ public class HCCorePlugin extends JavaPlugin {
     AstraAdv astra = new AstraAdv(this, mile, astraKey, adapter);
 
     // Register all advancements
-    tab.registerAdvancements(root, musicophile, bug, contribute, diamonds, hub, dragon, wither,
+    advancementTab.registerAdvancements(root, musicophile, bug, contribute, diamonds, hub, dragon,
+        wither,
         elder, wolf,
         ironGolem, mile, astra);
   }
+
+  private void registerCommand(String name, CommandExecutor commandExecutor) {
+    PluginCommand command = this.getCommand(name);
+    if (command == null) {
+      this.getLogger().severe("Command %s not found in plugin.yml".formatted(name));
+      return;
+    }
+    command.setExecutor(commandExecutor);
+  }
+
 }

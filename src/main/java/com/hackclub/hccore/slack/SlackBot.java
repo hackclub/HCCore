@@ -66,7 +66,7 @@ public class SlackBot implements Listener {
           .color(NamedTextColor.GOLD);
 
       TextComponent playerChatComponent = Component.text(
-          ChatColor.translateAlternateColorCodes('&', text));
+          ChatColor.translateAlternateColorCodes('&', text)).color(NamedTextColor.GRAY);
 
       plugin.getServer().broadcast(prefixComponent
           .append(nameComponent)
@@ -103,16 +103,16 @@ public class SlackBot implements Listener {
   public void onChat(AsyncChatEvent e) throws IOException {
     PlayerData player = plugin.getDataManager().getData(e.getPlayer());
     sendMessage(
-        ChatColor.stripColor(PlainTextComponentSerializer.plainText().serialize(e.message())),
+        PlainTextComponentSerializer.plainText().serialize(e.message()),
         getPlayerAvatarLink(player.player.getUniqueId().toString())
-        , ChatColor.stripColor(player.getDisplayedName()));
+        ,PlainTextComponentSerializer.plainText().serialize(player.getDisplayedName()));
   }
 
   @EventHandler(priority = EventPriority.MONITOR)
   public void onJoin(PlayerJoinEvent e) throws IOException {
     Player player = e.getPlayer();
-    sendMessage("*" + ChatColor.stripColor(
-            PlainTextComponentSerializer.plainText().serialize(player.displayName()))
+    sendMessage("*" +
+            PlainTextComponentSerializer.plainText().serialize(player.displayName())
             + "* joined the game!",
         getServerAvatarLink()
         , "Console");
@@ -121,8 +121,8 @@ public class SlackBot implements Listener {
   @EventHandler(priority = EventPriority.MONITOR)
   public void onQuit(PlayerQuitEvent e) throws IOException {
     Player player = e.getPlayer();
-    sendMessage("*" + ChatColor.stripColor(
-            PlainTextComponentSerializer.plainText().serialize(player.displayName()))
+    sendMessage("*" +
+            PlainTextComponentSerializer.plainText().serialize(player.displayName())
             + "* left the game!",
         getServerAvatarLink(),
         "Console");

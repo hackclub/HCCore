@@ -1,10 +1,14 @@
 package com.hackclub.hccore.listeners;
 
+import static net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand;
+
 import com.hackclub.hccore.HCCorePlugin;
 import com.hackclub.hccore.PlayerData;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
+import io.papermc.paper.event.player.AsyncChatEvent;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -12,7 +16,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -37,58 +40,64 @@ public class PlayerListener implements Listener {
 
   @EventHandler
   public void onPlayerDeath(final PlayerDeathEvent event) {
-    String message = event.getDeathMessage();
+    Component deathMessage = event.deathMessage();
+    if (deathMessage == null) {
+      return;
+    }
+    String message = PlainTextComponentSerializer.plainText().serialize(deathMessage);
+
     message = message.replace(event.getEntity().getName(),
-        ChatColor.stripColor(event.getEntity().getDisplayName()));
+        PlainTextComponentSerializer.plainText().serialize(event.getEntity().displayName()));
 
     Player killer = event.getEntity().getKiller();
     if (killer != null) {
       message = message.replace(killer.getName(),
-          ChatColor.stripColor(killer.getDisplayName()));
+          PlainTextComponentSerializer.plainText().serialize(killer.displayName()));
     }
 
-    event.setDeathMessage(message);
+    event.deathMessage(Component.text(message));
   }
 
   @EventHandler
-  public void onAsyncPlayerChat(final AsyncPlayerChatEvent event) {
+  public void onAsyncPlayerChat(final AsyncChatEvent event) {
+    Player player = event.getPlayer();
 
     // Apply the player's chat color to the message and translate color codes
 
-    PlayerData data = this.plugin.getDataManager().getData(event.getPlayer());
-    net.md_5.bungee.api.ChatColor messageColor = data.getMessageColor().asBungee();
-    net.md_5.bungee.api.ChatColor nameColor = data.getNameColor().asBungee();
+    PlayerData data = this.plugin.getDataManager().getData(player);
+    TextColor messageColor = data.getMessageColor();
+//    TextColor nameColor = data.getNameColor();
 
-    TextComponent nameComponent = new TextComponent(event.getPlayer().getDisplayName());
-    nameComponent.setColor(nameColor);
-    nameComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-        new ComponentBuilder(event.getPlayer().getName()).create()));
+    Component nameComponent = player.displayName().hoverEvent(
+        net.kyori.adventure.text.event.HoverEvent.showEntity(player.getType(), player.getUniqueId(),
+            player.name()));
 
-    TextComponent arrowComponent = new TextComponent(" » ");
-    arrowComponent.setColor(ChatColor.GOLD.asBungee());
+    Component arrowComponent = Component.text(" » ").color(NamedTextColor.GOLD);
 
-    TextComponent playerChatComponent =
-        new TextComponent(ChatColor.translateAlternateColorCodes('&', event.getMessage()));
-    playerChatComponent.setColor(messageColor);
+    Component chatMsgComponent = Component.text().color(messageColor)
+        .append(legacyAmpersand().deserialize(PlainTextComponentSerializer.plainText().serialize(event.message()))).build();
+    this.plugin.getServer().broadcast(
+        Component.empty().append(nameComponent).append(arrowComponent).append(chatMsgComponent));
 
-    this.plugin.getServer().spigot().broadcast(nameComponent, arrowComponent,
-        playerChatComponent);
+    // TODO: find out how to do chat without cancelling the event
+    // it seems that the new event, AsyncChatEvent takes / receives direct components
+    // only remaining thing would be to replace formatting codes
     event.setCancelled(true);
   }
 
   @EventHandler(priority = EventPriority.LOWEST) // Runs foremost
   public void onPlayerJoin(final PlayerJoinEvent event) {
-    this.plugin.getDataManager().registerPlayer(event.getPlayer());
+    Player player = event.getPlayer();
+    this.plugin.getDataManager().registerPlayer(player);
     // Set the initial active time
-    this.plugin.getDataManager().getData(event.getPlayer())
+    this.plugin.getDataManager().getData(player)
         .setLastActiveAt(System.currentTimeMillis());
 
     // NOTE: Title isn't cleared when the player leaves the server
-    event.getPlayer().resetTitle();
-    event.setJoinMessage(ChatColor.YELLOW
-        + ChatColor.stripColor(event.getPlayer().getDisplayName()) + " joined the game");
-
-    plugin.tab.showTab(event.getPlayer());
+    player.clearTitle();
+    event.joinMessage(player.displayName().color(NamedTextColor.YELLOW).appendSpace()
+        .append(Component.text("joined the game")));
+    plugin.advancementTab.showTab(event.getPlayer());
   }
 
   @EventHandler
@@ -98,29 +107,25 @@ public class PlayerListener implements Listener {
       return;
     }
 
-    String message = null;
+    String message;
     switch (event.getResult()) {
-      case KICK_BANNED:
-        message = ChatColor.RED + ChatColor.BOLD.toString() + "You’ve been banned :(\n\n"
-            + ChatColor.RESET + ChatColor.WHITE
-            + "If you believe this was a mistake, please DM " + ChatColor.AQUA
-            + "@alx or @eli " + ChatColor.WHITE + "on Slack.";
-        break;
-      case KICK_FULL:
-        message = ChatColor.RED + ChatColor.BOLD.toString() + "The server is full!\n\n"
-            + ChatColor.RESET + ChatColor.WHITE
-            + "Sorry, it looks like there’s no more room. Please try again in ~20 minutes.";
-        break;
-      case KICK_WHITELIST:
-        message = ChatColor.RED + ChatColor.BOLD.toString() + "You’re not whitelisted!\n\n"
-            + ChatColor.RESET + ChatColor.WHITE + "Join " + ChatColor.AQUA
-            + "#minecraft " + ChatColor.WHITE + "on Slack and ping " + ChatColor.AQUA
-            + "@alx or @eli " + ChatColor.WHITE + "to be added.";
-        break;
-      default:
-        break;
+      case KICK_BANNED ->
+          message = ChatColor.RED + ChatColor.BOLD.toString() + "You’ve been banned :(\n\n"
+              + ChatColor.RESET + ChatColor.WHITE
+              + "If you believe this was a mistake, please DM " + ChatColor.AQUA
+              + "@alx or @eli " + ChatColor.WHITE + "on Slack.";
+      case KICK_FULL ->
+          message = ChatColor.RED + ChatColor.BOLD.toString() + "The server is full!\n\n"
+              + ChatColor.RESET + ChatColor.WHITE
+              + "Sorry, it looks like there’s no more room. Please try again in ~20 minutes.";
+      case KICK_WHITELIST ->
+          message = ChatColor.RED + ChatColor.BOLD.toString() + "You’re not whitelisted!\n\n"
+              + ChatColor.RESET + ChatColor.WHITE + "Join " + ChatColor.AQUA
+              + "#minecraft " + ChatColor.WHITE + "on Slack and ping " + ChatColor.AQUA
+              + "@alx or @eli " + ChatColor.WHITE + "to be added.";
+      default -> message = PlainTextComponentSerializer.plainText().serialize(event.kickMessage());
     }
-    event.setKickMessage(message);
+    event.kickMessage(Component.text(message));
   }
 
   @EventHandler
@@ -133,8 +138,8 @@ public class PlayerListener implements Listener {
   public void onPlayerQuit(final PlayerQuitEvent event) {
     // NOTE: Title isn't cleared when the player leaves the server
     // event.getPlayer().resetTitle();
-    event.setQuitMessage(ChatColor.YELLOW
-        + ChatColor.stripColor(event.getPlayer().getDisplayName()) + " left the game");
+    event.quitMessage(event.getPlayer().displayName().color(NamedTextColor.YELLOW).appendSpace()
+        .append(Component.text("left the game")));
 
     this.plugin.getDataManager().unregisterPlayer(event.getPlayer());
   }

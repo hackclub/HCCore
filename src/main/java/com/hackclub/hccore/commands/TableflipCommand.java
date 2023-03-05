@@ -11,10 +11,7 @@ public class TableflipCommand implements CommandExecutor {
 
   private static final String TABLEFLIP = "(╯°□°）╯︵ ┻━┻";
 
-  private final HCCorePlugin plugin;
-
   public TableflipCommand(HCCorePlugin plugin) {
-    this.plugin = plugin;
   }
 
   @Override

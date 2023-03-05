@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.Map;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Location;
 
 public class GsonUtil {
@@ -17,11 +18,17 @@ public class GsonUtil {
       Type locationMapType = new TypeToken<Map<String, Location>>() {
       }.getType();
 
-      gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setPrettyPrinting()
-          .serializeNulls().registerTypeAdapter(Location.class, new LocationSerializer())
-          .registerTypeAdapter(locationMapType, new LocationMapDeserializer())
+      gson = new GsonBuilder()
+          .excludeFieldsWithoutExposeAnnotation()
+          .setPrettyPrinting()
+          .serializeNulls()
+          .registerTypeAdapter(Location.class, new LocationSerializer())
+          .registerTypeAdapter(Location.class, new LocationDeserializer())
           .registerTypeAdapter(locationMapType, new LocationMapSerializer())
-          .registerTypeAdapter(Location.class, new LocationDeserializer()).create();
+          .registerTypeAdapter(locationMapType, new LocationMapDeserializer())
+          .registerTypeAdapter(TextColor.class, new TextColorSerializer())
+          .registerTypeAdapter(TextColor.class, new TextColorDeserializer())
+          .create();
     }
 
     return gson;

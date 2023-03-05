@@ -2,6 +2,7 @@ package com.hackclub.hccore.commands;
 
 import com.hackclub.hccore.HCCorePlugin;
 import com.hackclub.hccore.PlayerData;
+import net.kyori.adventure.text.Component;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -32,7 +33,7 @@ public class NickCommand implements CommandExecutor {
     String newNickname = String.join(" ", args);
     if (newNickname.equalsIgnoreCase("Saharsh")) {
       this.plugin.getDataManager().getData(player).setNickname("Saharchery");
-      player.kickPlayer("Kicked for being Saharsh.");
+      player.kick(Component.text("Kicked for being Saharsh."));
       return true;
     }
 

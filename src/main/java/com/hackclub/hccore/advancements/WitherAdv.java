@@ -13,7 +13,7 @@ import org.bukkit.event.entity.EntityDeathEvent;
 
 public class WitherAdv extends BaseAdvancement {
 
-  static AdvancementDisplayBuilder<AdvancementDisplay.Builder, AdvancementDisplay> displayBuilder = new AdvancementDisplay.Builder(
+  static final AdvancementDisplayBuilder<AdvancementDisplay.Builder, AdvancementDisplay> displayBuilder = new AdvancementDisplay.Builder(
       Material.WITHER_SKELETON_SKULL,
       "Are You" +
           " Insane?!")
@@ -21,7 +21,7 @@ public class WitherAdv extends BaseAdvancement {
       .announceChat()
       .showToast()
       .description("Kill the Wither 20 times");
-  static int maxProgression = 20;
+  static final int maxProgression = 20;
 
   public WitherAdv(HCCorePlugin plugin, Advancement root, AdvancementKey key,
       CoordAdapter adapter) {

@@ -9,7 +9,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Statistic;
@@ -21,8 +20,8 @@ import org.bukkit.util.StringUtil;
 
 public class StatsCommand implements TabExecutor {
 
-  private static final List<String> STATISTIC_NAMES = Arrays.asList(Statistic.values()).stream()
-      .map(statistic -> statistic.name().toLowerCase()).collect(Collectors.toList());
+  private static final List<String> STATISTIC_NAMES = Arrays.stream(Statistic.values())
+      .map(statistic -> statistic.name().toLowerCase()).toList();
 
   private final HCCorePlugin plugin;
 
@@ -38,7 +37,7 @@ public class StatsCommand implements TabExecutor {
     if (args.length == 0) {
       if (sender instanceof Player) {
         sender.sendMessage("Your stats:");
-        this.sendStatistics(sender, (Player) sender, extended);
+        this.sendStatistics(sender, (Player) sender, false);
       } else {
         sender.sendMessage(ChatColor.RED + "You must be a player to use this");
       }
@@ -47,10 +46,9 @@ public class StatsCommand implements TabExecutor {
 
     if (args.length > 1) {
       switch (args[1].toLowerCase()) {
-        case "extended": // /stats <player> extended
-          extended = true;
-          break;
-        case "only": // /stats <player> only <statistic>
+        case "extended" -> // /stats <player> extended
+            extended = true;
+        case "only" -> { // /stats <player> only <statistic>
           if (args.length < 3) {
             sender.sendMessage(ChatColor.RED
                 + "You must include both a player and statistic name");
@@ -66,7 +64,6 @@ public class StatsCommand implements TabExecutor {
                 ChatColor.RED + "This statistic is not currently supported");
             return true;
           }
-
           Player player = sender.getServer().getPlayerExact(args[0]);
           if (player != null) {
             PlayerData data = this.plugin.getDataManager().getData(player);
@@ -77,8 +74,10 @@ public class StatsCommand implements TabExecutor {
                 ChatColor.RED + "No online player with that name was found");
           }
           return true;
-        default:
+        }
+        default -> {
           return false;
+        }
       }
     }
 
@@ -98,31 +97,31 @@ public class StatsCommand implements TabExecutor {
   @Override
   public List<String> onTabComplete(CommandSender sender, Command cmd, String alias,
       String[] args) {
-    List<String> completions = new ArrayList<String>();
+    List<String> completions = new ArrayList<>();
 
     switch (args.length) {
-      case 1:
+      case 1 -> {
         for (Player player : sender.getServer().getOnlinePlayers()) {
           if (StringUtil.startsWithIgnoreCase(player.getName(), args[0])) {
             completions.add(player.getName());
           }
         }
-        break;
-      case 2:
+      }
+      case 2 -> {
         List<String> subcommands = Arrays.asList("extended", "only");
         StringUtil.copyPartialMatches(args[1], subcommands, completions);
-        break;
-      case 3:
+      }
+      case 3 -> {
         // Only send statistic name suggestions in /stats <player> only
         if (!args[1].equalsIgnoreCase("only")) {
           break;
         }
-
         for (Statistic statistic : Statistic.values()) {
           if (StringUtil.startsWithIgnoreCase(statistic.name(), args[2])) {
             completions.add(statistic.name().toLowerCase());
           }
         }
+      }
     }
 
     Collections.sort(completions);

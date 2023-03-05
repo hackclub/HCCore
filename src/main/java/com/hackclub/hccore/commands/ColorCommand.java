@@ -6,7 +6,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -15,10 +16,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 
 public class ColorCommand implements TabExecutor {
-
-  private static final List<String> COLOR_NAMES =
-      Arrays.asList(ChatColor.values()).stream().filter(value -> value.isColor())
-          .map(color -> color.name().toLowerCase()).collect(Collectors.toList());
 
   private final HCCorePlugin plugin;
 
@@ -40,25 +37,26 @@ public class ColorCommand implements TabExecutor {
     PlayerData data = this.plugin.getDataManager().getData(player);
 
     // Validate selected color
-    ChatColor newColor = null;
+    TextColor newColor = null;
     if (args.length > 1) {
-      // Not in ChatColor at all
-      if (!COLOR_NAMES.contains(args[1].toLowerCase())) {
-        sender.sendMessage(ChatColor.RED + "Invalid color specified");
-        return true;
+      newColor = NamedTextColor.NAMES.keyToValue().get(args[1]);
+      if (newColor == null) {
+        newColor = TextColor.fromCSSHexString(args[1]);
+      }
+      if (newColor == null) {
+        newColor = TextColor.fromHexString(args[1]);
       }
 
-      // Is in ChatColor, but not a color
-      newColor = ChatColor.valueOf(args[1].toUpperCase());
-      if (!newColor.isColor()) {
+      if (newColor == null) {
         sender.sendMessage(ChatColor.RED + "Invalid color specified");
-        return true;
       }
+
+
     }
 
     switch (args[0].toLowerCase()) {
       // /color chat [color]
-      case "chat":
+      case "chat" -> {
         if (args.length == 1) {
           data.setMessageColor(null);
           sender.sendMessage("Your chat color has been reset");
@@ -66,9 +64,9 @@ public class ColorCommand implements TabExecutor {
         }
         data.setMessageColor(newColor);
         sender.sendMessage("Your chat color has been set to " + newColor + "this color");
-        break;
+      }
       // /color name [color]
-      case "name":
+      case "name" -> {
         if (args.length == 1) {
           data.setNameColor(null);
           sender.sendMessage("Your name color has been reset");
@@ -76,9 +74,10 @@ public class ColorCommand implements TabExecutor {
         }
         data.setNameColor(newColor);
         sender.sendMessage("Your name color has been set to " + newColor + "this color");
-        break;
-      default:
+      }
+      default -> {
         return false;
+      }
     }
 
     return true;
@@ -91,21 +90,20 @@ public class ColorCommand implements TabExecutor {
       return null;
     }
 
-    List<String> completions = new ArrayList<String>();
+    List<String> completions = new ArrayList<>();
     switch (args.length) {
       // Complete subcommand
-      case 1:
+      case 1 -> {
         List<String> subcommands = Arrays.asList("chat", "name");
         StringUtil.copyPartialMatches(args[0], subcommands, completions);
-        break;
+      }
       // Complete color name for /color chat and /color name
-      case 2:
+      case 2 -> {
         if (!(args[0].equalsIgnoreCase("chat") || args[0].equalsIgnoreCase("name"))) {
           break;
         }
-
-        StringUtil.copyPartialMatches(args[1], COLOR_NAMES, completions);
-        break;
+        StringUtil.copyPartialMatches(args[1], NamedTextColor.NAMES.keys(), completions);
+      }
     }
 
     Collections.sort(completions);

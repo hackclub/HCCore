@@ -13,14 +13,14 @@ import org.bukkit.event.entity.EntityDeathEvent;
 
 public class IronGolemAdv extends BaseAdvancement {
 
-  static AdvancementDisplayBuilder<AdvancementDisplay.Builder, AdvancementDisplay> displayBuilder = new AdvancementDisplay.Builder(
+  static final AdvancementDisplayBuilder<AdvancementDisplay.Builder, AdvancementDisplay> displayBuilder = new AdvancementDisplay.Builder(
       Material.IRON_INGOT, "Well " +
       "That's IRONic...")
       .taskFrame()
       .announceChat()
       .showToast()
       .description("Kill an Iron Golem");
-  static int maxProgression = 1;
+  static final int maxProgression = 1;
 
   public IronGolemAdv(HCCorePlugin plugin, Advancement root, AdvancementKey key,
       CoordAdapter adapter) {

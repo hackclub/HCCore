@@ -13,13 +13,13 @@ import org.bukkit.event.entity.EntityDeathEvent;
 
 public class WolfAdv extends BaseAdvancement {
 
-  static AdvancementDisplayBuilder<AdvancementDisplay.Builder, AdvancementDisplay> displayBuilder = new AdvancementDisplay.Builder(
+  static final AdvancementDisplayBuilder<AdvancementDisplay.Builder, AdvancementDisplay> displayBuilder = new AdvancementDisplay.Builder(
       Material.BONE, "You Monster!")
       .taskFrame()
       .announceChat()
       .showToast()
       .description("Slaughter a doggo");
-  static int maxProgression = 1;
+  static final int maxProgression = 1;
 
   public WolfAdv(HCCorePlugin plugin, Advancement root, AdvancementKey key, CoordAdapter adapter) {
     super(key.getKey(), displayBuilder.coords(adapter, key).build(), root, maxProgression);

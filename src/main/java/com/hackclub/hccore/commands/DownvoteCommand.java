@@ -11,10 +11,7 @@ public class DownvoteCommand implements CommandExecutor {
 
   private static final String DOWNVOTE = ChatColor.BLUE + ChatColor.BOLD.toString() + "↓";
 
-  private final HCCorePlugin plugin;
-
   public DownvoteCommand(HCCorePlugin plugin) {
-    this.plugin = plugin;
   }
 
   @Override

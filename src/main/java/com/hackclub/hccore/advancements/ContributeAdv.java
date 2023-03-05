@@ -11,14 +11,14 @@ import org.bukkit.Material;
 
 public class ContributeAdv extends BaseAdvancement {
 
-  static AdvancementDisplayBuilder<AdvancementDisplay.Builder, AdvancementDisplay> displayBuilder = new AdvancementDisplay.Builder(
+  static final AdvancementDisplayBuilder<AdvancementDisplay.Builder, AdvancementDisplay> displayBuilder = new AdvancementDisplay.Builder(
       Material.COMMAND_BLOCK,
       "Contributor")
       .taskFrame()
       .announceChat()
       .showToast()
       .description("Contribute to the server's codebase on GitHub");
-  static int maxProgression = 1;
+  static final int maxProgression = 1;
 
   public ContributeAdv(HCCorePlugin plugin, Advancement root, AdvancementKey key,
       CoordAdapter adapter) {
