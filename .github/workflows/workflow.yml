@@ -125,5 +125,5 @@ jobs:
           server: ${{ secrets.DEPLOY_SSH_SERVER }}
           port: ${{ secrets.DEPLOY_SSH_PORT }}
           ssh_private_key: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
-          local_path: "./HCCore-Shadow-*.jar"
+          local_path: "./HCCore/HCCore-Shadow-*.jar"
           remote_path: "/plugins/update/"
