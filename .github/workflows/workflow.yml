@@ -122,7 +122,7 @@ jobs:
         env:
           DEPLOY_SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
         run: |
-          echo $DEPLOY_SSH_PRIVATE_KEY > ./hackclub_minecraft_deploy
+          echo -n $DEPLOY_SSH_PRIVATE_KEY > ./hackclub_minecraft_deploy
           chmod 600 ./hackclub_minecraft_deploy
           sha256sum ./hackclub_minecraft_deploy
       - name: SCP Deploy
