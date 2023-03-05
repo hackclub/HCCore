@@ -4,7 +4,6 @@ import static net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializ
 
 import com.hackclub.hccore.HCCorePlugin;
 import com.hackclub.hccore.PlayerData;
-import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
@@ -16,6 +15,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -58,8 +58,9 @@ public class PlayerListener implements Listener {
     event.deathMessage(Component.text(message));
   }
 
-  @EventHandler
-  public void onAsyncPlayerChat(final AsyncChatEvent event) {
+  @EventHandler(priority = EventPriority.LOWEST)
+  public void onAsyncPlayerChat(final AsyncPlayerChatEvent event) {
+    event.setCancelled(true);
     Player player = event.getPlayer();
 
     // Apply the player's chat color to the message and translate color codes
@@ -75,14 +76,13 @@ public class PlayerListener implements Listener {
     Component arrowComponent = Component.text(" » ").color(NamedTextColor.GOLD);
 
     Component chatMsgComponent = Component.text().color(messageColor)
-        .append(legacyAmpersand().deserialize(PlainTextComponentSerializer.plainText().serialize(event.message()))).build();
+        .append(legacyAmpersand().deserialize(event.getMessage())).build();
     this.plugin.getServer().broadcast(
         Component.empty().append(nameComponent).append(arrowComponent).append(chatMsgComponent));
 
     // TODO: find out how to do chat without cancelling the event
     // it seems that the new event, AsyncChatEvent takes / receives direct components
     // only remaining thing would be to replace formatting codes
-    event.setCancelled(true);
   }
 
   @EventHandler(priority = EventPriority.LOWEST) // Runs foremost
