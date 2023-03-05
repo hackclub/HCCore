@@ -26,6 +26,9 @@ public class BeehiveInteractionListener implements Listener {
     }
 
     Block clickedBlock = event.getClickedBlock();
+    if (clickedBlock == null) {
+      return;
+    }
     // Check if it's a bee nest or beehive
     if (!(clickedBlock.getType() == Material.BEE_NEST
         || clickedBlock.getType() == Material.BEEHIVE)) {
