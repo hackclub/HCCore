@@ -11,9 +11,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -179,21 +179,24 @@ public class PlayerData {
     return this.getNickname() != null ? this.getNickname() : this.player.getName();
   }
 
-  public String getDisplayedName() {
-    String format = "%s";
+  public TextComponent getDisplayedName() {
+    TextColor color;
+    String name;
     if (this.isAfk()) {
-      format = ChatColor.GRAY + format + " (AFK)";
+      color = NamedTextColor.GRAY;
+      name = this.getUsableName() + " (AFK)";
     } else {
-      format = this.getNameColor() + format;
+      color = this.getNameColor();
+      name = this.getUsableName();
     }
 
-    return String.format(format, this.getUsableName());
+    return Component.text(name).color(color);
   }
 
   private void updateDisplayedName() {
-    String builtDisplayName = this.getDisplayedName();
-    this.player.setDisplayName(builtDisplayName);
-    this.player.setPlayerListName(builtDisplayName);
+    TextComponent builtDisplayName = this.getDisplayedName();
+    this.player.displayName(builtDisplayName);
+    this.player.playerListName(builtDisplayName);
     this.refreshNameTag();
   }
 
