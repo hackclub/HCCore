@@ -51,3 +51,79 @@ jobs:
         with:
           name: HCCore.jar
           path: build/libs/HCCore-Shadow-*.jar
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: validation
+    runs-on: ubuntu-latest
+    name: Gradle Build Release
+    outputs:
+      release-assets: steps..outputs.assets
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: 17
+          java-package: jdk
+      - uses: actions/cache@v3
+        id: gradle-cache
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/gradle/dependency-locks/*.lockfile') }}
+          restore-keys: |
+            - ${{ runner.os }}-gradle-
+      - uses: actions/cache@v3
+        id: gradle-wrapper-cache
+        with:
+          path: ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradlewrapper-${{ hashFiles('gradle/wrapper/*') }}
+          restore-keys: |
+            - ${{ runner.os }}-gradlewrapper-
+      - name: Publish candidate
+        if: |
+          startsWith(github.ref, 'refs/tags/v') &&
+          contains(github.ref, '-rc.')
+        run: ./gradlew --info --stacktrace -Prelease.useLastTag=true candidate
+      - name: Publish release
+        if: |
+          startsWith(github.ref, 'refs/tags/v') &&
+          (!contains(github.ref, '-rc.'))
+        run: ./gradlew --info --stacktrace -Prelease.useLastTag=true final
+      - name: Upload jar to build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: HCCore.jar
+          path: build/libs/HCCore-Shadow-*.jar
+      - name: Release
+        id: add-gh-release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: "${{github.ref}} ${{ contains(github.ref, '-rc.') ? '(beta)' : '' }}"
+          generate_release_notes: ${{ !(contains(github.ref, '-rc.')) }} # full releases only
+          prerelease: ${{ contains(github.ref, '-rc.') }}
+          files: "build/libs/HCCore-Shadow-*.jar"
+
+  deploy:
+    if: |
+      startsWith(github.ref, 'refs/tags/v') &&
+      (!contains(github.ref, '-rc.'))
+    needs: release
+    runs-on: ubuntu-latest
+    name: Deploy to Production Server
+    steps:
+      - name: Download released version
+        uses: actions/download-artifact@v3
+        with:
+          name: HCCore.jar
+      - name: SFTP Deploy
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+        with:
+          username: ${{ secrets.DEPLOY_SSH_USERNAME }}
+          server: ${{ secrets.DEPLOY_SSH_SERVER }}
+          port: ${{ secrets.DEPLOY_SSH_PORT }}
+          ssh_private_key: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
+          local_path: "./HCCore-Shadow-*.jar"
+          remote_path: "/plugins/update/"
