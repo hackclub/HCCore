@@ -11,12 +11,14 @@ import com.slack.api.methods.SlackApiException;
 import com.slack.api.methods.response.users.profile.UsersProfileGetResponse;
 import com.slack.api.model.event.MessageBotEvent;
 import com.slack.api.model.event.MessageEvent;
+import io.papermc.paper.event.player.AsyncChatEvent;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.chat.hover.content.Text;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.apache.commons.text.StringEscapeUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -24,7 +26,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
@@ -54,23 +55,25 @@ public class SlackBot implements Listener {
       );
       String displayName = result.getProfile().getDisplayName();
 
-      TextComponent prefixComponent = new TextComponent("[Slack] ");
-      prefixComponent.setColor(ChatColor.BLUE.asBungee());
+      TextComponent prefixComponent = Component.text("[Slack] ")
+          .color(NamedTextColor.BLUE);
 
-      TextComponent nameComponent = new TextComponent(displayName);
-      nameComponent.setColor(ChatColor.WHITE.asBungee());
+      TextComponent nameComponent = Component.text(displayName)
+          .color(NamedTextColor.WHITE)
+          .hoverEvent(Component.text(result.getProfile().getRealName()));
 
-      nameComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-          new Text(result.getProfile().getRealName())));
+      TextComponent arrowComponent = Component.text(" » ")
+          .color(NamedTextColor.GOLD);
 
-      TextComponent arrowComponent = new TextComponent(" » ");
-      arrowComponent.setColor(ChatColor.GOLD.asBungee());
+      TextComponent playerChatComponent = Component.text(
+          ChatColor.translateAlternateColorCodes('&', text));
 
-      TextComponent playerChatComponent =
-          new TextComponent(ChatColor.translateAlternateColorCodes('&', text));
+      plugin.getServer().broadcast(prefixComponent
+          .append(nameComponent)
+          .append(arrowComponent)
+          .append(playerChatComponent)
+      );
 
-      plugin.getServer().spigot()
-          .broadcast(prefixComponent, nameComponent, arrowComponent, playerChatComponent);
       return ctx.ack();
     });
 
@@ -97,9 +100,10 @@ public class SlackBot implements Listener {
   }
 
   @EventHandler(ignoreCancelled = true)
-  public void onChat(AsyncPlayerChatEvent e) throws IOException {
+  public void onChat(AsyncChatEvent e) throws IOException {
     PlayerData player = plugin.getDataManager().getData(e.getPlayer());
-    sendMessage(ChatColor.stripColor(e.getMessage()),
+    sendMessage(
+        ChatColor.stripColor(PlainTextComponentSerializer.plainText().serialize(e.message())),
         getPlayerAvatarLink(player.player.getUniqueId().toString())
         , ChatColor.stripColor(player.getDisplayedName()));
   }
@@ -107,7 +111,9 @@ public class SlackBot implements Listener {
   @EventHandler(priority = EventPriority.MONITOR)
   public void onJoin(PlayerJoinEvent e) throws IOException {
     Player player = e.getPlayer();
-    sendMessage("*" + ChatColor.stripColor(player.getDisplayName()) + "* joined the game!",
+    sendMessage("*" + ChatColor.stripColor(
+            PlainTextComponentSerializer.plainText().serialize(player.displayName()))
+            + "* joined the game!",
         getServerAvatarLink()
         , "Console");
   }
@@ -115,14 +121,21 @@ public class SlackBot implements Listener {
   @EventHandler(priority = EventPriority.MONITOR)
   public void onQuit(PlayerQuitEvent e) throws IOException {
     Player player = e.getPlayer();
-    sendMessage("*" + ChatColor.stripColor(player.getDisplayName()) + "* left the game!",
+    sendMessage("*" + ChatColor.stripColor(
+            PlainTextComponentSerializer.plainText().serialize(player.displayName()))
+            + "* left the game!",
         getServerAvatarLink(),
         "Console");
   }
 
   @EventHandler(priority = EventPriority.MONITOR)
   public void onDeath(PlayerDeathEvent e) throws IOException {
-    sendMessage(e.getDeathMessage(), "https://cloud-4zgvoofbx-hack-club-bot.vercel.app/0image.png",
+    Component deathMessage = e.deathMessage();
+    if (deathMessage == null) {
+      return;
+    }
+    sendMessage(PlainTextComponentSerializer.plainText().serialize(deathMessage),
+        "https://cloud-4zgvoofbx-hack-club-bot.vercel.app/0image.png",
         "R.I.P.");
   }
 
