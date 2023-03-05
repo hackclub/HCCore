@@ -18,16 +18,16 @@ import org.jetbrains.annotations.NotNull;
 
 public class DiamondsAdv extends BaseAdvancement {
 
-  static AdvancementDisplayBuilder<AdvancementDisplay.Builder, AdvancementDisplay> displayBuilder = new AdvancementDisplay.Builder(
+  static final AdvancementDisplayBuilder<AdvancementDisplay.Builder, AdvancementDisplay> displayBuilder = new AdvancementDisplay.Builder(
       Material.DIAMOND_ORE, "Look Ma, " +
       "Diamonds!")
       .taskFrame()
       .announceChat()
       .showToast()
       .description("Find your first diamond while mining");
-  static int maxProgression = 1;
+  static final int maxProgression = 1;
 
-  HCCorePlugin plugin;
+  final HCCorePlugin plugin;
 
   public DiamondsAdv(HCCorePlugin plugin, Advancement root, AdvancementKey key,
       CoordAdapter adapter) {
@@ -48,11 +48,13 @@ public class DiamondsAdv extends BaseAdvancement {
             "Congrats, you’ve found your very first diamond! You are now eligible for the exclusive (and limited edition!) Hack Club Minecraft stickers. Head over to ")
         .color(NamedTextColor.GREEN);
     Component linkComponent = Component.text(
-            this.plugin.getConfig().getString("claim-stickers-url"))
+            this.plugin.getConfig()
+                .getString("claim-stickers-url", "https://example.com/claim-stickers"))
         .color(NamedTextColor.GREEN)
         .decorate(TextDecoration.UNDERLINED)
         .hoverEvent(Component.text("Click here to claim your stickers!"))
-        .clickEvent(ClickEvent.openUrl(this.plugin.getConfig().getString("claim-stickers-url")));
+        .clickEvent(ClickEvent.openUrl(this.plugin.getConfig()
+            .getString("claim-stickers-url", "https://example.com/claim-stickers")));
     Component claimComponent = Component.text(" to claim them!")
         .color(NamedTextColor.GREEN);
     Component italicComponent = Component.text("""

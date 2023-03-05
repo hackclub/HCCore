@@ -13,15 +13,15 @@ import org.bukkit.event.player.PlayerMoveEvent;
 
 public class AstraAdv extends BaseAdvancement {
 
-  static AdvancementDisplayBuilder<AdvancementDisplay.Builder, AdvancementDisplay> displayBuilder = new AdvancementDisplay.Builder(
+  static final AdvancementDisplayBuilder<AdvancementDisplay.Builder, AdvancementDisplay> displayBuilder = new AdvancementDisplay.Builder(
       Material.FIREWORK_ROCKET, "Ad " +
       "Astra")
       .challengeFrame()
       .announceChat()
       .showToast()
       .description("Reach outer space and touch the stars");
-  static int maxProgression = 1;
-  static int minY = 10000;
+  static final int maxProgression = 1;
+  static final int minY = 10000;
 
   public AstraAdv(HCCorePlugin plugin, Advancement root, AdvancementKey key, CoordAdapter adapter) {
     super(key.getKey(), displayBuilder.coords(adapter, key).build(), root, maxProgression);

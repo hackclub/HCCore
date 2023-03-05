@@ -13,14 +13,14 @@ import org.bukkit.event.player.PlayerMoveEvent;
 
 public class MileAdv extends BaseAdvancement {
 
-  static AdvancementDisplayBuilder<AdvancementDisplay.Builder, AdvancementDisplay> displayBuilder =
+  static final AdvancementDisplayBuilder<AdvancementDisplay.Builder, AdvancementDisplay> displayBuilder =
       new AdvancementDisplay.Builder(Material.DIAMOND_BOOTS, "I'm Gonna Be")
           .challengeFrame()
           .announceChat()
           .showToast()
           .description(
               "Just to be the man who walked a thousand miles (1609.344 km) to fall down at your door");
-  static int maxProgression = 1;
+  static final int maxProgression = 1;
 
   public MileAdv(HCCorePlugin plugin, Advancement root, AdvancementKey key,
       CoordAdapter adapter) {

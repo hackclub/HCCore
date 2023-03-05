@@ -13,10 +13,7 @@ import org.bukkit.inventory.EquipmentSlot;
 
 public class BeehiveInteractionListener implements Listener {
 
-  private final HCCorePlugin plugin;
-
   public BeehiveInteractionListener(HCCorePlugin plugin) {
-    this.plugin = plugin;
   }
 
   @EventHandler

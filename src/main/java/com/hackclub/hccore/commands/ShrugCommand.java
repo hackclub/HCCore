@@ -11,10 +11,7 @@ public class ShrugCommand implements CommandExecutor {
 
   private static final String SHRUG = "¯\\_(ツ)_/¯";
 
-  private final HCCorePlugin plugin;
-
   public ShrugCommand(HCCorePlugin plugin) {
-    this.plugin = plugin;
   }
 
   @Override

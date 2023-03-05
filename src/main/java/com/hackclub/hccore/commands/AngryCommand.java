@@ -11,10 +11,7 @@ public class AngryCommand implements CommandExecutor {
 
   private static final String angry = ChatColor.BOLD + "ಠ_ಠ";
 
-  private final HCCorePlugin plugin;
-
   public AngryCommand(HCCorePlugin plugin) {
-    this.plugin = plugin;
   }
 
 

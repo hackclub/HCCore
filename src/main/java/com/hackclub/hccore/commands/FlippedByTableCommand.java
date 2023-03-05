@@ -11,10 +11,7 @@ public class FlippedByTableCommand implements CommandExecutor {
 
   private static final String flippedByTable = ChatColor.BOLD + "ノ┬─┬ノ ︵ (\\o°o)\\";
 
-  private final HCCorePlugin plugin;
-
   public FlippedByTableCommand(HCCorePlugin plugin) {
-    this.plugin = plugin;
   }
 
 

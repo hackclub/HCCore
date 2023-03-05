@@ -17,7 +17,7 @@ import org.bukkit.util.StringUtil;
 public class ColorCommand implements TabExecutor {
 
   private static final List<String> COLOR_NAMES =
-      Arrays.asList(ChatColor.values()).stream().filter(value -> value.isColor())
+      Arrays.stream(ChatColor.values()).filter(ChatColor::isColor)
           .map(color -> color.name().toLowerCase()).collect(Collectors.toList());
 
   private final HCCorePlugin plugin;
@@ -58,7 +58,7 @@ public class ColorCommand implements TabExecutor {
 
     switch (args[0].toLowerCase()) {
       // /color chat [color]
-      case "chat":
+      case "chat" -> {
         if (args.length == 1) {
           data.setMessageColor(null);
           sender.sendMessage("Your chat color has been reset");
@@ -66,9 +66,9 @@ public class ColorCommand implements TabExecutor {
         }
         data.setMessageColor(newColor);
         sender.sendMessage("Your chat color has been set to " + newColor + "this color");
-        break;
+      }
       // /color name [color]
-      case "name":
+      case "name" -> {
         if (args.length == 1) {
           data.setNameColor(null);
           sender.sendMessage("Your name color has been reset");
@@ -76,9 +76,10 @@ public class ColorCommand implements TabExecutor {
         }
         data.setNameColor(newColor);
         sender.sendMessage("Your name color has been set to " + newColor + "this color");
-        break;
-      default:
+      }
+      default -> {
         return false;
+      }
     }
 
     return true;
@@ -91,21 +92,20 @@ public class ColorCommand implements TabExecutor {
       return null;
     }
 
-    List<String> completions = new ArrayList<String>();
+    List<String> completions = new ArrayList<>();
     switch (args.length) {
       // Complete subcommand
-      case 1:
+      case 1 -> {
         List<String> subcommands = Arrays.asList("chat", "name");
         StringUtil.copyPartialMatches(args[0], subcommands, completions);
-        break;
+      }
       // Complete color name for /color chat and /color name
-      case 2:
+      case 2 -> {
         if (!(args[0].equalsIgnoreCase("chat") || args[0].equalsIgnoreCase("name"))) {
           break;
         }
-
         StringUtil.copyPartialMatches(args[1], COLOR_NAMES, completions);
-        break;
+      }
     }
 
     Collections.sort(completions);

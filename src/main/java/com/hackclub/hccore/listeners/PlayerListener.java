@@ -100,25 +100,22 @@ public class PlayerListener implements Listener {
 
     String message = null;
     switch (event.getResult()) {
-      case KICK_BANNED:
-        message = ChatColor.RED + ChatColor.BOLD.toString() + "You’ve been banned :(\n\n"
-            + ChatColor.RESET + ChatColor.WHITE
-            + "If you believe this was a mistake, please DM " + ChatColor.AQUA
-            + "@alx or @eli " + ChatColor.WHITE + "on Slack.";
-        break;
-      case KICK_FULL:
-        message = ChatColor.RED + ChatColor.BOLD.toString() + "The server is full!\n\n"
-            + ChatColor.RESET + ChatColor.WHITE
-            + "Sorry, it looks like there’s no more room. Please try again in ~20 minutes.";
-        break;
-      case KICK_WHITELIST:
-        message = ChatColor.RED + ChatColor.BOLD.toString() + "You’re not whitelisted!\n\n"
-            + ChatColor.RESET + ChatColor.WHITE + "Join " + ChatColor.AQUA
-            + "#minecraft " + ChatColor.WHITE + "on Slack and ping " + ChatColor.AQUA
-            + "@alx or @eli " + ChatColor.WHITE + "to be added.";
-        break;
-      default:
-        break;
+      case KICK_BANNED ->
+          message = ChatColor.RED + ChatColor.BOLD.toString() + "You’ve been banned :(\n\n"
+              + ChatColor.RESET + ChatColor.WHITE
+              + "If you believe this was a mistake, please DM " + ChatColor.AQUA
+              + "@alx or @eli " + ChatColor.WHITE + "on Slack.";
+      case KICK_FULL ->
+          message = ChatColor.RED + ChatColor.BOLD.toString() + "The server is full!\n\n"
+              + ChatColor.RESET + ChatColor.WHITE
+              + "Sorry, it looks like there’s no more room. Please try again in ~20 minutes.";
+      case KICK_WHITELIST ->
+          message = ChatColor.RED + ChatColor.BOLD.toString() + "You’re not whitelisted!\n\n"
+              + ChatColor.RESET + ChatColor.WHITE + "Join " + ChatColor.AQUA
+              + "#minecraft " + ChatColor.WHITE + "on Slack and ping " + ChatColor.AQUA
+              + "@alx or @eli " + ChatColor.WHITE + "to be added.";
+      default -> {
+      }
     }
     event.setKickMessage(message);
   }
