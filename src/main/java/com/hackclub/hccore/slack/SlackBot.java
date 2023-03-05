@@ -99,7 +99,7 @@ public class SlackBot implements Listener {
     this.socket.stop();
   }
 
-  @EventHandler(ignoreCancelled = true)
+  @EventHandler
   public void onChat(AsyncChatEvent e) throws IOException {
     PlayerData player = plugin.getDataManager().getData(e.getPlayer());
     sendMessage(
