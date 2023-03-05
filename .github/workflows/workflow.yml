@@ -118,12 +118,11 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: HCCore.jar
-      - name: SFTP Deploy
-        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
-        with:
-          username: ${{ secrets.DEPLOY_SSH_USERNAME }}
-          server: ${{ secrets.DEPLOY_SSH_SERVER }}
-          port: ${{ secrets.DEPLOY_SSH_PORT }}
-          ssh_private_key: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
-          local_path: "HCCore/HCCore-Shadow-*.jar"
-          remote_path: "/plugins/update/"
+      - name: Get SSH key
+        env:
+          DEPLOY_SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
+        run: echo $DEPLOY_SSH_PRIVATE_KEY > hackclub_minecraft_deploy
+      - name: SCP Deploy
+        run: "echo 'put ./HCCore/HCCore-Shadow-*.jar /plugins/update/' | sftp -qi ./hackclub_minecraft_deploy -b -  sftp://${{ secrets.DEPLOY_SSH_USERNAME }}@${{ secrets.DEPLOY_SSH_SERVER }}:${{ secrets.DEPLOY_SSH_PORT }}"
+
+
