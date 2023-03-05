@@ -1,10 +1,13 @@
 # Setup
 
-For the purposes of this guide we'll designate the `~/minecraft-server` and `~/HCCore` directories for the locations of the minecraft (paper) server, and the HCCore source code. Of course, you don't have to put the files in the same place
+For the purposes of this guide we'll designate the `~/minecraft-server` and `~/HCCore` directories
+for the locations of the minecraft (paper) server, and the HCCore source code. Of course, you don't
+have to put the files in the same place
 
 ## 1. Start Minecraft Paper Server
 
-[Download Paper](https://papermc.io/downloads) (build #261 at the time of writing) and place the resulting jar to `~/minecraft-server`
+[Download Paper](https://papermc.io/downloads) (build #261 at the time of writing) and place the
+resulting jar to `~/minecraft-server`
 
 Start the server and check that it works properly
 
@@ -20,7 +23,9 @@ This server is running Paper version git-Paper-261 (MC: 1.16.4) (Implementing AP
 
 You'll notice other files and folders like `folder`, `whitelist.json`, etc. are created
 
-To join the server, launch your Minecraft client, and click `[Direct Connection]` -> and enter `localhost` to 'Server Address'. Notice that the `/color` command doesn't work (it will work once we add the HCCore plugin)
+To join the server, launch your Minecraft client, and click `[Direct Connection]` -> and
+enter `localhost` to 'Server Address'. Notice that the `/color` command doesn't work (it will work
+once we add the HCCore plugin)
 
 ## 2. Download and Build HCCore
 
@@ -40,26 +45,19 @@ cd HCCore
 ## 3. Copy the Built HCCore Plugin to the Minecraft Paper Server
 
 ```sh
-cp ~/HCCore/build/libs/HCCore-Shadow.jar ~/minecraft-server/plugins
+cp ~/HCCore/build/libs/HCCore-1.0.0.jar ~/minecraft-server/plugins
 ```
 
-On launch, you should receive an error:
+## 4. Install Dependencies
 
-```txt
-[00:33:58 ERROR]: Could not load 'plugins/HCCore-Shadow.jar' in folder 'plugins'
-org.bukkit.plugin.UnknownDependencyException: Unknown dependency ProtocolLib. Please download and install ProtocolLib to run this plugin.
-	at org.bukkit.plugin.SimplePluginManager.loadPlugins(SimplePluginManager.java:272) ~[patched_1.16.4.jar:git-Paper-261]
-	at org.bukkit.craftbukkit.v1_16_R3.CraftServer.loadPlugins(CraftServer.java:389) ~[patched_1.16.4.jar:git-Paper-261]
-	at net.minecraft.server.v1_16_R3.DedicatedServer.init(DedicatedServer.java:206) ~[patched_1.16.4.jar:git-Paper-261]
-	at net.minecraft.server.v1_16_R3.MinecraftServer.w(MinecraftServer.java:939) ~[patched_1.16.4.jar:git-Paper-261]
-	at net.minecraft.server.v1_16_R3.MinecraftServer.lambda$a$0(MinecraftServer.java:177) ~[patched_1.16.4.jar:git-Paper-261]
-	at java.lang.Thread.run(Thread.java:834) [?:?]
-```
+Download:
 
-We fix this by [installing ProtocolLib](https://www.spigotmc.org/resources/protocollib.1997/)
+- [ProtocolLib](https://www.spigotmc.org/resources/protocollib.1997/)
+- [UltimateAdvancementAPI](https://www.spigotmc.org/resources/ultimateadvancementapi-1-15-1-19-3.95585/)
 
 ```sh
 mv ~/Downloads/ProtocolLib.jar ~/minecraft-server/plugins
+mv ~/Downloads/UltimateAdvancementAPI-2.2.2-(1.15-1.19.3).jar ~/minecraft-server/plugins
 ```
 
 Note: Make sure you stop the server and restart it for the plugins to properly load
@@ -72,18 +70,23 @@ BOOM! Now we can connect with our Minecraft client and test/use the plugin
 -> /color <chat|name> [color]
 ```
 
-## 4. Install BileTools
+## 5. Install BileTools
 
-We can use BileTools to hot-reload our plugin. BileTools looks for changes in the directory, and when it detects that a `.jar` file has changed, it will reload that plugin
+> Note: As of writing, BileTools is not working properly with the latest Paper version. See this
+> issue for details: https://github.com/VolmitSoftware/BileTools/issues/8
 
-You can test this out by modifying the strings in `player.getServer().broadcastMessage()` in `src/main/java/com/hackclub/hccore/listeners/AFKListener.java`
+We can use BileTools to hot-reload our plugin. BileTools looks for changes in the directory, and
+when it detects that a `.jar` file has changed, it will reload that plugin
+
+You can test this out by modifying the strings in `player.getServer().broadcastMessage()`
+in `src/main/java/com/hackclub/hccore/listeners/AFKListener.java`
 
 Once you have made your modifications, rebuild
 
 ```
 cd ~/HCCore
 ./gradlew build
-cp ~/HCCore/build/libs/HCCore-Shadow.jar ~/minecraft-server/plugins
+cp ~/HCCore/build/libs/HCCore-1.0.0.jar ~/minecraft-server/plugins
 ```
 
 Without closing the server, your console should look like the following

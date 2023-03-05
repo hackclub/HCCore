@@ -1,46 +1,36 @@
 name: ${name}
 version: ${version}
-api-version: 1.16
+api-version: 1.19
 main: com.hackclub.hccore.HCCorePlugin
-depend: [ProtocolLib]
+depend:
+  - UltimateAdvancementAPI
+  - ProtocolLib
 commands:
   afk:
     description: Toggles your AFK status
-    usage: /afk
-    aliases: [a, away]
+    usage: /<command>
+    aliases: [ a, away ]
   color:
     description: Sets your chat or name color
-    usage: /color <chat|name> [color]
-  downvote:
-    description: Appends a downvote to your message
-    usage: /downvote [message]
+    usage: /<command> <chat|name> [color]
+    aliases:
+      - colour
   loc:
     description: Manage your saved locations
-    usage: /loc <del|get|list|rename|save|share> [...args]
+    usage: /<command> <del|get|list|rename|save|share> [...args]
+    aliases:
+      - locations
   nick:
     description: Sets your nickname
-    usage: /nick [nickname]
+    usage: /<command> [nickname]
+    aliases:
+      - nickname
   ping:
     description: Gets the ping of you or a specified player
     usage: /ping [player]
-  shrug:
-    description: Shrug, just like /shrug in Slack
-    usage: /shrug [message]
   spawn:
     description: Teleports you to the world’s spawn location
     usage: /spawn
   stats:
     description: Gets the stats of you or a specified player
     usage: /stats [player] [extended|only] <statistic>
-  tableflip:
-    description: Appends a tableflip to your message
-    usage: /tableflip [message]
-  upvote:
-    description: Appends an upvote to your message
-    usage: /upvote [message]
-  angry:
-    description: Appends a angry face to your message
-    usage: /angry [message]
-  flippedbytable:
-    description: Appends ノ┬─┬ノ ︵ (/o°o)/  to your message
-    usage: /flippedbytable [message]

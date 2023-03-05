@@ -9,24 +9,24 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class AFKCommand implements CommandExecutor {
-    private final HCCorePlugin plugin;
 
-    public AFKCommand(HCCorePlugin plugin) {
-        this.plugin = plugin;
+  private final HCCorePlugin plugin;
+
+  public AFKCommand(HCCorePlugin plugin) {
+    this.plugin = plugin;
+  }
+
+  @Override
+  public boolean onCommand(CommandSender sender, Command cmd, String alias, String[] args) {
+    if (!(sender instanceof Player player)) {
+      sender.sendMessage(ChatColor.RED + "You must be a player to use this");
+      return true;
     }
 
-    @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String alias, String[] args) {
-        if (!(sender instanceof Player)) {
-            sender.sendMessage(ChatColor.RED + "You must be a player to use this");
-            return true;
-        }
+    // Toggle player's AFK status
+    PlayerData data = this.plugin.getDataManager().getData(player);
+    data.setAfk(!data.isAfk());
 
-        Player player = (Player) sender;
-        // Toggle player's AFK status
-        PlayerData data = this.plugin.getDataManager().getData(player);
-        data.setAfk(!data.isAfk());
-
-        return true;
-    }
+    return true;
+  }
 }
