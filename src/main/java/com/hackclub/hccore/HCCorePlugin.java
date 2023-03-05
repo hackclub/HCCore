@@ -123,13 +123,13 @@ public class HCCorePlugin extends JavaPlugin {
     return this.protocolManager;
   }
 
-  public AdvancementTab tab;
+  public AdvancementTab advancementTab;
   public RootAdvancement root;
 
   private void registerAdvancements() {
     // Initialize advancement api
     UltimateAdvancementAPI api = UltimateAdvancementAPI.getInstance(this);
-    tab = api.createAdvancementTab("hack_club");
+    advancementTab = api.createAdvancementTab("hack_club");
 
     // Create root display banner
     ItemStack bannerStack = new ItemStack(Material.RED_BANNER);
@@ -146,7 +146,8 @@ public class HCCorePlugin extends JavaPlugin {
     // Create root display
     AdvancementDisplay rootDisplay = new AdvancementDisplay(bannerStack, "Hack Club",
         AdvancementFrameType.TASK, false, false, 0, 3, "Beep boop beep beep boop");
-    root = new RootAdvancement(tab, "root", rootDisplay, "textures/block/coal_block.png");
+    root = new RootAdvancement(advancementTab, "root", rootDisplay,
+        "textures/block/coal_block.png");
 
     AdvancementKey astraKey = new AdvancementKey(this, "astra");
     AdvancementKey bugKey = new AdvancementKey(this, "bug");
@@ -190,7 +191,8 @@ public class HCCorePlugin extends JavaPlugin {
     AstraAdv astra = new AstraAdv(this, mile, astraKey, adapter);
 
     // Register all advancements
-    tab.registerAdvancements(root, musicophile, bug, contribute, diamonds, hub, dragon, wither,
+    advancementTab.registerAdvancements(root, musicophile, bug, contribute, diamonds, hub, dragon,
+        wither,
         elder, wolf,
         ironGolem, mile, astra);
   }
@@ -201,6 +203,7 @@ public class HCCorePlugin extends JavaPlugin {
       this.getLogger().severe("Command %s not found in plugin.yml".formatted(name));
       return;
     }
+    command.setExecutor(commandExecutor);
   }
 
 }

@@ -6,7 +6,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -15,10 +16,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 
 public class ColorCommand implements TabExecutor {
-
-  private static final List<String> COLOR_NAMES =
-      Arrays.stream(ChatColor.values()).filter(ChatColor::isColor)
-          .map(color -> color.name().toLowerCase()).collect(Collectors.toList());
 
   private final HCCorePlugin plugin;
 
@@ -40,20 +37,21 @@ public class ColorCommand implements TabExecutor {
     PlayerData data = this.plugin.getDataManager().getData(player);
 
     // Validate selected color
-    ChatColor newColor = null;
+    TextColor newColor = null;
     if (args.length > 1) {
-      // Not in ChatColor at all
-      if (!COLOR_NAMES.contains(args[1].toLowerCase())) {
-        sender.sendMessage(ChatColor.RED + "Invalid color specified");
-        return true;
+      newColor = NamedTextColor.NAMES.keyToValue().get(args[1]);
+      if (newColor == null) {
+        newColor = TextColor.fromCSSHexString(args[1]);
+      }
+      if (newColor == null) {
+        newColor = TextColor.fromHexString(args[1]);
       }
 
-      // Is in ChatColor, but not a color
-      newColor = ChatColor.valueOf(args[1].toUpperCase());
-      if (!newColor.isColor()) {
+      if (newColor == null) {
         sender.sendMessage(ChatColor.RED + "Invalid color specified");
-        return true;
       }
+
+
     }
 
     switch (args[0].toLowerCase()) {
@@ -104,7 +102,7 @@ public class ColorCommand implements TabExecutor {
         if (!(args[0].equalsIgnoreCase("chat") || args[0].equalsIgnoreCase("name"))) {
           break;
         }
-        StringUtil.copyPartialMatches(args[1], COLOR_NAMES, completions);
+        StringUtil.copyPartialMatches(args[1], NamedTextColor.NAMES.keys(), completions);
       }
     }
 

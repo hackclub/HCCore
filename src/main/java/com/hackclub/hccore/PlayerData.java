@@ -10,6 +10,9 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -35,9 +38,9 @@ public class PlayerData {
   @Expose
   private String slackId = null;
   @Expose
-  private ChatColor nameColor = ChatColor.WHITE;
+  private TextColor nameColor = NamedTextColor.WHITE;
   @Expose
-  private ChatColor messageColor = ChatColor.GRAY;
+  private TextColor messageColor = NamedTextColor.GRAY;
   @Expose
   private Map<String, Location> savedLocations = new LinkedHashMap<>();
 
@@ -56,10 +59,10 @@ public class PlayerData {
     this.isAfk = afk;
     this.updateDisplayedName();
 
-    ChatColor newColor = afk ? ChatColor.GRAY : this.getNameColor();
+    TextColor newColor = afk ? NamedTextColor.GRAY : this.getNameColor();
     String newSuffix = afk ? " (AFK)" : "";
-    this.getTeam().setColor(newColor);
-    this.getTeam().setSuffix(newSuffix);
+    this.getTeam().color(NamedTextColor.nearestTo(newColor));
+    this.getTeam().suffix(Component.text(newSuffix).color(newColor));
 
     Event event = new PlayerAFKStatusChangeEvent(this.player, afk);
     this.player.getServer().getPluginManager().callEvent(event);
@@ -109,23 +112,23 @@ public class PlayerData {
     this.slackId = id;
   }
 
-  public ChatColor getNameColor() {
+  public TextColor getNameColor() {
     return this.nameColor;
   }
 
-  public void setNameColor(ChatColor color) {
-    this.nameColor = (color != null && color.isColor()) ? color : ChatColor.WHITE;
+  public void setNameColor(TextColor color) {
+    this.nameColor = (color != null) ? color : NamedTextColor.WHITE;
     this.updateDisplayedName();
 
-    this.getTeam().setColor(this.getNameColor());
+    this.getTeam().color(NamedTextColor.nearestTo(this.getNameColor()));
   }
 
-  public ChatColor getMessageColor() {
+  public TextColor getMessageColor() {
     return this.messageColor;
   }
 
-  public void setMessageColor(ChatColor color) {
-    this.messageColor = (color != null && color.isColor()) ? color : ChatColor.GRAY;
+  public void setMessageColor(TextColor color) {
+    this.messageColor = (color != null) ? color : NamedTextColor.GRAY;
   }
 
   public Map<String, Location> getSavedLocations() {
