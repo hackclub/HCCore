@@ -101,7 +101,6 @@ jobs:
         id: add-gh-release
         uses: softprops/action-gh-release@v1
         with:
-          name: "${{github.ref}}"
           generate_release_notes: ${{ !(contains(github.ref, '-rc.')) }} # full releases only
           prerelease: ${{ contains(github.ref, '-rc.') }}
           files: "build/libs/HCCore-Shadow-*.jar"
@@ -124,7 +123,7 @@ jobs:
         run: |
           echo -ne "$DEPLOY_SSH_PRIVATE_KEY" > ./hackclub_minecraft_deploy
           chmod 600 ./hackclub_minecraft_deploy
-      - name: SCP Deploy
-        run: "echo 'put HCCore-Shadow-*.jar /plugins/update/' | sftp -i ./hackclub_minecraft_deploy -b - -oStrictHostKeyChecking=false sftp://mc-hc-deployker.89c06257@hebra.365hosts.network:60022"
+      - name: SFTP Deploy
+        run: "echo -e '-rm HCCore-Shadow-*.jar\nput HCCore-Shadow-*.jar /plugins/update/' | sftp -i ./hackclub_minecraft_deploy -oStrictHostKeyChecking=false -b - sftp://mc-hc-deployker.89c06257@hebra.365hosts.network:60022"
 
 
