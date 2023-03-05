@@ -43,7 +43,7 @@ public class SlackBot implements Listener {
       MessageEvent event = payload.getEvent();
       String text = StringEscapeUtils.unescapeHtml4(event.getText());
       String channelId = event.getChannel();
-      String mainChannel = String.valueOf(getSlackChannel());
+      String mainChannel = getSlackChannel();
       if (!channelId.equals(mainChannel)) {
         return ctx.ack();
       }
@@ -140,15 +140,33 @@ public class SlackBot implements Listener {
   }
 
   private String getSlackChannel() {
-    return this.plugin.getConfig().getString("settings.slack-link.channel-id");
+    String id = this.plugin.getConfig().getString("settings.slack-link.channel-id");
+
+    if (id == null) {
+      throw new IllegalStateException("Slack channel ID is not set!");
+    }
+
+    return id;
   }
 
   private String getBotToken() {
-    return this.plugin.getConfig().getString("settings.slack-link.bot-token");
+    String botToken = this.plugin.getConfig().getString("settings.slack-link.bot-token");
+
+    if (botToken == null) {
+      throw new IllegalStateException("Slack bot token is not set!");
+    }
+
+    return botToken;
   }
 
   private String getAppToken() {
-    return this.plugin.getConfig().getString("settings.slack-link.app-token");
+    String appToken =  this.plugin.getConfig().getString("settings.slack-link.app-token");
+
+    if (appToken == null) {
+      throw new IllegalStateException("Slack app token is not set!");
+    }
+
+    return appToken;
   }
 
   void sendMessage(String msg, String iconURL, String username) throws IOException {
