@@ -1,6 +1,5 @@
 package com.hackclub.hccore.listeners;
 
-import com.hackclub.hccore.HCCorePlugin;
 import de.tr7zw.changeme.nbtapi.NBTTileEntity;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -13,7 +12,7 @@ import org.bukkit.inventory.EquipmentSlot;
 
 public class BeehiveInteractionListener implements Listener {
 
-  public BeehiveInteractionListener(HCCorePlugin plugin) {
+  public BeehiveInteractionListener() {
   }
 
   @EventHandler

@@ -104,7 +104,7 @@ public class HCCorePlugin extends JavaPlugin {
     }
 
     this.getServer().getPluginManager().registerEvents(new AFKListener(this), this);
-    this.getServer().getPluginManager().registerEvents(new BeehiveInteractionListener(this), this);
+    this.getServer().getPluginManager().registerEvents(new BeehiveInteractionListener(), this);
     this.getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
 
     // Register packet listeners
