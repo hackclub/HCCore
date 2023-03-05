@@ -45,7 +45,7 @@ jobs:
           restore-keys: |
             - ${{ runner.os }}-gradlewrapper-
       - name: Gradle build
-        run: ./gradlew --info --stacktrace build -Prelease.state=dev
+        run: ./gradlew --build-cache --info --stacktrace build -Prelease.state=dev
       - name: Upload jar to build artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -86,12 +86,12 @@ jobs:
         if: |
           startsWith(github.ref, 'refs/tags/v') &&
           contains(github.ref, '-rc.')
-        run: ./gradlew --info --stacktrace -Prelease.useLastTag=true candidate
+        run: ./gradlew --build-cache --info --stacktrace -Prelease.useLastTag=true candidate
       - name: Publish release
         if: |
           startsWith(github.ref, 'refs/tags/v') &&
           (!contains(github.ref, '-rc.'))
-        run: ./gradlew --info --stacktrace -Prelease.useLastTag=true final
+        run: ./gradlew --build-cache --info --stacktrace -Prelease.useLastTag=true final
       - name: Upload jar to build artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -123,7 +123,7 @@ jobs:
           DEPLOY_SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
         run: echo $DEPLOY_SSH_PRIVATE_KEY > hackclub_minecraft_deploy
       - name: SCP Deploy
-        run: "echo 'put ./HCCore/HCCore-Shadow-*.jar /plugins/update/' | sftp -qi ./hackclub_minecraft_deploy -b - sftp://mc-hc-deployker.89c06257@hebra.365hosts.network:60022
+        run: "echo 'put HCCore/HCCore-Shadow-*.jar /plugins/update/' | sftp -vvv -i ./hackclub_minecraft_deploy -b - sftp://mc-hc-deployker.89c06257@hebra.365hosts.network:60022
 "
 
 
