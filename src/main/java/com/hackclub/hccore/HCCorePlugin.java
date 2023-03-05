@@ -70,7 +70,7 @@ public class HCCorePlugin extends JavaPlugin {
     this.dataManager = new DataManager(this);
     this.protocolManager = ProtocolLibrary.getProtocolManager();
 
-    if (this.getConfig().getBoolean("settings.slack-link.enabled")) {
+    if (this.getConfig().getBoolean("settings.slack-link.enabled", false)) {
       try {
         this.bot = new SlackBot(this);
       } catch (Exception e) {
