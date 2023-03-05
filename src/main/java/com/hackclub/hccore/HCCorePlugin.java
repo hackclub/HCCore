@@ -2,7 +2,6 @@ package com.hackclub.hccore;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
@@ -21,8 +20,6 @@ import com.hackclub.hccore.commands.TableflipCommand;
 import com.hackclub.hccore.commands.UpvoteCommand;
 import com.hackclub.hccore.commands.AngryCommand;
 import com.hackclub.hccore.commands.FlippedByTableCommand;
-import com.hackclub.hccore.commands.*;
-// import com.hackclub.hccore.discord.DiscordBot;
 import com.hackclub.hccore.slack.SlackBot;
 import com.hackclub.hccore.listeners.AFKListener;
 import com.hackclub.hccore.listeners.AdvancementListener;
@@ -33,9 +30,6 @@ import com.hackclub.hccore.listeners.SleepListener;
 import com.hackclub.hccore.tasks.AutoAFKTask;
 import com.hackclub.hccore.tasks.CheckAdAstraTask;
 import com.hackclub.hccore.utils.TimeUtil;
-//import net.dv8tion.jda.api.JDA;
-//import net.dv8tion.jda.api.JDABuilder;
-//import net.dv8tion.jda.api.entities.Activity;
 import org.bukkit.GameRule;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -46,8 +40,6 @@ import hu.trigary.advancementcreator.Advancement;
 import hu.trigary.advancementcreator.AdvancementFactory;
 import hu.trigary.advancementcreator.shared.ItemObject;
 import net.md_5.bungee.api.chat.TextComponent;
-
-import javax.security.auth.login.LoginException;
 
 public class HCCorePlugin extends JavaPlugin {
     private DataManager dataManager;
@@ -70,7 +62,7 @@ public class HCCorePlugin extends JavaPlugin {
         this.protocolManager = ProtocolLibrary.getProtocolManager();
 
 
-        if (this.getConfig().getBoolean("settings.discord-link.enabled")) {
+        if (this.getConfig().getBoolean("settings.slack-link.enabled")) {
             try {
                 this.bot = new SlackBot(this);
             } catch (Exception e) {
@@ -92,9 +84,11 @@ public class HCCorePlugin extends JavaPlugin {
         this.getCommand("upvote").setExecutor(new UpvoteCommand(this));
         this.getCommand("angry").setExecutor(new AngryCommand(this));
         this.getCommand("flippedbytable").setExecutor(new FlippedByTableCommand(this));
-        this.getCommand("discord").setExecutor(new DiscordCommand(this));
 
         // Register event listeners
+        if (this.bot != null) {
+            this.getServer().getPluginManager().registerEvents(this.bot, this);
+        }
         this.getServer().getPluginManager().registerEvents(new AdvancementListener(this), this);
         this.getServer().getPluginManager().registerEvents(new AFKListener(this), this);
         this.getServer().getPluginManager().registerEvents(new BeehiveInteractionListener(this),
@@ -123,13 +117,16 @@ public class HCCorePlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         this.getDataManager().unregisterAll();
-        // this.bot.close();
-        try {
-            this.bot.disconnect();
-        } catch (Exception e) {
-            e.printStackTrace();
+
+        if (this.bot != null) {
+            try {
+                this.bot.disconnect();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            this.bot = null;
         }
-        this.bot = null;
     }
 
     public DataManager getDataManager() {
