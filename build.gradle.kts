@@ -16,6 +16,11 @@ java {
 dependencies {
     implementation("com.google.code.gson:gson:2.8.9")
     implementation("de.tr7zw:item-nbt-api:2.8.0")
+    implementation("com.slack.api:bolt-socket-mode:1.10.0")
+    implementation("javax.websocket:javax.websocket-api:1.1")
+    implementation("org.glassfish.tyrus.bundles:tyrus-standalone-client:1.17")
+    implementation("org.slf4j:slf4j-simple:1.7.32")
+    implementation("org.apache.commons:commons-text:1.10.0")
 
     compileOnly("com.frengor:ultimateadvancementapi:2.2.2")
     compileOnly("com.comphenix.protocol:ProtocolLib:5.0.0-SNAPSHOT")

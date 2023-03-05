@@ -34,6 +34,7 @@ import com.hackclub.hccore.listeners.AFKListener;
 import com.hackclub.hccore.listeners.BeehiveInteractionListener;
 import com.hackclub.hccore.listeners.NameChangeListener;
 import com.hackclub.hccore.listeners.PlayerListener;
+import com.hackclub.hccore.slack.SlackBot;
 import com.hackclub.hccore.tasks.AutoAFKTask;
 import com.hackclub.hccore.utils.TimeUtil;
 import java.util.ArrayList;
@@ -48,10 +49,12 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BannerMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
+
 public class HCCorePlugin extends JavaPlugin {
 
   private DataManager dataManager;
   private ProtocolManager protocolManager;
+  private SlackBot bot;
 
   @Override
   public void onEnable() {
@@ -67,6 +70,13 @@ public class HCCorePlugin extends JavaPlugin {
     this.dataManager = new DataManager(this);
     this.protocolManager = ProtocolLibrary.getProtocolManager();
 
+    if (this.getConfig().getBoolean("settings.slack-link.enabled", false)) {
+      try {
+        this.bot = new SlackBot(this);
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
     // Register commands
     this.getCommand("afk").setExecutor(new AFKCommand(this));
     this.getCommand("color").setExecutor(new ColorCommand(this));
@@ -87,6 +97,10 @@ public class HCCorePlugin extends JavaPlugin {
     // Register advancements
     this.registerAdvancements();
 
+    // Register event listeners
+    if (this.bot != null) {
+      this.getServer().getPluginManager().registerEvents(this.bot, this);
+    }
     // Register event listeners
     this.getServer().getPluginManager().registerEvents(new AFKListener(this), this);
     this.getServer().getPluginManager().registerEvents(new BeehiveInteractionListener(this), this);
@@ -110,6 +124,16 @@ public class HCCorePlugin extends JavaPlugin {
   @Override
   public void onDisable() {
     this.getDataManager().unregisterAll();
+
+    if (this.bot != null) {
+      try {
+        this.bot.disconnect();
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+
+      this.bot = null;
+    }
   }
 
   public DataManager getDataManager() {
@@ -191,6 +215,4 @@ public class HCCorePlugin extends JavaPlugin {
         elder, wolf,
         ironGolem, mile, astra);
   }
-
-
 }
