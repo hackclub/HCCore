@@ -50,10 +50,10 @@ public class NameChangeListener extends PacketAdapter {
       // Copy properties (currently just skin texture) to new profile
       newProfile.getProperties().putAll(playerInfoData.getProfile().getProperties());
 
-      // Put all of the info from the old profile into the new one
-      PlayerInfoData newPlayerInfoData =
-          new PlayerInfoData(newProfile, playerInfoData.getLatency(),
-              playerInfoData.getGameMode(), playerInfoData.getDisplayName());
+      // Put all the info from the old profile into the new one
+      PlayerInfoData newPlayerInfoData = new PlayerInfoData(newProfile, playerInfoData.getLatency(),
+          playerInfoData.getGameMode(), playerInfoData.getDisplayName(),
+          playerInfoData.getProfileKeyData());
 
       newPlayerInfoDataList.add(newPlayerInfoData);
     }
