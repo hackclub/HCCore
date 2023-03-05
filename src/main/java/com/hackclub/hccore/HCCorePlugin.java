@@ -87,14 +87,13 @@ public class HCCorePlugin extends JavaPlugin {
     registerCommand("ping", new PingCommand(this));
     registerCommand("spawn", new SpawnCommand(this));
     registerCommand("stats", new StatsCommand(this));
-    // disable emote commands due to Player#chat not working with colours on (recent) paper
-    // current behavior is being kicked, which while funny the first time, gets old fast
-    //        this.getCommand("downvote").setExecutor(new DownvoteCommand(this));
-    //        this.getCommand("shrug").setExecutor(new ShrugCommand(this));
-    //        this.getCommand("tableflip").setExecutor(new TableflipCommand(this));
-    //        this.getCommand("upvote").setExecutor(new UpvoteCommand(this));
-    //        this.getCommand("angry").setExecutor(new AngryCommand(this));
-    //        this.getCommand("flippedbytable").setExecutor(new FlippedByTableCommand(this));
+
+    // prepare for new emotes commands:
+    // downvote       "↓"
+    // shrug          "¯\_(ツ)_/¯"
+    // tableflip      "(╯°□°）╯︵ ┻━┻"
+    // upvote         "↑"
+    // angry          "ಠ_ಠ"
 
     // Register advancements
     this.registerAdvancements();
