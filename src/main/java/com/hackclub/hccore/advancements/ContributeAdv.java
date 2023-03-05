@@ -6,7 +6,6 @@ import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementDispla
 import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementDisplayBuilder;
 import com.fren_gor.ultimateAdvancementAPI.util.AdvancementKey;
 import com.fren_gor.ultimateAdvancementAPI.util.CoordAdapter;
-import com.hackclub.hccore.HCCorePlugin;
 import org.bukkit.Material;
 
 public class ContributeAdv extends BaseAdvancement {
@@ -20,7 +19,7 @@ public class ContributeAdv extends BaseAdvancement {
       .description("Contribute to the server's codebase on GitHub");
   static final int maxProgression = 1;
 
-  public ContributeAdv(HCCorePlugin plugin, Advancement root, AdvancementKey key,
+  public ContributeAdv(Advancement root, AdvancementKey key,
       CoordAdapter adapter) {
     super(key.getKey(), displayBuilder.coords(adapter, key).build(), root, maxProgression);
   }

@@ -6,7 +6,6 @@ import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementDispla
 import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementDisplayBuilder;
 import com.fren_gor.ultimateAdvancementAPI.util.AdvancementKey;
 import com.fren_gor.ultimateAdvancementAPI.util.CoordAdapter;
-import com.hackclub.hccore.HCCorePlugin;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.entity.EntityDeathEvent;
@@ -21,7 +20,7 @@ public class WolfAdv extends BaseAdvancement {
       .description("Slaughter a doggo");
   static final int maxProgression = 1;
 
-  public WolfAdv(HCCorePlugin plugin, Advancement root, AdvancementKey key, CoordAdapter adapter) {
+  public WolfAdv(Advancement root, AdvancementKey key, CoordAdapter adapter) {
     super(key.getKey(), displayBuilder.coords(adapter, key).build(), root, maxProgression);
 
     registerEvent(EntityDeathEvent.class, e -> {

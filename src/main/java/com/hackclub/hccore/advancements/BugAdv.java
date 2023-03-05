@@ -6,7 +6,6 @@ import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementDispla
 import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementDisplayBuilder;
 import com.fren_gor.ultimateAdvancementAPI.util.AdvancementKey;
 import com.fren_gor.ultimateAdvancementAPI.util.CoordAdapter;
-import com.hackclub.hccore.HCCorePlugin;
 import org.bukkit.Material;
 
 public class BugAdv extends BaseAdvancement {
@@ -19,7 +18,7 @@ public class BugAdv extends BaseAdvancement {
           .description("Find and report a bug");
   static final int maxProgression = 1;
 
-  public BugAdv(HCCorePlugin plugin, Advancement root, AdvancementKey key, CoordAdapter adapter) {
+  public BugAdv(Advancement root, AdvancementKey key, CoordAdapter adapter) {
     super(key.getKey(), displayBuilder.coords(adapter, key).build(), root, maxProgression);
   }
 }

@@ -200,17 +200,17 @@ public class HCCorePlugin extends JavaPlugin {
         .build();
 
     MusicophileAdv musicophile = new MusicophileAdv(this, root, musicophileKey, adapter);
-    BugAdv bug = new BugAdv(this, root, bugKey, adapter);
-    ContributeAdv contribute = new ContributeAdv(this, bug, contributeKey, adapter);
+    BugAdv bug = new BugAdv(root, bugKey, adapter);
+    ContributeAdv contribute = new ContributeAdv(bug, contributeKey, adapter);
     DiamondsAdv diamonds = new DiamondsAdv(this, root, diamondsKey, adapter);
-    HubAdv hub = new HubAdv(this, diamonds, hubKey, adapter);
-    DragonAdv dragon = new DragonAdv(this, diamonds, dragonKey, adapter);
-    WitherAdv wither = new WitherAdv(this, dragon, witherKey, adapter);
-    ElderAdv elder = new ElderAdv(this, diamonds, elderKey, adapter);
-    WolfAdv wolf = new WolfAdv(this, diamonds, wolfKey, adapter);
-    IronGolemAdv ironGolem = new IronGolemAdv(this, wolf, ironGolemKey, adapter);
-    MileAdv mile = new MileAdv(this, diamonds, mileKey, adapter);
-    AstraAdv astra = new AstraAdv(this, mile, astraKey, adapter);
+    HubAdv hub = new HubAdv(diamonds, hubKey, adapter);
+    DragonAdv dragon = new DragonAdv(diamonds, dragonKey, adapter);
+    WitherAdv wither = new WitherAdv(dragon, witherKey, adapter);
+    ElderAdv elder = new ElderAdv(diamonds, elderKey, adapter);
+    WolfAdv wolf = new WolfAdv(diamonds, wolfKey, adapter);
+    IronGolemAdv ironGolem = new IronGolemAdv(wolf, ironGolemKey, adapter);
+    MileAdv mile = new MileAdv(diamonds, mileKey, adapter);
+    AstraAdv astra = new AstraAdv(mile, astraKey, adapter);
 
     // Register all advancements
     advancementTab.registerAdvancements(root, musicophile, bug, contribute, diamonds, hub, dragon,

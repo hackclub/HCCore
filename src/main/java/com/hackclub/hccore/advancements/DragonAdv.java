@@ -6,7 +6,6 @@ import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementDispla
 import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementDisplayBuilder;
 import com.fren_gor.ultimateAdvancementAPI.util.AdvancementKey;
 import com.fren_gor.ultimateAdvancementAPI.util.CoordAdapter;
-import com.hackclub.hccore.HCCorePlugin;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.entity.EntityDeathEvent;
@@ -22,7 +21,7 @@ public class DragonAdv extends BaseAdvancement {
       .description("Kill the Ender Dragon 10 times");
   static final int maxProgression = 10;
 
-  public DragonAdv(HCCorePlugin plugin, Advancement root, AdvancementKey key,
+  public DragonAdv(Advancement root, AdvancementKey key,
       CoordAdapter adapter) {
     super(key.getKey(), displayBuilder.coords(adapter, key).build(), root, maxProgression);
 
