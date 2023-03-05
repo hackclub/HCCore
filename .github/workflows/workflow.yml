@@ -123,6 +123,7 @@ jobs:
           DEPLOY_SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
         run: echo $DEPLOY_SSH_PRIVATE_KEY > hackclub_minecraft_deploy
       - name: SCP Deploy
-        run: "echo 'put ./HCCore/HCCore-Shadow-*.jar /plugins/update/' | sftp -qi ./hackclub_minecraft_deploy -b -  sftp://${{ secrets.DEPLOY_SSH_USERNAME }}@${{ secrets.DEPLOY_SSH_SERVER }}:${{ secrets.DEPLOY_SSH_PORT }}"
+        run: "echo 'put ./HCCore/HCCore-Shadow-*.jar /plugins/update/' | sftp -qi ./hackclub_minecraft_deploy -b - sftp://mc-hc-deployker.89c06257@hebra.365hosts.network:60022
+"
 
 
