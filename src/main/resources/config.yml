@@ -8,3 +8,9 @@ settings:
     allowed-radius: 2000
     # Time in seconds a player has to wait before being able to use the command again
     damage-cooldown: 10
+  slack-link:
+    enabled: false
+    bot-token: ""
+    app-token: ""
+    channel-id: ""
+    bot-prefix: "/"

@@ -22,9 +22,8 @@ import org.bukkit.scoreboard.Team;
 public class PlayerData {
 
   public static final int MAX_NICKNAME_LENGTH = 16;
-
   private final HCCorePlugin plugin;
-  private final Player player;
+  public final Player player;
   private final File dataFile;
 
   // Session data (will be cleared when player quits)
