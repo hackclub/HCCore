@@ -101,7 +101,7 @@ jobs:
         id: add-gh-release
         uses: softprops/action-gh-release@v1
         with:
-          name: "${{github.ref}} ${{ contains(github.ref, '-rc.') ? '(beta)' : '' }}"
+          name: "${{github.ref}}"
           generate_release_notes: ${{ !(contains(github.ref, '-rc.')) }} # full releases only
           prerelease: ${{ contains(github.ref, '-rc.') }}
           files: "build/libs/HCCore-Shadow-*.jar"
