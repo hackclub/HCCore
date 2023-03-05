@@ -4,6 +4,9 @@
     <list size="1">
       <item index="0" class="java.lang.String" itemvalue="org.bukkit.event.EventHandler" />
     </list>
+    <pattern value="com.hackclub.hccore.HCCorePlugin" method="onEnable" />
+    <pattern value="com.hackclub.hccore.HCCorePlugin" method="onDisable" />
+    <pattern value="com.hackclub.hccore.HCCorePlugin" method="onLoad" />
   </component>
   <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="FrameworkDetectionExcludesConfiguration">
