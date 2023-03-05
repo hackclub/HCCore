@@ -1,8 +1,5 @@
 package com.hackclub.hccore;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
@@ -33,15 +30,11 @@ import com.hackclub.hccore.commands.NickCommand;
 import com.hackclub.hccore.commands.PingCommand;
 import com.hackclub.hccore.commands.SpawnCommand;
 import com.hackclub.hccore.commands.StatsCommand;
-import com.hackclub.hccore.commands.TableflipCommand;
-import com.hackclub.hccore.commands.UpvoteCommand;
-import com.hackclub.hccore.commands.AngryCommand;
-import com.hackclub.hccore.commands.FlippedByTableCommand;
-import com.hackclub.hccore.slack.SlackBot;
 import com.hackclub.hccore.listeners.AFKListener;
 import com.hackclub.hccore.listeners.BeehiveInteractionListener;
 import com.hackclub.hccore.listeners.NameChangeListener;
 import com.hackclub.hccore.listeners.PlayerListener;
+import com.hackclub.hccore.slack.SlackBot;
 import com.hackclub.hccore.tasks.AutoAFKTask;
 import com.hackclub.hccore.utils.TimeUtil;
 import java.util.ArrayList;
@@ -55,19 +48,13 @@ import org.bukkit.block.banner.PatternType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BannerMeta;
 import org.bukkit.plugin.java.JavaPlugin;
-import hu.trigary.advancementcreator.Advancement;
-import hu.trigary.advancementcreator.AdvancementFactory;
-import hu.trigary.advancementcreator.shared.ItemObject;
-import net.md_5.bungee.api.chat.TextComponent;
 
 
 public class HCCorePlugin extends JavaPlugin {
 
   private DataManager dataManager;
   private ProtocolManager protocolManager;
-    private DataManager dataManager;
-    private ProtocolManager protocolManager;
-    private SlackBot bot;
+  private SlackBot bot;
 
   @Override
   public void onEnable() {
@@ -83,29 +70,13 @@ public class HCCorePlugin extends JavaPlugin {
     this.dataManager = new DataManager(this);
     this.protocolManager = ProtocolLibrary.getProtocolManager();
 
-
-        if (this.getConfig().getBoolean("settings.slack-link.enabled")) {
-            try {
-                this.bot = new SlackBot(this);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        // Register commands
-        this.getCommand("afk").setExecutor(new AFKCommand(this));
-        this.getCommand("color").setExecutor(new ColorCommand(this));
-        this.getCommand("downvote").setExecutor(new DownvoteCommand(this));
-        this.getCommand("loc").setExecutor(new LocCommand(this));
-        this.getCommand("nick").setExecutor(new NickCommand(this));
-        this.getCommand("ping").setExecutor(new PingCommand(this));
-        this.getCommand("shrug").setExecutor(new ShrugCommand(this));
-        this.getCommand("spawn").setExecutor(new SpawnCommand(this));
-        this.getCommand("stats").setExecutor(new StatsCommand(this));
-        this.getCommand("tableflip").setExecutor(new TableflipCommand(this));
-        this.getCommand("upvote").setExecutor(new UpvoteCommand(this));
-        this.getCommand("angry").setExecutor(new AngryCommand(this));
-        this.getCommand("flippedbytable").setExecutor(new FlippedByTableCommand(this));
+    if (this.getConfig().getBoolean("settings.slack-link.enabled")) {
+      try {
+        this.bot = new SlackBot(this);
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
     // Register commands
     this.getCommand("afk").setExecutor(new AFKCommand(this));
     this.getCommand("color").setExecutor(new ColorCommand(this));
@@ -126,10 +97,10 @@ public class HCCorePlugin extends JavaPlugin {
     // Register advancements
     this.registerAdvancements();
 
-        // Register event listeners
-        if (this.bot != null) {
-            this.getServer().getPluginManager().registerEvents(this.bot, this);
-        }
+    // Register event listeners
+    if (this.bot != null) {
+      this.getServer().getPluginManager().registerEvents(this.bot, this);
+    }
     // Register event listeners
     this.getServer().getPluginManager().registerEvents(new AFKListener(this), this);
     this.getServer().getPluginManager().registerEvents(new BeehiveInteractionListener(this), this);
@@ -150,20 +121,20 @@ public class HCCorePlugin extends JavaPlugin {
     this.getDataManager().registerAll();
   }
 
-    @Override
-    public void onDisable() {
-        this.getDataManager().unregisterAll();
+  @Override
+  public void onDisable() {
+    this.getDataManager().unregisterAll();
 
-        if (this.bot != null) {
-            try {
-                this.bot.disconnect();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+    if (this.bot != null) {
+      try {
+        this.bot.disconnect();
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
 
-            this.bot = null;
-        }
+      this.bot = null;
     }
+  }
 
   public DataManager getDataManager() {
     return this.dataManager;
@@ -244,6 +215,4 @@ public class HCCorePlugin extends JavaPlugin {
         elder, wolf,
         ironGolem, mile, astra);
   }
-
-
 }
