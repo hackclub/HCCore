@@ -87,14 +87,13 @@ public class HCCorePlugin extends JavaPlugin {
     registerCommand("ping", new PingCommand(this));
     registerCommand("spawn", new SpawnCommand(this));
     registerCommand("stats", new StatsCommand(this));
-    // disable emote commands due to Player#chat not working with colours on (recent) paper
-    // current behavior is being kicked, which while funny the first time, gets old fast
-    //        this.getCommand("downvote").setExecutor(new DownvoteCommand(this));
-    //        this.getCommand("shrug").setExecutor(new ShrugCommand(this));
-    //        this.getCommand("tableflip").setExecutor(new TableflipCommand(this));
-    //        this.getCommand("upvote").setExecutor(new UpvoteCommand(this));
-    //        this.getCommand("angry").setExecutor(new AngryCommand(this));
-    //        this.getCommand("flippedbytable").setExecutor(new FlippedByTableCommand(this));
+
+    // prepare for new emotes commands:
+    // downvote       "↓"
+    // shrug          "¯\_(ツ)_/¯"
+    // tableflip      "(╯°□°）╯︵ ┻━┻"
+    // upvote         "↑"
+    // angry          "ಠ_ಠ"
 
     // Register advancements
     this.registerAdvancements();
@@ -105,7 +104,7 @@ public class HCCorePlugin extends JavaPlugin {
     }
 
     this.getServer().getPluginManager().registerEvents(new AFKListener(this), this);
-    this.getServer().getPluginManager().registerEvents(new BeehiveInteractionListener(this), this);
+    this.getServer().getPluginManager().registerEvents(new BeehiveInteractionListener(), this);
     this.getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
 
     // Register packet listeners
@@ -201,17 +200,17 @@ public class HCCorePlugin extends JavaPlugin {
         .build();
 
     MusicophileAdv musicophile = new MusicophileAdv(this, root, musicophileKey, adapter);
-    BugAdv bug = new BugAdv(this, root, bugKey, adapter);
-    ContributeAdv contribute = new ContributeAdv(this, bug, contributeKey, adapter);
+    BugAdv bug = new BugAdv(root, bugKey, adapter);
+    ContributeAdv contribute = new ContributeAdv(bug, contributeKey, adapter);
     DiamondsAdv diamonds = new DiamondsAdv(this, root, diamondsKey, adapter);
-    HubAdv hub = new HubAdv(this, diamonds, hubKey, adapter);
-    DragonAdv dragon = new DragonAdv(this, diamonds, dragonKey, adapter);
-    WitherAdv wither = new WitherAdv(this, dragon, witherKey, adapter);
-    ElderAdv elder = new ElderAdv(this, diamonds, elderKey, adapter);
-    WolfAdv wolf = new WolfAdv(this, diamonds, wolfKey, adapter);
-    IronGolemAdv ironGolem = new IronGolemAdv(this, wolf, ironGolemKey, adapter);
-    MileAdv mile = new MileAdv(this, diamonds, mileKey, adapter);
-    AstraAdv astra = new AstraAdv(this, mile, astraKey, adapter);
+    HubAdv hub = new HubAdv(diamonds, hubKey, adapter);
+    DragonAdv dragon = new DragonAdv(diamonds, dragonKey, adapter);
+    WitherAdv wither = new WitherAdv(dragon, witherKey, adapter);
+    ElderAdv elder = new ElderAdv(diamonds, elderKey, adapter);
+    WolfAdv wolf = new WolfAdv(diamonds, wolfKey, adapter);
+    IronGolemAdv ironGolem = new IronGolemAdv(wolf, ironGolemKey, adapter);
+    MileAdv mile = new MileAdv(diamonds, mileKey, adapter);
+    AstraAdv astra = new AstraAdv(mile, astraKey, adapter);
 
     // Register all advancements
     advancementTab.registerAdvancements(root, musicophile, bug, contribute, diamonds, hub, dragon,

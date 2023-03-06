@@ -28,11 +28,14 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 public class SlackBot implements Listener {
 
   private final HCCorePlugin plugin;
   private final SocketModeApp socket;
+  public static final String serverAvatarLink = "https://assets.hackclub.com/icon-progress-square.png";
 
   public SlackBot(HCCorePlugin plugin) throws Exception {
     this.plugin = plugin;
@@ -83,19 +86,16 @@ public class SlackBot implements Listener {
     this.socket = socket;
     socket.startAsync();
     this.plugin.getLogger().info("HackCraft Slack started!");
-    sendMessage("*Server Started*", getServerAvatarLink(), "Console");
+    sendMessage("*Server Started*", serverAvatarLink, "Console");
   }
 
-  public static String getPlayerAvatarLink(String uuid) {
+  @Contract(pure = true)
+  public static @NotNull String getPlayerAvatarLink(String uuid) {
     return "https://cravatar.eu/avatar/" + uuid;
   }
 
-  public static String getServerAvatarLink() {
-    return "https://assets.hackclub.com/icon-progress-square.png";
-  }
-
   public void disconnect() throws Exception {
-    sendMessage("*Server Stopped*", getServerAvatarLink(), "Console");
+    sendMessage("*Server Stopped*", serverAvatarLink, "Console");
     this.socket.stop();
   }
 
@@ -114,7 +114,7 @@ public class SlackBot implements Listener {
     sendMessage("*" +
             PlainTextComponentSerializer.plainText().serialize(player.displayName())
             + "* joined the game!",
-        getServerAvatarLink()
+        serverAvatarLink
         , "Console");
   }
 
@@ -124,7 +124,7 @@ public class SlackBot implements Listener {
     sendMessage("*" +
             PlainTextComponentSerializer.plainText().serialize(player.displayName())
             + "* left the game!",
-        getServerAvatarLink(),
+        serverAvatarLink,
         "Console");
   }
 

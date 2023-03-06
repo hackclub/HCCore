@@ -7,7 +7,6 @@ import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementDispla
 import com.fren_gor.ultimateAdvancementAPI.util.AdvancementKey;
 import com.fren_gor.ultimateAdvancementAPI.util.CoordAdapter;
 import com.fren_gor.ultimateAdvancementAPI.visibilities.HiddenVisibility;
-import com.hackclub.hccore.HCCorePlugin;
 import org.bukkit.Material;
 
 public class HubAdv extends BaseAdvancement implements HiddenVisibility {
@@ -20,7 +19,7 @@ public class HubAdv extends BaseAdvancement implements HiddenVisibility {
       .description("Connect your base to the Nether Hub");
   static final int maxProgression = 1;
 
-  public HubAdv(HCCorePlugin plugin, Advancement root, AdvancementKey key, CoordAdapter adapter) {
+  public HubAdv(Advancement root, AdvancementKey key, CoordAdapter adapter) {
     super(key.getKey(), displayBuilder.coords(adapter, key).build(), root, maxProgression);
   }
 }

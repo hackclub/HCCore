@@ -103,6 +103,7 @@ public class PlayerData {
     this.getTeam().addEntry(this.getUsableName());
   }
 
+  @SuppressWarnings("unused")
   public String getSlackId() {
     return this.slackId;
   }

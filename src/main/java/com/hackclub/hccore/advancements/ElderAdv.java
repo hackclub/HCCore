@@ -6,7 +6,6 @@ import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementDispla
 import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementDisplayBuilder;
 import com.fren_gor.ultimateAdvancementAPI.util.AdvancementKey;
 import com.fren_gor.ultimateAdvancementAPI.util.CoordAdapter;
-import com.hackclub.hccore.HCCorePlugin;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.entity.EntityDeathEvent;
@@ -22,7 +21,7 @@ public class ElderAdv extends BaseAdvancement {
       .description("Defeat an Elder Guardian");
   static final int maxProgression = 1;
 
-  public ElderAdv(HCCorePlugin plugin, Advancement root, AdvancementKey key, CoordAdapter adapter) {
+  public ElderAdv(Advancement root, AdvancementKey key, CoordAdapter adapter) {
     super(key.getKey(), displayBuilder.coords(adapter, key).build(), root, maxProgression);
 
     registerEvent(EntityDeathEvent.class, e -> {

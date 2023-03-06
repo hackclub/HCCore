@@ -6,7 +6,6 @@ import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementDispla
 import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementDisplayBuilder;
 import com.fren_gor.ultimateAdvancementAPI.util.AdvancementKey;
 import com.fren_gor.ultimateAdvancementAPI.util.CoordAdapter;
-import com.hackclub.hccore.HCCorePlugin;
 import org.bukkit.Material;
 import org.bukkit.Statistic;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -22,7 +21,7 @@ public class MileAdv extends BaseAdvancement {
               "Just to be the man who walked a thousand miles (1609.344 km) to fall down at your door");
   static final int maxProgression = 1;
 
-  public MileAdv(HCCorePlugin plugin, Advancement root, AdvancementKey key,
+  public MileAdv(Advancement root, AdvancementKey key,
       CoordAdapter adapter) {
     super(key.getKey(), displayBuilder.coords(adapter, key).build(), root, maxProgression);
 

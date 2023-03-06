@@ -3,6 +3,7 @@ package com.hackclub.hccore.events.player;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerEvent;
+import org.jetbrains.annotations.NotNull;
 
 public class PlayerAFKStatusChangeEvent extends PlayerEvent {
 
@@ -20,7 +21,7 @@ public class PlayerAFKStatusChangeEvent extends PlayerEvent {
     return this.isAfk;
   }
 
-  public HandlerList getHandlers() {
+  public @NotNull HandlerList getHandlers() {
     return handlers;
   }
 
