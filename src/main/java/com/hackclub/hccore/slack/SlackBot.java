@@ -2,14 +2,20 @@ package com.hackclub.hccore.slack;
 
 import com.hackclub.hccore.HCCorePlugin;
 import com.hackclub.hccore.PlayerData;
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.slack.api.Slack;
 import com.slack.api.bolt.App;
 import com.slack.api.bolt.AppConfig;
+import com.slack.api.bolt.request.builtin.SlashCommandRequest;
 import com.slack.api.bolt.socket_mode.SocketModeApp;
 import com.slack.api.methods.MethodsClient;
 import com.slack.api.methods.SlackApiException;
 import com.slack.api.methods.response.users.profile.UsersProfileGetResponse;
 import com.slack.api.model.event.MessageBotEvent;
+import com.slack.api.model.event.MessageChannelJoinEvent;
+import com.slack.api.model.event.MessageDeletedEvent;
 import com.slack.api.model.event.MessageEvent;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import java.io.IOException;
@@ -82,6 +88,50 @@ public class SlackBot implements Listener {
 
     app.event(MessageBotEvent.class, (payload, ctx) -> ctx.ack());
 
+    app.event(MessageDeletedEvent.class, (payload, ctx) -> ctx.ack());
+
+    app.event(MessageChannelJoinEvent.class, (payload, ctx) -> ctx.ack());
+
+    CommandDispatcher<SlashCommandRequest> dispatcher = new CommandDispatcher<>();
+    // TODO change to get base command from config.yml
+    dispatcher.register(LiteralArgumentBuilder.<SlashCommandRequest>literal("minecraft").then(
+        LiteralArgumentBuilder.<SlashCommandRequest>literal("getplayers").executes(context -> {
+          try {
+            context.getSource().getContext()
+                .respond(plugin.getServer().getOnlinePlayers().toString());
+          } catch (IOException e) {
+            e.printStackTrace();
+          }
+          return 1;
+        })).executes(context -> {
+      try {
+        context.getSource().getContext().respond("no args given");
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+      return 1;
+    }));
+
+    app.command("/minecraft", ((slashCommandRequest, ctx) -> {
+      plugin.getLogger().info(slashCommandRequest.getPayload().getCommand() + (
+          (slashCommandRequest.getPayload().getText() == null) ? ""
+              : " " + slashCommandRequest.getPayload()
+                  .getText()));
+      plugin.getLogger().info(slashCommandRequest.getPayload().getCommand());
+      plugin.getLogger().info(slashCommandRequest.getPayload().getText());
+      try {
+        dispatcher.execute(
+            slashCommandRequest.getPayload().getCommand().substring(1) + (
+                (slashCommandRequest.getPayload().getText().isEmpty()) ? ""
+                    : " " + slashCommandRequest.getPayload()
+                        .getText()), slashCommandRequest);
+      } catch (CommandSyntaxException e) {
+        ctx.respond("parsing error: see console");
+        e.printStackTrace();
+      }
+      return ctx.ack();
+    }));
+
     SocketModeApp socket = new SocketModeApp(getAppToken(), app);
     this.socket = socket;
     socket.startAsync();
@@ -105,7 +155,7 @@ public class SlackBot implements Listener {
     sendMessage(
         PlainTextComponentSerializer.plainText().serialize(e.message()),
         getPlayerAvatarLink(player.player.getUniqueId().toString())
-        ,PlainTextComponentSerializer.plainText().serialize(player.getDisplayedName()));
+        , PlainTextComponentSerializer.plainText().serialize(player.getDisplayedName()));
   }
 
   @EventHandler(priority = EventPriority.MONITOR)
@@ -160,7 +210,7 @@ public class SlackBot implements Listener {
   }
 
   private String getAppToken() {
-    String appToken =  this.plugin.getConfig().getString("settings.slack-link.app-token");
+    String appToken = this.plugin.getConfig().getString("settings.slack-link.app-token");
 
     if (appToken == null) {
       throw new IllegalStateException("Slack app token is not set!");
