@@ -10,6 +10,7 @@ import com.slack.api.methods.MethodsClient;
 import com.slack.api.methods.SlackApiException;
 import com.slack.api.methods.response.users.profile.UsersProfileGetResponse;
 import com.slack.api.model.event.MessageBotEvent;
+import com.slack.api.model.event.MessageChannelJoinEvent;
 import com.slack.api.model.event.MessageEvent;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import java.io.IOException;
@@ -81,6 +82,7 @@ public class SlackBot implements Listener {
     });
 
     app.event(MessageBotEvent.class, (payload, ctx) -> ctx.ack());
+    app.event(MessageChannelJoinEvent.class, (payload, ctx) -> ctx.ack());
 
     SocketModeApp socket = new SocketModeApp(getAppToken(), app);
     this.socket = socket;
