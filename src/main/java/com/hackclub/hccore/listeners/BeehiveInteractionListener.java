@@ -1,6 +1,6 @@
 package com.hackclub.hccore.listeners;
 
-import de.tr7zw.changeme.nbtapi.NBTTileEntity;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.Beehive;
@@ -26,19 +26,24 @@ public class BeehiveInteractionListener implements Listener {
     }
 
     Block clickedBlock = event.getClickedBlock();
-    if (clickedBlock == null) {
+    if (!(clickedBlock instanceof org.bukkit.block.Beehive)) {
       return;
     }
-    // Check if it's a bee nest or beehive
-    if (!(clickedBlock.getType() == Material.BEE_NEST
-        || clickedBlock.getType() == Material.BEEHIVE)) {
-      return;
-    }
-
-    NBTTileEntity tile = new NBTTileEntity(clickedBlock.getState());
-    int beeCount = tile.getCompoundList("Bees").size();
+    int beeCount = ((org.bukkit.block.Beehive) clickedBlock).getEntityCount();
     int honeyLevel = ((Beehive) clickedBlock.getBlockData()).getHoneyLevel();
-    event.getPlayer().sendMessage(
-        "There are " + beeCount + " bees housed and the honey level is " + honeyLevel);
+
+    Component message = Component.text("There").appendSpace()
+        .append(Component.text((beeCount == 1) ? "is" : "are")).appendSpace()
+        .append(Component.text(beeCount)).appendSpace()
+        .append(Component.text((beeCount == 1) ? "bee" : "bees")).appendSpace()
+        .append(Component.text("hiding inside")).appendNewline()
+        .append(Component.text("guarding")).appendSpace().append(Component.text(honeyLevel))
+        .appendSpace().append(Component.text((honeyLevel == 1) ? "level" : "levels")).appendSpace()
+        .append(Component.text("of honey"));
+    /*
+    there are/is 0/1/2/3 bee[s] hiding inside
+    guarding 0/1/2/3/4/5 level[s] of honey
+     */
+    event.getPlayer().sendMessage(message);
   }
 }
