@@ -44,6 +44,7 @@ public class SlackBot implements Listener {
 
   private final HCCorePlugin plugin;
   private final SocketModeApp socket;
+  private final String commandBase;
 
   public static final String playerDeathMessageAvatarUrl = "https://cloud-4zgvoofbx-hack-club-bot.vercel.app/0image.png";
   public static final String playerAfkEnterAvatarUrl = "https://cloud-pt6yc0dyx-hack-club-bot.vercel.app/0hc-afk-icon.png";
@@ -56,6 +57,7 @@ public class SlackBot implements Listener {
   public SlackBot(HCCorePlugin plugin) throws Exception {
     this.plugin = plugin;
     App app = new App(AppConfig.builder().singleTeamBotToken(getBotToken()).build());
+    commandBase = plugin.getConfig().getString("settings.slack-link.base-command", "minecraft");
 
     Pattern sdk = Pattern.compile(".*");
     app.message(sdk, (payload, ctx) -> {
@@ -95,41 +97,45 @@ public class SlackBot implements Listener {
 
     CommandDispatcher<SlashCommandRequest> dispatcher = new CommandDispatcher<>();
     // TODO change to get base command from config.yml
-    dispatcher.register(LiteralArgumentBuilder.<SlashCommandRequest>literal("/minecraft")
-        .then(LiteralArgumentBuilder.<SlashCommandRequest>literal("players").executes(context -> {
-          StringBuilder message = new StringBuilder(
-              "Players online (%d/%d)\n\n".formatted(plugin.getServer().getOnlinePlayers().size(),
-                  plugin.getServer().getMaxPlayers()));
-          for (Player player : plugin.getServer().getOnlinePlayers()) {
-            String displayName = plainText().serialize(player.displayName());
-            String name = player.getName();
-            String line = "%s%s\n".formatted(displayName,
-                (name.equals(displayName)) ? "" : (", AKA " + name));
-            message.append(line);
-          }
+    dispatcher.register(
+        LiteralArgumentBuilder.<SlashCommandRequest>literal("/%s".formatted(commandBase))
+            .then(
+                LiteralArgumentBuilder.<SlashCommandRequest>literal("players").executes(context -> {
+                  StringBuilder message = new StringBuilder(
+                      "Players online (%d/%d)\n\n".formatted(
+                          plugin.getServer().getOnlinePlayers().size(),
+                          plugin.getServer().getMaxPlayers()));
+                  for (Player player : plugin.getServer().getOnlinePlayers()) {
+                    String displayName = plainText().serialize(player.displayName());
+                    String name = player.getName();
+                    String line = "%s%s\n".formatted(displayName,
+                        (name.equals(displayName)) ? "" : (", AKA " + name));
+                    message.append(line);
+                  }
 
-          try {
-            ChatPostMessageResponse response = context.getSource().getContext()
-                .say(message.toString());
-            if (!response.isOk()) {
-              context.getSource().getContext().respond(message.toString());
-            }
-          } catch (IOException e) {
-            e.printStackTrace();
-          } catch (SlackApiException e) {
-            throw new RuntimeException(e);
-          }
-          return 1;
-        })).executes(context -> {
-          try {
-            context.getSource().getContext().respond("no arguments given\ntry /minecraft players");
-          } catch (IOException e) {
-            e.printStackTrace();
-          }
-          return 1;
-        }));
+                  try {
+                    ChatPostMessageResponse response = context.getSource().getContext()
+                        .say(message.toString());
+                    if (!response.isOk()) {
+                      context.getSource().getContext().respond(message.toString());
+                    }
+                  } catch (IOException e) {
+                    e.printStackTrace();
+                  } catch (SlackApiException e) {
+                    throw new RuntimeException(e);
+                  }
+                  return 1;
+                })).executes(context -> {
+              try {
+                context.getSource().getContext()
+                    .respond("no arguments given\ntry /%s players".formatted(commandBase));
+              } catch (IOException e) {
+                e.printStackTrace();
+              }
+              return 1;
+            }));
 
-    app.command("/minecraft", ((slashCommandRequest, ctx) -> {
+    app.command("/%s".formatted(commandBase), ((slashCommandRequest, ctx) -> {
       String command = slashCommandRequest.getPayload().getCommand() + (
           (slashCommandRequest.getPayload().getText().isEmpty()) ? ""
               : (" " + slashCommandRequest.getPayload().getText()));
@@ -138,7 +144,7 @@ public class SlackBot implements Listener {
       try {
         dispatcher.execute(command, slashCommandRequest);
       } catch (CommandSyntaxException e) {
-        ctx.respond("parsing error: %s".formatted(e.getMessage()));
+        ctx.respond("parsing error: %s\ntry /%s players".formatted(e.getMessage(), commandBase));
         e.printStackTrace();
       }
       return ctx.ack();

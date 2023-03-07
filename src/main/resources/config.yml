@@ -13,4 +13,4 @@ settings:
     bot-token: ""
     app-token: ""
     channel-id: ""
-    bot-prefix: "/"
+    base-command: "minecraft"
