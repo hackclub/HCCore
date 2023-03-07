@@ -44,7 +44,7 @@ public class AFKListener implements Listener {
       player.getServer().broadcast(Component.text(data.getUsableName() + " is now AFK"));
     } else {
       player.clearTitle();
-      player.getServer().broadcast(Component.text(data.getUsableName() + " is now Active"));
+      player.getServer().broadcast(Component.text(data.getUsableName() + " is no longer AFK"));
     }
   }
 

@@ -1,7 +1,10 @@
 package com.hackclub.hccore.slack;
 
+import static net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer.plainText;
+
 import com.hackclub.hccore.HCCorePlugin;
 import com.hackclub.hccore.PlayerData;
+import com.hackclub.hccore.events.player.PlayerAFKStatusChangeEvent;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -12,6 +15,7 @@ import com.slack.api.bolt.request.builtin.SlashCommandRequest;
 import com.slack.api.bolt.socket_mode.SocketModeApp;
 import com.slack.api.methods.MethodsClient;
 import com.slack.api.methods.SlackApiException;
+import com.slack.api.methods.response.chat.ChatPostMessageResponse;
 import com.slack.api.methods.response.users.profile.UsersProfileGetResponse;
 import com.slack.api.model.event.MessageBotEvent;
 import com.slack.api.model.event.MessageChannelJoinEvent;
@@ -24,7 +28,6 @@ import java.util.regex.Pattern;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.apache.commons.text.StringEscapeUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -41,7 +44,14 @@ public class SlackBot implements Listener {
 
   private final HCCorePlugin plugin;
   private final SocketModeApp socket;
+
+  public static final String playerDeathMessageAvatarUrl = "https://cloud-4zgvoofbx-hack-club-bot.vercel.app/0image.png";
+  public static final String playerAfkEnterAvatarUrl = "https://cloud-pt6yc0dyx-hack-club-bot.vercel.app/0hc-afk-icon.png";
+  public static final String playerAfkLeaveAvatarUrl = "https://cloud-pt6yc0dyx-hack-club-bot.vercel.app/0hc-afk-icon.png";
+  public static final String serverConsoleAvatarUrl = "https://cloud-6lujjsrt6-hack-club-bot.vercel.app/0console_edited.png";
   public static final String serverAvatarLink = "https://assets.hackclub.com/icon-progress-square.png";
+  public static final String playerServerLeaveAvatarUrl = "https://cloud-if9tepzbn-hack-club-bot.vercel.app/0hccoreleave.png";
+  public static final String playerServerJoinAvatarUrl = "https://cloud-if9tepzbn-hack-club-bot.vercel.app/1hccorejoin.png";
 
   public SlackBot(HCCorePlugin plugin) throws Exception {
     this.plugin = plugin;
@@ -57,31 +67,22 @@ public class SlackBot implements Listener {
         return ctx.ack();
       }
       String userId = event.getUser();
-      UsersProfileGetResponse result = ctx.client().usersProfileGet(r ->
-          r
-              .token(ctx.getBotToken())
-              .user(userId)
-      );
+      UsersProfileGetResponse result = ctx.client()
+          .usersProfileGet(r -> r.token(ctx.getBotToken()).user(userId));
       String displayName = result.getProfile().getDisplayName();
 
-      TextComponent prefixComponent = Component.text("[Slack] ")
-          .color(NamedTextColor.BLUE);
+      TextComponent prefixComponent = Component.text("[Slack] ").color(NamedTextColor.BLUE);
 
-      TextComponent nameComponent = Component.text(displayName)
-          .color(NamedTextColor.WHITE)
+      TextComponent nameComponent = Component.text(displayName).color(NamedTextColor.WHITE)
           .hoverEvent(Component.text(result.getProfile().getRealName()));
 
-      TextComponent arrowComponent = Component.text(" » ")
-          .color(NamedTextColor.GOLD);
+      TextComponent arrowComponent = Component.text(" » ").color(NamedTextColor.GOLD);
 
       TextComponent playerChatComponent = Component.text(
           ChatColor.translateAlternateColorCodes('&', text)).color(NamedTextColor.GRAY);
 
-      plugin.getServer().broadcast(prefixComponent
-          .append(nameComponent)
-          .append(arrowComponent)
-          .append(playerChatComponent)
-      );
+      plugin.getServer().broadcast(
+          prefixComponent.append(nameComponent).append(arrowComponent).append(playerChatComponent));
 
       return ctx.ack();
     });
@@ -94,39 +95,50 @@ public class SlackBot implements Listener {
 
     CommandDispatcher<SlashCommandRequest> dispatcher = new CommandDispatcher<>();
     // TODO change to get base command from config.yml
-    dispatcher.register(LiteralArgumentBuilder.<SlashCommandRequest>literal("minecraft").then(
-        LiteralArgumentBuilder.<SlashCommandRequest>literal("getplayers").executes(context -> {
+    dispatcher.register(LiteralArgumentBuilder.<SlashCommandRequest>literal("/minecraft")
+        .then(LiteralArgumentBuilder.<SlashCommandRequest>literal("players").executes(context -> {
+          StringBuilder message = new StringBuilder(
+              "Players online (%d/%d)\n\n".formatted(plugin.getServer().getOnlinePlayers().size(),
+                  plugin.getServer().getMaxPlayers()));
+          for (Player player : plugin.getServer().getOnlinePlayers()) {
+            String displayName = plainText().serialize(player.displayName());
+            String name = player.getName();
+            String line = "%s%s\n".formatted(displayName,
+                (name.equals(displayName)) ? "" : (", AKA " + name));
+            message.append(line);
+          }
+
           try {
-            context.getSource().getContext()
-                .respond(plugin.getServer().getOnlinePlayers().toString());
+            ChatPostMessageResponse response = context.getSource().getContext()
+                .say(message.toString());
+            if (!response.isOk()) {
+              context.getSource().getContext().respond(message.toString());
+            }
+          } catch (IOException e) {
+            e.printStackTrace();
+          } catch (SlackApiException e) {
+            throw new RuntimeException(e);
+          }
+          return 1;
+        })).executes(context -> {
+          try {
+            context.getSource().getContext().respond("no arguments given\ntry /minecraft players");
           } catch (IOException e) {
             e.printStackTrace();
           }
           return 1;
-        })).executes(context -> {
-      try {
-        context.getSource().getContext().respond("no args given");
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-      return 1;
-    }));
+        }));
 
     app.command("/minecraft", ((slashCommandRequest, ctx) -> {
-      plugin.getLogger().info(slashCommandRequest.getPayload().getCommand() + (
-          (slashCommandRequest.getPayload().getText() == null) ? ""
-              : " " + slashCommandRequest.getPayload()
-                  .getText()));
-      plugin.getLogger().info(slashCommandRequest.getPayload().getCommand());
-      plugin.getLogger().info(slashCommandRequest.getPayload().getText());
+      String command = slashCommandRequest.getPayload().getCommand() + (
+          (slashCommandRequest.getPayload().getText().isEmpty()) ? ""
+              : (" " + slashCommandRequest.getPayload().getText()));
+      plugin.getLogger().info(
+          "received slack command from %s: \"%s\"".formatted(ctx.getRequestUserId(), command));
       try {
-        dispatcher.execute(
-            slashCommandRequest.getPayload().getCommand().substring(1) + (
-                (slashCommandRequest.getPayload().getText().isEmpty()) ? ""
-                    : " " + slashCommandRequest.getPayload()
-                        .getText()), slashCommandRequest);
+        dispatcher.execute(command, slashCommandRequest);
       } catch (CommandSyntaxException e) {
-        ctx.respond("parsing error: see console");
+        ctx.respond("parsing error: %s".formatted(e.getMessage()));
         e.printStackTrace();
       }
       return ctx.ack();
@@ -136,46 +148,40 @@ public class SlackBot implements Listener {
     this.socket = socket;
     socket.startAsync();
     this.plugin.getLogger().info("HackCraft Slack started!");
-    sendMessage("*Server Started*", serverAvatarLink, "Console");
+    sendMessage(":large_green_circle: *Server Started*", serverConsoleAvatarUrl, "Console");
   }
 
   @Contract(pure = true)
   public static @NotNull String getPlayerAvatarLink(String uuid) {
-    return "https://cravatar.eu/avatar/" + uuid;
+    return "https://cravatar.eu/avatar/" + uuid + "/512";
   }
 
   public void disconnect() throws Exception {
-    sendMessage("*Server Stopped*", serverAvatarLink, "Console");
+    sendMessage(":tw_octagonal_sign: *Server Stopped*", serverConsoleAvatarUrl, "Console");
     this.socket.stop();
   }
+
 
   @EventHandler
   public void onChat(AsyncChatEvent e) throws IOException {
     PlayerData player = plugin.getDataManager().getData(e.getPlayer());
-    sendMessage(
-        PlainTextComponentSerializer.plainText().serialize(e.message()),
-        getPlayerAvatarLink(player.player.getUniqueId().toString())
-        , PlainTextComponentSerializer.plainText().serialize(player.getDisplayedName()));
+    sendMessage(plainText().serialize(e.message()),
+        getPlayerAvatarLink(player.player.getUniqueId().toString()),
+        plainText().serialize(player.getDisplayedName()));
   }
 
   @EventHandler(priority = EventPriority.MONITOR)
   public void onJoin(PlayerJoinEvent e) throws IOException {
     Player player = e.getPlayer();
-    sendMessage("*" +
-            PlainTextComponentSerializer.plainText().serialize(player.displayName())
-            + "* joined the game!",
-        serverAvatarLink
-        , "Console");
+    sendMessage("*" + plainText().serialize(player.displayName()) + "* joined the game!",
+        playerServerJoinAvatarUrl, "Join");
   }
 
   @EventHandler(priority = EventPriority.MONITOR)
   public void onQuit(PlayerQuitEvent e) throws IOException {
     Player player = e.getPlayer();
-    sendMessage("*" +
-            PlainTextComponentSerializer.plainText().serialize(player.displayName())
-            + "* left the game!",
-        serverAvatarLink,
-        "Console");
+    sendMessage("*" + plainText().serialize(player.displayName()) + "* left the game!",
+        playerServerLeaveAvatarUrl, "Leave");
   }
 
   @EventHandler(priority = EventPriority.MONITOR)
@@ -184,9 +190,15 @@ public class SlackBot implements Listener {
     if (deathMessage == null) {
       return;
     }
-    sendMessage(PlainTextComponentSerializer.plainText().serialize(deathMessage),
-        "https://cloud-4zgvoofbx-hack-club-bot.vercel.app/0image.png",
-        "R.I.P.");
+    sendMessage(plainText().serialize(deathMessage), playerDeathMessageAvatarUrl, "R.I.P.");
+  }
+
+  @EventHandler
+  public void onAfkChange(PlayerAFKStatusChangeEvent e) throws IOException {
+    boolean nowAfk = e.getNewValue();
+    PlayerData data = this.plugin.getDataManager().getData(e.getPlayer());
+    sendMessage("%s is ".formatted(data.getUsableName()) + (nowAfk ? "now" : "no longer") + " AFK",
+        nowAfk ? playerAfkEnterAvatarUrl : playerAfkLeaveAvatarUrl, "AFK");
   }
 
   private String getSlackChannel() {
@@ -223,13 +235,9 @@ public class SlackBot implements Listener {
     MethodsClient client = Slack.getInstance().methods();
 
     try {
-      var res = client.chatPostMessage(r -> r
-          .token(getBotToken())
-          .channel(this.getSlackChannel())
-          .text(msg)
-          .iconUrl(iconURL)
-          .username(username)
-      );
+      var res = client.chatPostMessage(
+          r -> r.token(getBotToken()).channel(this.getSlackChannel()).text(msg).iconUrl(iconURL)
+              .username(username));
 
       if (!res.isOk()) {
         this.plugin.getLogger().log(Level.WARNING, "SlackBot failed to send message: " + res);
