@@ -4,30 +4,7 @@ For the purposes of this guide we'll designate the `~/minecraft-server` and `~/H
 for the locations of the minecraft (paper) server, and the HCCore source code. Of course, you don't
 have to put the files in the same place
 
-## 1. Start Minecraft Paper Server
-
-[Download Paper](https://papermc.io/downloads) (build #261 at the time of writing) and place the
-resulting jar to `~/minecraft-server`
-
-Start the server and check that it works properly
-
-```sh
-java -Xms2G -Xmx2G -jar paper-261.jar --nogui
-```
-
-Something like the following should be outputted to the console
-
-```txt
-This server is running Paper version git-Paper-261 (MC: 1.16.4) (Implementing API version 1.16.4-R0.1-SNAPSHOT)
-```
-
-You'll notice other files and folders like `folder`, `whitelist.json`, etc. are created
-
-To join the server, launch your Minecraft client, and click `[Direct Connection]` -> and
-enter `localhost` to 'Server Address'. Notice that the `/color` command doesn't work (it will work
-once we add the HCCore plugin)
-
-## 2. Download and Build HCCore
+## 1. Download and Build HCCore
 
 We use [Gradle](https://gradle.org/install) for dependency management and as a build time tool
 
@@ -42,22 +19,25 @@ cd HCCore
 ./gradlew.bat build
 ```
 
-## 3. Copy the Built HCCore Plugin to the Minecraft Paper Server
+## 2. run the built-in Minecraft Paper Server
 
 ```sh
-cp ~/HCCore/build/libs/HCCore-1.0.0.jar ~/minecraft-server/plugins
+./gradlew runServer
 ```
 
-## 4. Install Dependencies
+the server will fail to load, because you havnt accepted the EULA, so do that, and re-run  
+next it will error out due to missing dependancies, so install those:
+
+## 3. Install Dependencies
 
 Download:
 
-- [ProtocolLib](https://www.spigotmc.org/resources/protocollib.1997/)
+- [ProtocolLib](https://www.spigotmc.org/resources/protocollib.1997/) [Dev Builds](https://ci.dmulloy2.net/job/ProtocolLib/lastSuccessfulBuild/)
 - [UltimateAdvancementAPI](https://www.spigotmc.org/resources/ultimateadvancementapi-1-15-1-19-3.95585/)
 
 ```sh
-mv ~/Downloads/ProtocolLib.jar ~/minecraft-server/plugins
-mv ~/Downloads/UltimateAdvancementAPI-2.2.2-(1.15-1.19.3).jar ~/minecraft-server/plugins
+mv ~/Downloads/ProtocolLib.jar run/plugins
+mv ~/Downloads/UltimateAdvancementAPI-2.2.2-(1.15-1.19.3).jar run/plugins
 ```
 
 Note: Make sure you stop the server and restart it for the plugins to properly load
@@ -70,7 +50,7 @@ BOOM! Now we can connect with our Minecraft client and test/use the plugin
 -> /color <chat|name> [color]
 ```
 
-## 5. Install BileTools
+## 4. ~~Install BileTools~~
 
 > Note: As of writing, BileTools is not working properly with the latest Paper version. See this
 > issue for details: https://github.com/VolmitSoftware/BileTools/issues/8
