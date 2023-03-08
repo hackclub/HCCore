@@ -232,8 +232,19 @@ public class SlackBot implements Listener {
 
     String advancementName = PlainTextComponentSerializer.plainText()
         .serialize(advancement.getDisplay().title());
+
+    String advancementType;
+    switch (advancement.getDisplay().frame()) {
+      case GOAL ->
+          advancementType = "goal";
+      case CHALLENGE ->
+          advancementType = "challenge";
+      default ->
+          advancementType = "advancement";
+    }
+
     sendMessage(
-        "%s has completed the advancement *%s*".formatted(data.getUsableName(), advancementName),
+        "%s has completed the %s *%s*".formatted(data.getUsableName(), advancementType, advancementName),
         playerAdvancementAvatarUrl, "Advancement");
   }
 
@@ -259,9 +270,19 @@ public class SlackBot implements Listener {
     }
     String advancementName = advancement.getDisplay().getTitle();
 
+    String advancementType;
+    switch (advancement.getDisplay().getFrame()) {
+      case GOAL ->
+          advancementType = "goal";
+      case CHALLENGE ->
+          advancementType = "challenge";
+      default ->
+          advancementType = "advancement";
+    }
+
     try {
       sendMessage(
-          "%s has completed the advancement *%s*".formatted(data.getUsableName(), advancementName),
+          "%s has completed the %s *%s*".formatted(data.getUsableName(), advancementType, advancementName),
           playerAdvancementAvatarUrl, "Advancement");
     } catch (IOException ioException) {
       ioException.printStackTrace();
