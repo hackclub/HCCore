@@ -24,6 +24,7 @@ dependencies {
     compileOnly("com.frengor:ultimateadvancementapi:2.2.2")
     compileOnly("com.comphenix.protocol:ProtocolLib:5.0.0-SNAPSHOT")
     compileOnly("io.papermc.paper:paper-api:1.19.3-R0.1-SNAPSHOT")
+    compileOnly("com.mojang:brigadier:1.0.18")
 }
 
 tasks {
@@ -74,4 +75,7 @@ repositories {
 
     // Papermc
     maven("https://repo.papermc.io/repository/maven-public/")
+
+    // brigadier
+    maven("https://libraries.minecraft.net")
 }
