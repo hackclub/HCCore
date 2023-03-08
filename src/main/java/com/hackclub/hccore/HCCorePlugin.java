@@ -9,6 +9,7 @@ import com.fren_gor.ultimateAdvancementAPI.UltimateAdvancementAPI;
 import com.fren_gor.ultimateAdvancementAPI.advancement.RootAdvancement;
 import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementDisplay;
 import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementFrameType;
+import com.fren_gor.ultimateAdvancementAPI.events.advancement.ProgressionUpdateEvent;
 import com.fren_gor.ultimateAdvancementAPI.util.AdvancementKey;
 import com.fren_gor.ultimateAdvancementAPI.util.CoordAdapter;
 import com.hackclub.hccore.advancements.AstraAdv;
@@ -106,6 +107,9 @@ public class HCCorePlugin extends JavaPlugin {
     this.getServer().getPluginManager().registerEvents(new AFKListener(this), this);
     this.getServer().getPluginManager().registerEvents(new BeehiveInteractionListener(), this);
     this.getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
+
+    this.advancementTab.getEventManager()
+        .register(this.bot, ProgressionUpdateEvent.class, this.bot::onCustomAdvancementProgressed);
 
     // Register packet listeners
     this.getProtocolManager()

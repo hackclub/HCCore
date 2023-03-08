@@ -2,6 +2,8 @@ package com.hackclub.hccore.slack;
 
 import static net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer.plainText;
 
+import com.fren_gor.ultimateAdvancementAPI.events.advancement.ProgressionUpdateEvent;
+import com.fren_gor.ultimateAdvancementAPI.util.AdvancementKey;
 import com.hackclub.hccore.HCCorePlugin;
 import com.hackclub.hccore.PlayerData;
 import com.hackclub.hccore.events.player.PlayerAFKStatusChangeEvent;
@@ -24,18 +26,23 @@ import com.slack.api.model.event.MessageEvent;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.apache.commons.text.StringEscapeUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.advancement.Advancement;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerAdvancementDoneEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.jetbrains.annotations.Contract;
@@ -54,6 +61,7 @@ public class SlackBot implements Listener {
   public static final String serverAvatarLink = "https://assets.hackclub.com/icon-progress-square.png";
   public static final String playerServerLeaveAvatarUrl = "https://cloud-if9tepzbn-hack-club-bot.vercel.app/0hccoreleave.png";
   public static final String playerServerJoinAvatarUrl = "https://cloud-if9tepzbn-hack-club-bot.vercel.app/1hccorejoin.png";
+  public static final String playerAdvancementAvatarUrl = "https://cloud-obk2f29h4-hack-club-bot.vercel.app/0achievement.png";
 
   public SlackBot(HCCorePlugin plugin) throws Exception {
     this.plugin = plugin;
@@ -207,6 +215,57 @@ public class SlackBot implements Listener {
     PlayerData data = this.plugin.getDataManager().getData(e.getPlayer());
     sendMessage("%s is ".formatted(data.getUsableName()) + (nowAfk ? "now" : "no longer") + " AFK",
         nowAfk ? playerAfkEnterAvatarUrl : playerAfkLeaveAvatarUrl, "AFK");
+  }
+
+  @EventHandler
+  public void onAdvancementDone(PlayerAdvancementDoneEvent e) throws IOException {
+    PlayerData data = this.plugin.getDataManager().getData(e.getPlayer());
+    Advancement advancement = e.getAdvancement();
+
+    // Filter out hidden advancements and recipes
+    if (advancement.getDisplay() == null) {
+      return;
+    }
+    if (!advancement.getDisplay().doesAnnounceToChat()) {
+      return;
+    }
+
+    String advancementName = PlainTextComponentSerializer.plainText()
+        .serialize(advancement.getDisplay().title());
+    sendMessage(
+        "%s has completed the advancement *%s*".formatted(data.getUsableName(), advancementName),
+        playerAdvancementAvatarUrl, "Advancement");
+  }
+
+  public void onCustomAdvancementProgressed(ProgressionUpdateEvent e) {
+    UUID uuid = e.getTeamProgression().getAMember();
+    if (uuid == null) {
+      return;
+    }
+    Player player = Bukkit.getPlayer(e.getTeamProgression().getAMember());
+    if (player == null) {
+      return;
+    }
+
+    PlayerData data = this.plugin.getDataManager().getData(player);
+    AdvancementKey key = e.getAdvancementKey();
+    com.fren_gor.ultimateAdvancementAPI.advancement.Advancement advancement = this.plugin.advancementTab.getAdvancement(
+        key);
+    if (advancement == null) {
+      return;
+    }
+    if (e.getNewProgression() < advancement.getMaxProgression()) {
+      return;
+    }
+    String advancementName = advancement.getDisplay().getTitle();
+
+    try {
+      sendMessage(
+          "%s has completed the advancement *%s*".formatted(data.getUsableName(), advancementName),
+          playerAdvancementAvatarUrl, "Advancement");
+    } catch (IOException ioException) {
+      ioException.printStackTrace();
+    }
   }
 
   private String getSlackChannel() {
