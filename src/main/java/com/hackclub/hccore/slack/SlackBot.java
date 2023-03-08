@@ -23,6 +23,7 @@ import com.slack.api.model.event.MessageDeletedEvent;
 import com.slack.api.model.event.MessageEvent;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 import net.kyori.adventure.text.Component;
@@ -96,44 +97,45 @@ public class SlackBot implements Listener {
     app.event(MessageChannelJoinEvent.class, (payload, ctx) -> ctx.ack());
 
     CommandDispatcher<SlashCommandRequest> dispatcher = new CommandDispatcher<>();
-    // TODO change to get base command from config.yml
     dispatcher.register(
-        LiteralArgumentBuilder.<SlashCommandRequest>literal("/%s".formatted(commandBase))
-            .then(
-                LiteralArgumentBuilder.<SlashCommandRequest>literal("players").executes(context -> {
-                  StringBuilder message = new StringBuilder(
-                      "Players online (%d/%d)\n\n".formatted(
-                          plugin.getServer().getOnlinePlayers().size(),
-                          plugin.getServer().getMaxPlayers()));
-                  for (Player player : plugin.getServer().getOnlinePlayers()) {
-                    String displayName = plainText().serialize(player.displayName());
-                    String name = player.getName();
-                    String line = "%s%s\n".formatted(displayName,
-                        (name.equals(displayName)) ? "" : (", AKA " + name));
-                    message.append(line);
-                  }
-
-                  try {
-                    ChatPostMessageResponse response = context.getSource().getContext()
-                        .say(message.toString());
-                    if (!response.isOk()) {
-                      context.getSource().getContext().respond(message.toString());
-                    }
-                  } catch (IOException e) {
-                    e.printStackTrace();
-                  } catch (SlackApiException e) {
-                    throw new RuntimeException(e);
-                  }
-                  return 1;
-                })).executes(context -> {
+        LiteralArgumentBuilder.<SlashCommandRequest>literal("/%s".formatted(commandBase)).then(
+            LiteralArgumentBuilder.<SlashCommandRequest>literal("players").executes(context -> {
+              Collection<? extends Player> onlinePlayers = plugin.getServer().getOnlinePlayers();
+              StringBuilder message = new StringBuilder();
+              if (onlinePlayers.size() == 0) {
+                message.append("There are currently no players online");
+              } else {
+                message.append("*Players online* (%d/%d)\n\n".formatted(onlinePlayers.size(),
+                    plugin.getServer().getMaxPlayers()));
+                for (Player player : onlinePlayers) {
+                  String displayName = plainText().serialize(player.displayName());
+                  String name = player.getName();
+                  String line = "%s%s\n".formatted(displayName,
+                      (name.equals(displayName)) ? "" : (", AKA " + name));
+                  message.append(line);
+                }
+              }
               try {
-                context.getSource().getContext()
-                    .respond("no arguments given\ntry /%s players".formatted(commandBase));
+                ChatPostMessageResponse response = context.getSource().getContext()
+                    .say(message.toString());
+                if (!response.isOk()) {
+                  context.getSource().getContext().respond(message.toString());
+                }
               } catch (IOException e) {
                 e.printStackTrace();
+              } catch (SlackApiException e) {
+                throw new RuntimeException(e);
               }
               return 1;
-            }));
+            })).executes(context -> {
+          try {
+            context.getSource().getContext()
+                .respond("no arguments given\ntry /%s players".formatted(commandBase));
+          } catch (IOException e) {
+            e.printStackTrace();
+          }
+          return 1;
+        }));
 
     app.command("/%s".formatted(commandBase), ((slashCommandRequest, ctx) -> {
       String command = slashCommandRequest.getPayload().getCommand() + (
