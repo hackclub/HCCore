@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -28,7 +28,8 @@ public class ColorCommand implements TabExecutor {
   public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd,
       @NotNull String alias, String[] args) {
     if (!(sender instanceof Player player)) {
-      sender.sendMessage(ChatColor.RED + "You must be a player to use this");
+      sender.sendMessage(
+          Component.text("You must be a player to use this").color(NamedTextColor.RED));
       return true;
     }
 
@@ -50,7 +51,7 @@ public class ColorCommand implements TabExecutor {
       }
 
       if (newColor == null) {
-        sender.sendMessage(ChatColor.RED + "Invalid color specified");
+        sender.sendMessage(Component.text("Invalid color specified").color(NamedTextColor.RED));
       }
 
 
@@ -65,7 +66,8 @@ public class ColorCommand implements TabExecutor {
           break;
         }
         data.setMessageColor(newColor);
-        sender.sendMessage("Your chat color has been set to " + newColor + "this color");
+        sender.sendMessage(Component.text("Your chat color has been set to ")
+            .append(Component.text("this color").color(newColor)));
       }
       // /color name [color]
       case "name" -> {
@@ -75,7 +77,8 @@ public class ColorCommand implements TabExecutor {
           break;
         }
         data.setNameColor(newColor);
-        sender.sendMessage("Your name color has been set to " + newColor + "this color");
+        sender.sendMessage(
+            Component.text("Your name color has been set to ").append(Component.text("this color").color(newColor)));
       }
       default -> {
         return false;
