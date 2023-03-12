@@ -1,4 +1,4 @@
-# HCCore [![Build Status](https://travis-ci.com/hackclub/HCCore.svg?branch=master)](https://travis-ci.com/hackclub/HCCore)
+# HCCore [![Build Status](https://github.com/hackclub/HCCore/actions/workflows/workflow.yml/badge.svg)](https://github.com/hackclub/HCCore/actions/workflows/workflow.yml)
 
 Main plugin for the Hack Club Minecraft server.
 
