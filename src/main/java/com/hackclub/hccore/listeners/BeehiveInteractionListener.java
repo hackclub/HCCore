@@ -27,11 +27,12 @@ public class BeehiveInteractionListener implements Listener {
       return;
     }
 
+    // Check if the block is a beehive (or bee nest, which implements beehive)
     Block clickedBlock = event.getClickedBlock();
     if (clickedBlock == null) {
       return;
     }
-    if (clickedBlock.getType() != Material.BEEHIVE) {
+    if (!(clickedBlock.getState() instanceof org.bukkit.block.Beehive)) {
       return;
     }
 
