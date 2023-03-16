@@ -1,8 +1,17 @@
 package com.hackclub.hccore.listeners;
 
+import static net.kyori.adventure.text.Component.empty;
+import static net.kyori.adventure.text.Component.space;
+import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.format.NamedTextColor.AQUA;
+import static net.kyori.adventure.text.format.NamedTextColor.GOLD;
+import static net.kyori.adventure.text.format.NamedTextColor.GRAY;
+import static net.kyori.adventure.text.format.NamedTextColor.GREEN;
+import static net.kyori.adventure.text.format.NamedTextColor.RED;
+import static net.kyori.adventure.text.format.NamedTextColor.WHITE;
+import static net.kyori.adventure.text.format.NamedTextColor.YELLOW;
+
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.Beehive;
@@ -22,8 +31,7 @@ public class BeehiveInteractionListener implements Listener {
     // Check if this was a right hand interaction with a block while not holding
     // anything
     if (!(event.getHand() == EquipmentSlot.HAND && event.getAction() == Action.RIGHT_CLICK_BLOCK
-        && event.getPlayer().getInventory().getItemInMainHand()
-        .getType() == Material.AIR)) {
+        && event.getPlayer().getInventory().getItemInMainHand().getType() == Material.AIR)) {
       return;
     }
 
@@ -32,30 +40,52 @@ public class BeehiveInteractionListener implements Listener {
     if (clickedBlock == null) {
       return;
     }
-    if (!(clickedBlock.getState() instanceof org.bukkit.block.Beehive)) {
+    if (!(clickedBlock.getState() instanceof org.bukkit.block.Beehive beehiveState)) {
       return;
     }
+    Beehive beehiveData = (Beehive) clickedBlock.getBlockData();
 
-    int beeCount = ((org.bukkit.block.Beehive) clickedBlock.getState()).getEntityCount();
-    int honeyLevel = ((Beehive) clickedBlock.getBlockData()).getHoneyLevel();
+    int beeCount = beehiveState.getEntityCount();
+    int honeyLevel = beehiveData.getHoneyLevel();
 
-    Component message = Component.empty().decorate(TextDecoration.ITALIC).color(NamedTextColor.GOLD)
-        .append(Component.text("There").appendSpace()
-            .append(Component.text((beeCount == 1) ? "is" : "are")).appendSpace()
-            .append(
-                Component.text(beeCount).color(NamedTextColor.WHITE))
-            .appendSpace()
-            .append(Component.text((beeCount == 1) ? "bee" : "bees")).appendSpace()
-            .append(Component.text("hiding inside,")).appendNewline()
-            .append(Component.text("guarding")).appendSpace().append(
-                Component.text(honeyLevel).color(NamedTextColor.WHITE))
-            .appendSpace().append(Component.text((honeyLevel == 1) ? "level" : "levels"))
-            .appendSpace()
-            .append(Component.text("of honey.")));
-    /*
-    there are/is 0/1/2/3 bee[s] hiding inside
-    guarding 0/1/2/3/4/5 level[s] of honey
-     */
-    event.getPlayer().sendMessage(message);
+    Component msg = text("Bees:").color(AQUA);
+
+    for (int i = 0; i < beehiveState.getMaxEntities(); i++) {
+      Component bee = space().append(text("☻"));
+      Component beeHoverText = text("Bee").color(WHITE).appendNewline();
+      if (i >= beeCount) {
+        bee = bee.color(GRAY);
+        beeHoverText = beeHoverText.append(text("Not Home :(").color(RED));
+      } else {
+        bee = bee.color(YELLOW);
+        beeHoverText = beeHoverText.append(text("Buzzing Around").color(GREEN));
+      }
+      bee = bee.hoverEvent(beeHoverText);
+      msg = msg.append(bee);
+    }
+    msg = msg.appendNewline().append(text("Honey:").color(AQUA)).appendSpace();
+
+    Component honeyBlock = empty();
+    for (int i = 0; i < beehiveData.getMaximumHoneyLevel(); i++) {
+      Component honey = text("█");
+      if (i >= honeyLevel) {
+        honey = honey.color(GRAY);
+      } else {
+        honey = honey.color(GOLD);
+      }
+      honeyBlock = honeyBlock.append(honey);
+    }
+    Component honeyHoverText = text(
+        "Honey %d/%d".formatted(honeyLevel, beehiveData.getMaximumHoneyLevel())).color(WHITE)
+        .appendNewline();
+    if (honeyLevel == beehiveData.getMaximumHoneyLevel()) {
+      honeyHoverText = honeyHoverText.append(text("Ready to Harvest!").color(GREEN));
+    } else {
+      honeyHoverText = honeyHoverText.append(text("Not Ready Yet...").color(RED));
+    }
+    honeyBlock = honeyBlock.hoverEvent(honeyHoverText);
+    msg = msg.append(honeyBlock);
+
+    event.getPlayer().sendMessage(msg);
   }
 }

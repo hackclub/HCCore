@@ -102,14 +102,14 @@ public class HCCorePlugin extends JavaPlugin {
     // Register event listeners
     if (this.bot != null) {
       this.getServer().getPluginManager().registerEvents(this.bot, this);
+      this.advancementTab.getEventManager()
+          .register(this.bot, ProgressionUpdateEvent.class,
+              this.bot::onCustomAdvancementProgressed);
     }
 
     this.getServer().getPluginManager().registerEvents(new AFKListener(this), this);
     this.getServer().getPluginManager().registerEvents(new BeehiveInteractionListener(), this);
     this.getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
-
-    this.advancementTab.getEventManager()
-        .register(this.bot, ProgressionUpdateEvent.class, this.bot::onCustomAdvancementProgressed);
 
     // Register packet listeners
     this.getProtocolManager()
