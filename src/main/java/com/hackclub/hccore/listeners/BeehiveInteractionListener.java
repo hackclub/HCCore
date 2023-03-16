@@ -1,6 +1,8 @@
 package com.hackclub.hccore.listeners;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.Beehive;
@@ -25,21 +27,31 @@ public class BeehiveInteractionListener implements Listener {
       return;
     }
 
+    // Check if the block is a beehive (or bee nest, which implements beehive)
     Block clickedBlock = event.getClickedBlock();
-    if (!(clickedBlock instanceof org.bukkit.block.Beehive)) {
+    if (clickedBlock == null) {
       return;
     }
-    int beeCount = ((org.bukkit.block.Beehive) clickedBlock).getEntityCount();
+    if (!(clickedBlock.getState() instanceof org.bukkit.block.Beehive)) {
+      return;
+    }
+
+    int beeCount = ((org.bukkit.block.Beehive) clickedBlock.getState()).getEntityCount();
     int honeyLevel = ((Beehive) clickedBlock.getBlockData()).getHoneyLevel();
 
-    Component message = Component.text("There").appendSpace()
-        .append(Component.text((beeCount == 1) ? "is" : "are")).appendSpace()
-        .append(Component.text(beeCount)).appendSpace()
-        .append(Component.text((beeCount == 1) ? "bee" : "bees")).appendSpace()
-        .append(Component.text("hiding inside")).appendNewline()
-        .append(Component.text("guarding")).appendSpace().append(Component.text(honeyLevel))
-        .appendSpace().append(Component.text((honeyLevel == 1) ? "level" : "levels")).appendSpace()
-        .append(Component.text("of honey"));
+    Component message = Component.empty().decorate(TextDecoration.ITALIC).color(NamedTextColor.GOLD)
+        .append(Component.text("There").appendSpace()
+            .append(Component.text((beeCount == 1) ? "is" : "are")).appendSpace()
+            .append(
+                Component.text(beeCount).color(NamedTextColor.WHITE))
+            .appendSpace()
+            .append(Component.text((beeCount == 1) ? "bee" : "bees")).appendSpace()
+            .append(Component.text("hiding inside,")).appendNewline()
+            .append(Component.text("guarding")).appendSpace().append(
+                Component.text(honeyLevel).color(NamedTextColor.WHITE))
+            .appendSpace().append(Component.text((honeyLevel == 1) ? "level" : "levels"))
+            .appendSpace()
+            .append(Component.text("of honey.")));
     /*
     there are/is 0/1/2/3 bee[s] hiding inside
     guarding 0/1/2/3/4/5 level[s] of honey
