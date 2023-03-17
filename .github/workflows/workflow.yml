@@ -117,13 +117,27 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: built-plugin
-      - name: Get SSH key
-        env:
-          DEPLOY_SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
-        run: |
-          echo -ne "$DEPLOY_SSH_PRIVATE_KEY" > ./hackclub_minecraft_deploy
-          chmod 600 ./hackclub_minecraft_deploy
+      - name: install sshpass
+        run: apt-get install sshpass
       - name: SFTP Deploy
-        run: "echo -e '-rm /plugins/update/HCCore-Shadow-*.jar\nput HCCore-Shadow-*.jar /plugins/update/' | sftp -i ./hackclub_minecraft_deploy -oStrictHostKeyChecking=false -b - sftp://mc-hc-deployker.89c06257@hebra.365hosts.network:60022"
-
-
+        env:
+          DEPLOY_SSH_PASSWORD: ${{ secrets.DEPLOY_SSH_PASSWORD }}
+        run: |
+          PIPE=$(mktemp -u)
+          mkfifo -m 600 $PIPE
+          # Attach it to file descriptior 3
+          exec 3<>$PIPE
+          # Delete the directory entry
+          rm $PIPE
+          # Write your password in the pipe
+          echo '$DEPLOY_SSH_PASSWORD' >&3
+          # Connect with sshpass -d
+          sshpass -d3 sftp -4 -oStrictHostKeyChecking=false -oBatchMode=no -b - sftp://github-deploy@mc-admin.hackclub.com:2225 << !
+            -rm /plugins/update/HCCore-Shadow-*.jar
+            put HCCore-Shadow-*.jar /plugins/update/
+            bye
+          !
+          
+          # Close the pipe when done
+          exec 3>&-
+          
