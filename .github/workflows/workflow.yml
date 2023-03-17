@@ -139,7 +139,7 @@ jobs:
             put HCCore-Shadow-*.jar /plugins/update/
             bye
           !
-          ech
+          
           # Close the pipe when done
           exec 3>&-
           
