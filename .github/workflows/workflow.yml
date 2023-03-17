@@ -118,7 +118,9 @@ jobs:
         with:
           name: built-plugin
       - name: install sshpass
-        run: apt-get install sshpass
+        uses: awalsh128/cache-apt-pkgs-action@v1
+        with:
+          packages: sshpass
       - name: SFTP Deploy
         env:
           DEPLOY_SSH_PASSWORD: ${{ secrets.DEPLOY_SSH_PASSWORD }}
