@@ -134,7 +134,7 @@ jobs:
           # Write your password in the pipe
           echo -n $DEPLOY_SSH_PASSWORD >&3
           # Connect with sshpass -d
-          sshpass -d3 sftp -4 -v -oStrictHostKeyChecking=false -oBatchMode=no -b - sftp://github-deploy@mc-admin.hackclub.com:2225 << !
+          sshpass -d3 sftp -4 -oStrictHostKeyChecking=false -oBatchMode=no -b - sftp://github-deploy@mc-admin.hackclub.com:2225 << !
             -rm /plugins/update/HCCore-Shadow-*.jar
             put HCCore-Shadow-*.jar /plugins/update/
             bye
