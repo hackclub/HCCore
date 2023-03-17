@@ -120,7 +120,7 @@ jobs:
       - name: install sshpass
         uses: awalsh128/cache-apt-pkgs-action@v1
         with:
-          packages: sshpass
+          packages: "sshpass"
       - name: SFTP Deploy
         env:
           DEPLOY_SSH_PASSWORD: ${{ secrets.DEPLOY_SSH_PASSWORD }}
@@ -132,14 +132,14 @@ jobs:
           # Delete the directory entry
           rm $PIPE
           # Write your password in the pipe
-          echo '$DEPLOY_SSH_PASSWORD' >&3
+          echo -n $DEPLOY_SSH_PASSWORD >&3
           # Connect with sshpass -d
-          sshpass -d3 sftp -4 -oStrictHostKeyChecking=false -oBatchMode=no -b - sftp://github-deploy@mc-admin.hackclub.com:2225 << !
+          sshpass -d3 sftp -4 -v -oStrictHostKeyChecking=false -oBatchMode=no -b - sftp://github-deploy@mc-admin.hackclub.com:2225 << !
             -rm /plugins/update/HCCore-Shadow-*.jar
             put HCCore-Shadow-*.jar /plugins/update/
             bye
           !
-          
+          ech
           # Close the pipe when done
           exec 3>&-
           
