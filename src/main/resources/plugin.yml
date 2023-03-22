@@ -28,6 +28,9 @@ commands:
   ping:
     description: Gets the ping of you or a specified player
     usage: /ping [player]
+  slack:
+    description: Manage the HackCraft Slack integration
+    usage: /slack <link|unlink> [id]
   spawn:
     description: Teleports you to the world’s spawn location
     usage: /spawn
