@@ -25,6 +25,7 @@ import com.slack.api.methods.MethodsClient;
 import com.slack.api.methods.SlackApiException;
 import com.slack.api.methods.response.chat.ChatPostMessageResponse;
 import com.slack.api.methods.response.users.profile.UsersProfileGetResponse;
+import com.slack.api.model.User;
 import com.slack.api.model.event.MessageBotEvent;
 import com.slack.api.model.event.MessageChannelJoinEvent;
 import com.slack.api.model.event.MessageDeletedEvent;
@@ -378,15 +379,14 @@ public class SlackBot implements Listener {
     return appToken;
   }
 
-  public boolean isUserIdValid(String id) throws IOException {
+  public User getUserInfo(String id) throws IOException {
     MethodsClient client = Slack.getInstance().methods();
     try {
       var res = client.usersInfo(r -> r.token(getBotToken()).user(id));
 
-      return res.isOk();
+      return res.getUser();
     } catch (SlackApiException e) {
-      e.printStackTrace();
-      return false;
+      return null;
     }
   }
 

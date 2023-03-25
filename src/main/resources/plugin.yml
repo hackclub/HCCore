@@ -30,7 +30,7 @@ commands:
     usage: /ping [player]
   slack:
     description: Manage the HackCraft Slack integration
-    usage: /slack <link|unlink> [id]
+    usage: /slack <link|unlink|lookup> [id|payer]
   spawn:
     description: Teleports you to the world’s spawn location
     usage: /spawn
