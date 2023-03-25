@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Predicate;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
@@ -28,6 +29,9 @@ public class DataManager {
 
   public PlayerData getData(Player player) {
     return this.players.get(player.getUniqueId());
+  }
+  public PlayerData findData(Predicate<? super PlayerData> predicate) {
+    return this.players.values().stream().filter(predicate).findFirst().orElse(null);
   }
 
   public void registerPlayer(Player player) {

@@ -14,7 +14,9 @@ import com.hackclub.hccore.HCCorePlugin;
 import com.hackclub.hccore.PlayerData;
 import com.hackclub.hccore.events.player.PlayerAFKStatusChangeEvent;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.slack.api.Slack;
 import com.slack.api.bolt.App;
@@ -201,6 +203,41 @@ public class SlackBot implements Listener {
               } catch (SlackApiException e) {
                 throw new RuntimeException(e);
               }
+              return 1;
+            })).then(LiteralArgumentBuilder.<SlashCommandRequest>literal("lookup")
+            .then(RequiredArgumentBuilder.<SlashCommandRequest, String>argument("mention",
+                StringArgumentType.greedyString()).executes(context -> {
+              String mention = StringArgumentType.getString(context, "mention");
+              String id;
+              if (mention.startsWith("<@") && mention.endsWith(">")) {
+                int pipeIdx = mention.indexOf('|');
+                id = mention.substring(2, pipeIdx);
+              } else {
+                try {
+                  context.getSource().getContext().respond("Invalid user mention");
+                } catch (IOException e) {
+                  e.printStackTrace();
+                }
+                return 1;
+              }
+
+              try {
+                PlayerData data = this.plugin.getDataManager().findData(pData -> pData.getSlackId().equals(id));
+
+                if (data == null) {
+                  context.getSource().getContext().respond("No linked user was found");
+                  return 1;
+                }
+
+                context.getSource().getContext().respond(
+                    "The linked user is %s".formatted(data.getUsableName()));
+              } catch (IOException e) {
+                e.printStackTrace();
+              }
+
+              return 1;
+            })).executes(context -> {
+              System.out.println("no arguments given");
               return 1;
             })).executes(context -> {
           try {
