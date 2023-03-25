@@ -34,7 +34,9 @@ import com.slack.api.model.event.MessageDeletedEvent;
 import com.slack.api.model.event.MessageEvent;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
@@ -222,7 +224,8 @@ public class SlackBot implements Listener {
               }
 
               try {
-                PlayerData data = this.plugin.getDataManager().findData(pData -> pData.getSlackId().equals(id));
+                PlayerData data = this.plugin.getDataManager()
+                    .findData(pData -> pData.getSlackId().equals(id));
 
                 if (data == null) {
                   context.getSource().getContext().respond("No linked user was found");
@@ -237,12 +240,19 @@ public class SlackBot implements Listener {
 
               return 1;
             })).executes(context -> {
-              System.out.println("no arguments given");
+              try {
+                context.getSource().getContext().respond("Missing argument: mention");
+              } catch (IOException e) {
+                e.printStackTrace();
+              }
               return 1;
             })).executes(context -> {
           try {
+            List<String> usage = Arrays.asList(dispatcher.getAllUsage(dispatcher.getRoot(), null,
+                false));
             context.getSource().getContext()
-                .respond("no arguments given\ntry /%s players".formatted(commandBase));
+                .respond("No arguments given\nPossible commands:\n%s".formatted(
+                    usage.stream().reduce((s, s2) -> s + "\n" + s2).orElse("")));
           } catch (IOException e) {
             e.printStackTrace();
           }
@@ -254,11 +264,13 @@ public class SlackBot implements Listener {
           (slashCommandRequest.getPayload().getText().isEmpty()) ? ""
               : (" " + slashCommandRequest.getPayload().getText()));
       plugin.getLogger().info(
-          "received slack command from %s: \"%s\"".formatted(ctx.getRequestUserId(), command));
+          "Received slack command from %s: \"%s\"".formatted(ctx.getRequestUserId(), command));
       try {
         dispatcher.execute(command, slashCommandRequest);
       } catch (CommandSyntaxException e) {
-        ctx.respond("parsing error: %s\ntry /%s players".formatted(e.getMessage(), commandBase));
+        List<String> usage = Arrays.asList(dispatcher.getAllUsage(dispatcher.getRoot(), null,
+            false));
+        ctx.respond("Parsing error: %s\nPossible commands:\n%s".formatted(e.getMessage(), usage.stream().reduce((s, s2) -> s + "\n" + s2).orElse("")));
         e.printStackTrace();
       }
       return ctx.ack();
