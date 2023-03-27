@@ -247,7 +247,7 @@ public class SlackBot implements Listener {
               return 1;
             })).executes(context -> {
               try {
-                context.getSource().getContext().respond("Missing argument: mention");
+                context.getSource().getContext().respond("Missing argument: slack user mention or id");
               } catch (IOException e) {
                 e.printStackTrace();
               }
