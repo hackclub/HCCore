@@ -1,5 +1,11 @@
 package com.hackclub.hccore.slack;
 
+import static com.slack.api.model.block.Blocks.actions;
+import static com.slack.api.model.block.Blocks.asBlocks;
+import static com.slack.api.model.block.Blocks.section;
+import static com.slack.api.model.block.composition.BlockCompositions.markdownText;
+import static com.slack.api.model.block.element.BlockElements.asElements;
+import static com.slack.api.model.block.element.BlockElements.button;
 import static net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer.plainText;
 
 import com.fren_gor.ultimateAdvancementAPI.events.advancement.ProgressionUpdateEvent;
@@ -8,7 +14,9 @@ import com.hackclub.hccore.HCCorePlugin;
 import com.hackclub.hccore.PlayerData;
 import com.hackclub.hccore.events.player.PlayerAFKStatusChangeEvent;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.slack.api.Slack;
 import com.slack.api.bolt.App;
@@ -19,13 +27,16 @@ import com.slack.api.methods.MethodsClient;
 import com.slack.api.methods.SlackApiException;
 import com.slack.api.methods.response.chat.ChatPostMessageResponse;
 import com.slack.api.methods.response.users.profile.UsersProfileGetResponse;
+import com.slack.api.model.User;
 import com.slack.api.model.event.MessageBotEvent;
 import com.slack.api.model.event.MessageChannelJoinEvent;
 import com.slack.api.model.event.MessageDeletedEvent;
 import com.slack.api.model.event.MessageEvent;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
@@ -36,6 +47,7 @@ import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.apache.commons.text.StringEscapeUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -98,6 +110,69 @@ public class SlackBot implements Listener {
       return ctx.ack();
     });
 
+    app.blockAction("verify-link", (req, ctx) -> {
+      String mcUuid = req.getPayload().getActions().get(0).getValue();
+      OfflinePlayer player = Bukkit.getOfflinePlayer(UUID.fromString(mcUuid));
+      String channelId = req.getPayload().getChannel().getId();
+      String messageTs = req.getPayload().getMessage().getTs();
+      MethodsClient client = ctx.client();
+
+      if (!player.hasPlayedBefore()) {
+        client.chatPostMessage(
+            r -> r.token(ctx.getBotToken()).channel(channelId).threadTs(messageTs).text(
+                "Hmm, it seems that the player you're trying to link doesn't exist? Please report this to a minecraft server admin"));
+        this.plugin.getLogger().warning("Player " + mcUuid + " doesn't exist, but tried to link their account");
+        return ctx.ack();
+      }
+
+      this.plugin.getDataManager().getData(player).setSlackId(req.getPayload().getUser().getId());
+
+      try {
+        client.chatPostMessage(
+            r -> r.token(ctx.getBotToken()).channel(channelId).threadTs(messageTs)
+                .text("Your accounts have been linked!"));
+        if (player.isOnline()) {
+          player.getPlayer().sendMessage(
+              Component.text("Your accounts have been linked!").color(NamedTextColor.GREEN));
+        }
+      } catch (IOException | SlackApiException e) {
+        e.printStackTrace();
+      }
+
+      return ctx.ack();
+    });
+
+    app.blockAction("deny-link", (req, ctx) -> {
+      String mcUuid = req.getPayload().getActions().get(0).getValue();
+      OfflinePlayer player = Bukkit.getOfflinePlayer(UUID.fromString(mcUuid));
+      String channelId = req.getPayload().getChannel().getId();
+      String messageTs = req.getPayload().getMessage().getTs();
+      MethodsClient client = ctx.client();
+
+      if (!player.hasPlayedBefore()) {
+        client.chatPostMessage(
+            r -> r.token(ctx.getBotToken()).channel(channelId).threadTs(messageTs).text(
+                "Hmm, it seems that the player you're trying to deny linking doesn't exist? Please report this to a minecraft server admin"));
+        this.plugin.getLogger().warning("Player " + mcUuid + " doesn't exist, but tried to deny linking their account");
+        return ctx.ack();
+      }
+
+      try {
+        client.chatPostMessage(
+            r -> r.token(ctx.getBotToken()).channel(channelId).threadTs(messageTs)
+                .text("Denied link request"));
+
+        if (player.isOnline()) {
+          player.getPlayer().sendMessage(
+              Component.text("The request to link the account was denied").color(NamedTextColor.RED));
+        }
+      } catch (IOException | SlackApiException e) {
+        e.printStackTrace();
+      }
+
+      return ctx.ack();
+    });
+
     app.event(MessageBotEvent.class, (payload, ctx) -> ctx.ack());
 
     app.event(MessageDeletedEvent.class, (payload, ctx) -> ctx.ack());
@@ -135,10 +210,55 @@ public class SlackBot implements Listener {
                 throw new RuntimeException(e);
               }
               return 1;
+            })).then(LiteralArgumentBuilder.<SlashCommandRequest>literal("lookup")
+            .then(RequiredArgumentBuilder.<SlashCommandRequest, String>argument("mention",
+                StringArgumentType.greedyString()).executes(context -> {
+              String mention = StringArgumentType.getString(context, "mention");
+              String id;
+
+              // User mention
+              if (mention.startsWith("<@") && mention.endsWith(">")) {
+                int pipeIdx = mention.indexOf('|');
+                if (pipeIdx == -1) {
+                  id = mention.substring(2, mention.length() - 1);
+                } else {
+                  id = mention.substring(2, pipeIdx);
+                }
+              } else {
+                // Try user id
+                id = mention;
+              }
+
+              try {
+                PlayerData data = this.plugin.getDataManager()
+                    .findData(pData -> pData.getSlackId().equals(id));
+
+                if (data == null) {
+                  context.getSource().getContext().respond("No linked user was found");
+                  return 1;
+                }
+
+                context.getSource().getContext().respond(
+                    "The linked user is %s".formatted(data.getUsableName()));
+              } catch (IOException e) {
+                e.printStackTrace();
+              }
+
+              return 1;
+            })).executes(context -> {
+              try {
+                context.getSource().getContext().respond("Missing argument: slack user mention or id");
+              } catch (IOException e) {
+                e.printStackTrace();
+              }
+              return 1;
             })).executes(context -> {
           try {
+            List<String> usage = Arrays.asList(dispatcher.getAllUsage(dispatcher.getRoot(), null,
+                false));
             context.getSource().getContext()
-                .respond("no arguments given\ntry /%s players".formatted(commandBase));
+                .respond("No arguments given\nPossible commands:\n%s".formatted(
+                    usage.stream().reduce((s, s2) -> s + "\n" + s2).orElse("")));
           } catch (IOException e) {
             e.printStackTrace();
           }
@@ -150,11 +270,14 @@ public class SlackBot implements Listener {
           (slashCommandRequest.getPayload().getText().isEmpty()) ? ""
               : (" " + slashCommandRequest.getPayload().getText()));
       plugin.getLogger().info(
-          "received slack command from %s: \"%s\"".formatted(ctx.getRequestUserId(), command));
+          "Received slack command from %s: \"%s\"".formatted(ctx.getRequestUserId(), command));
       try {
         dispatcher.execute(command, slashCommandRequest);
       } catch (CommandSyntaxException e) {
-        ctx.respond("parsing error: %s\ntry /%s players".formatted(e.getMessage(), commandBase));
+        List<String> usage = Arrays.asList(dispatcher.getAllUsage(dispatcher.getRoot(), null,
+            false));
+        ctx.respond("Parsing error: %s\nPossible commands:\n%s".formatted(e.getMessage(),
+            usage.stream().reduce((s, s2) -> s + "\n" + s2).orElse("")));
         e.printStackTrace();
       }
       return ctx.ack();
@@ -235,17 +358,13 @@ public class SlackBot implements Listener {
 
     String advancementType;
     switch (advancement.getDisplay().frame()) {
-      case GOAL ->
-          advancementType = "goal";
-      case CHALLENGE ->
-          advancementType = "challenge";
-      default ->
-          advancementType = "advancement";
+      case GOAL -> advancementType = "goal";
+      case CHALLENGE -> advancementType = "challenge";
+      default -> advancementType = "advancement";
     }
 
-    sendMessage(
-        "%s has completed the %s *%s*".formatted(data.getUsableName(), advancementType, advancementName),
-        playerAdvancementAvatarUrl, "Advancement");
+    sendMessage("%s has completed the %s *%s*".formatted(data.getUsableName(), advancementType,
+        advancementName), playerAdvancementAvatarUrl, "Advancement");
   }
 
   public void onCustomAdvancementProgressed(ProgressionUpdateEvent e) {
@@ -260,8 +379,9 @@ public class SlackBot implements Listener {
 
     PlayerData data = this.plugin.getDataManager().getData(player);
     AdvancementKey key = e.getAdvancementKey();
-    com.fren_gor.ultimateAdvancementAPI.advancement.Advancement advancement = this.plugin.advancementTab.getAdvancement(
-        key);
+    com.fren_gor.ultimateAdvancementAPI.advancement.Advancement advancement =
+        this.plugin.advancementTab.getAdvancement(
+            key);
     if (advancement == null) {
       return;
     }
@@ -272,18 +392,14 @@ public class SlackBot implements Listener {
 
     String advancementType;
     switch (advancement.getDisplay().getFrame()) {
-      case GOAL ->
-          advancementType = "goal";
-      case CHALLENGE ->
-          advancementType = "challenge";
-      default ->
-          advancementType = "advancement";
+      case GOAL -> advancementType = "goal";
+      case CHALLENGE -> advancementType = "challenge";
+      default -> advancementType = "advancement";
     }
 
     try {
-      sendMessage(
-          "%s has completed the %s *%s*".formatted(data.getUsableName(), advancementType, advancementName),
-          playerAdvancementAvatarUrl, "Advancement");
+      sendMessage("%s has completed the %s *%s*".formatted(data.getUsableName(), advancementType,
+          advancementName), playerAdvancementAvatarUrl, "Advancement");
     } catch (IOException ioException) {
       ioException.printStackTrace();
     }
@@ -319,6 +435,17 @@ public class SlackBot implements Listener {
     return appToken;
   }
 
+  public User getUserInfo(String id) throws IOException {
+    MethodsClient client = this.socket.getApp().getClient();
+    try {
+      var res = client.usersInfo(r -> r.token(getBotToken()).user(id));
+
+      return res.getUser();
+    } catch (SlackApiException e) {
+      return null;
+    }
+  }
+
   void sendMessage(String msg, String iconURL, String username) throws IOException {
     MethodsClient client = Slack.getInstance().methods();
 
@@ -332,6 +459,38 @@ public class SlackBot implements Listener {
       }
     } catch (SlackApiException e) {
       e.printStackTrace();
+    }
+  }
+
+  public boolean sendVerificationMessage(String id, String mcName, String uuid) throws IOException {
+    MethodsClient client = this.socket.getApp().getClient();
+
+    try {
+      var res = client.chatPostMessage(r -> r.token(getBotToken()).channel(id).text(
+              "A player on the Hack Club Minecraft server with username " + mcName
+                  + " (UUID " + uuid + ") is trying to link to your Slack account")
+          .blocks(asBlocks(section(s -> s.text(
+              markdownText("A player on the Hack Club Minecraft server with username *" + mcName
+                  + "*" + " (UUID `" + uuid + "`) is trying to link to " + "your "
+                  + "Slack account. If you are this player, click the \"Verify\" button. If you "
+                  + "are " + "not this player, click the \"Deny\" button."))), actions(
+              actions -> actions.elements(asElements(button(b -> b.actionId("verify-link").text(
+                  com.slack.api.model.block.composition.BlockCompositions.plainText(
+                      pt -> pt.text("Verify"))).value(uuid).style("primary")), button(
+                  b -> b.actionId("deny-link").text(
+                      com.slack.api.model.block.composition.BlockCompositions.plainText(
+                          pt -> pt.text("Deny"))).value(uuid).style("danger"))))))));
+
+      if (!res.isOk()) {
+        this.plugin.getLogger()
+            .log(Level.WARNING, "SlackBot failed to send verification message: " + res);
+        return false;
+      }
+
+      return true;
+    } catch (SlackApiException e) {
+      e.printStackTrace();
+      return false;
     }
   }
 }

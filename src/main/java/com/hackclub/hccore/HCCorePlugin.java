@@ -29,6 +29,7 @@ import com.hackclub.hccore.commands.ColorCommand;
 import com.hackclub.hccore.commands.LocCommand;
 import com.hackclub.hccore.commands.NickCommand;
 import com.hackclub.hccore.commands.PingCommand;
+import com.hackclub.hccore.commands.SlackCommand;
 import com.hackclub.hccore.commands.SpawnCommand;
 import com.hackclub.hccore.commands.StatsCommand;
 import com.hackclub.hccore.listeners.AFKListener;
@@ -86,6 +87,7 @@ public class HCCorePlugin extends JavaPlugin {
     registerCommand("loc", new LocCommand(this));
     registerCommand("nick", new NickCommand(this));
     registerCommand("ping", new PingCommand(this));
+    registerCommand("slack", new SlackCommand(this));
     registerCommand("spawn", new SpawnCommand(this));
     registerCommand("stats", new StatsCommand(this));
 
@@ -147,6 +149,10 @@ public class HCCorePlugin extends JavaPlugin {
 
   public ProtocolManager getProtocolManager() {
     return this.protocolManager;
+  }
+
+  public SlackBot getSlackBot() {
+    return this.bot;
   }
 
   public AdvancementTab advancementTab;
