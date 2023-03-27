@@ -215,6 +215,8 @@ public class SlackBot implements Listener {
                 StringArgumentType.greedyString()).executes(context -> {
               String mention = StringArgumentType.getString(context, "mention");
               String id;
+
+              // User mention
               if (mention.startsWith("<@") && mention.endsWith(">")) {
                 int pipeIdx = mention.indexOf('|');
                 if (pipeIdx == -1) {
@@ -223,12 +225,8 @@ public class SlackBot implements Listener {
                   id = mention.substring(2, pipeIdx);
                 }
               } else {
-                try {
-                  context.getSource().getContext().respond("Invalid user mention");
-                } catch (IOException e) {
-                  e.printStackTrace();
-                }
-                return 1;
+                // Try user id
+                id = mention;
               }
 
               try {
