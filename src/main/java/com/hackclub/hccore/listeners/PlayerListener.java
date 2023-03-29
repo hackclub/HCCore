@@ -7,8 +7,10 @@ import com.hackclub.hccore.PlayerData;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-import org.bukkit.ChatColor;
+import org.bukkit.BanEntry;
+import org.bukkit.BanList.Type;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -17,6 +19,8 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerKickEvent;
+import org.bukkit.event.player.PlayerKickEvent.Cause;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -107,25 +111,33 @@ public class PlayerListener implements Listener {
       return;
     }
 
-    String message;
+    Component message;
     switch (event.getResult()) {
       case KICK_BANNED ->
-          message = ChatColor.RED + ChatColor.BOLD.toString() + "You’ve been banned :(\n\n"
-              + ChatColor.RESET + ChatColor.WHITE
-              + "If you believe this was a mistake, please DM " + ChatColor.AQUA
-              + "@alx or @eli " + ChatColor.WHITE + "on Slack.";
-      case KICK_FULL ->
-          message = ChatColor.RED + ChatColor.BOLD.toString() + "The server is full!\n\n"
-              + ChatColor.RESET + ChatColor.WHITE
-              + "Sorry, it looks like there’s no more room. Please try again in ~20 minutes.";
+        message = this.getBanMessage(event.getPlayer().getUniqueId().toString());
+
+      case KICK_FULL -> message = Component.text("The server is full!").color(NamedTextColor.RED)
+          .decorate(TextDecoration.BOLD).appendNewline().appendNewline().append(
+              Component.text(
+                  "Sorry, it looks like there’s no more room. Please try again in ~20 minutes.").color(NamedTextColor.WHITE));
       case KICK_WHITELIST ->
-          message = ChatColor.RED + ChatColor.BOLD.toString() + "You’re not whitelisted!\n\n"
-              + ChatColor.RESET + ChatColor.WHITE + "Join " + ChatColor.AQUA
-              + "#minecraft " + ChatColor.WHITE + "on Slack and ping " + ChatColor.AQUA
-              + "@alx or @eli " + ChatColor.WHITE + "to be added.";
-      default -> message = PlainTextComponentSerializer.plainText().serialize(event.kickMessage());
+          message = Component.text("You're not whitelisted!").color(NamedTextColor.RED)
+              .decorate(TextDecoration.BOLD);
+      default -> message = event.kickMessage();
     }
-    event.kickMessage(Component.text(message));
+    event.kickMessage(message);
+  }
+
+  @EventHandler
+  public void onPlayerKick(final PlayerKickEvent event) {
+    Component message;
+    if (event.getCause() == Cause.BANNED) {
+      message = this.getBanMessage(event.getPlayer().getUniqueId().toString());
+    } else {
+      message = event.reason();
+    }
+
+    event.reason(message);
   }
 
   @EventHandler
@@ -142,5 +154,33 @@ public class PlayerListener implements Listener {
         .append(Component.text("left the game")));
 
     this.plugin.getDataManager().unregisterPlayer(event.getPlayer());
+  }
+
+  private Component getBanMessage(String uuid) {
+    BanEntry banEntry = this.plugin.getServer().getBanList(Type.NAME)
+        .getBanEntry(uuid);
+    String reason;
+    if (banEntry != null) {
+      reason = banEntry.getReason();
+      if (reason != null) {
+        if (!reason.equals("Banned by an operator.")) {
+          reason = ": " + reason;
+        } else {
+          reason = " no specified reason";
+        }
+      } else {
+        reason = " no specified reason";
+      }
+    } else {
+      reason = " no specified reason";
+    }
+
+    return Component.text("You've been banned for" + reason + " :(")
+        .color(NamedTextColor.RED).decorate(
+            TextDecoration.BOLD).appendNewline().appendNewline().append(
+            Component.text("If you would like to appeal, please DM ").color(NamedTextColor.WHITE)).append(
+            Component.text("a Minecraft server admin (minecrafters team) ")
+                .color(NamedTextColor.AQUA))
+        .append(Component.text("on Slack.").color(NamedTextColor.WHITE));
   }
 }
