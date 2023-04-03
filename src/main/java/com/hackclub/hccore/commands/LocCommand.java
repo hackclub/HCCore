@@ -1,5 +1,8 @@
 package com.hackclub.hccore.commands;
 
+import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.format.NamedTextColor.RED;
+
 import com.hackclub.hccore.HCCorePlugin;
 import com.hackclub.hccore.PlayerData;
 import java.util.ArrayList;
@@ -22,13 +25,13 @@ public class LocCommand implements TabExecutor {
 
   public LocCommand(HCCorePlugin plugin) {
     this.plugin = plugin;
-  }
+  } //TODO dechatcolour
 
   @Override
   public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd,
       @NotNull String alias, String[] args) {
     if (!(sender instanceof Player player)) {
-      sender.sendMessage(ChatColor.RED + "You must be a player to use this");
+      sender.sendMessage(text("You must be a player to use this").color(RED));
       return true;
     }
 

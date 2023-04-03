@@ -1,5 +1,8 @@
 package com.hackclub.hccore.commands;
 
+import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.format.NamedTextColor.RED;
+
 import com.hackclub.hccore.HCCorePlugin;
 import com.hackclub.hccore.PlayerData;
 import com.hackclub.hccore.utils.TimeUtil;
@@ -41,7 +44,7 @@ public class StatsCommand implements TabExecutor {
         sender.sendMessage("Your stats:");
         this.sendStatistics(sender, (Player) sender, false);
       } else {
-        sender.sendMessage(ChatColor.RED + "You must be a player to use this");
+        sender.sendMessage(text("You must be a player to use this").color(RED));
       }
       return true;
     }
@@ -52,28 +55,28 @@ public class StatsCommand implements TabExecutor {
             extended = true;
         case "only" -> { // /stats <player> only <statistic>
           if (args.length < 3) {
-            sender.sendMessage(ChatColor.RED
-                + "You must include both a player and statistic name");
+            sender.sendMessage(
+                text("You must include both a player and statistic name").color(RED));
             return true;
           }
           if (!STATISTIC_NAMES.contains(args[2].toLowerCase())) {
-            sender.sendMessage(ChatColor.RED + "Not a valid statistic");
+            sender.sendMessage(text("Not a valid statistic").color(RED));
             return true;
           }
           Statistic specificStat = Statistic.valueOf(args[2].toUpperCase());
           if (specificStat.isSubstatistic()) {
-            sender.sendMessage(
-                ChatColor.RED + "This statistic is not currently supported");
+            sender.sendMessage(text("This statistic is not currently supported").color(RED));
+            // TODO
             return true;
           }
           Player player = sender.getServer().getPlayerExact(args[0]);
           if (player != null) {
             PlayerData data = this.plugin.getDataManager().getData(player);
-            sender.sendMessage(data.getUsableName() + "’s " + args[2].toLowerCase()
-                + " statistic: " + player.getStatistic(specificStat));
+            sender.sendMessage(text(data.getUsableName()).append(text("’s")).appendSpace()
+                .append(text(args[2].toLowerCase())).appendSpace().append(text("statistic:"))
+                .appendSpace().append(text(player.getStatistic(specificStat))));
           } else {
-            sender.sendMessage(
-                ChatColor.RED + "No online player with that name was found");
+            sender.sendMessage(text("No online player with that name was found").color(RED));
           }
           return true;
         }
@@ -90,16 +93,15 @@ public class StatsCommand implements TabExecutor {
       sender.sendMessage(data.getUsableName() + "’s stats:");
       this.sendStatistics(sender, targetPlayer, extended);
     } else {
-      sender.sendMessage(ChatColor.RED + "No online player with that name was found");
+      sender.sendMessage(ChatColor.RED + "No online player with that name was found"); // TODO
     }
 
     return true;
   }
 
   @Override
-  public List<String> onTabComplete(
-      @NotNull CommandSender sender, @NotNull Command cmd, @NotNull String alias,
-      String[] args) {
+  public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command cmd,
+      @NotNull String alias, String[] args) {
     List<String> completions = new ArrayList<>();
 
     switch (args.length) {
@@ -135,30 +137,32 @@ public class StatsCommand implements TabExecutor {
     sender.sendMessage("- Deaths: " + player.getStatistic(Statistic.DEATHS));
     sender.sendMessage("- Mob kills: " + player.getStatistic(Statistic.MOB_KILLS));
     sender.sendMessage("- Player kills: " + player.getStatistic(Statistic.PLAYER_KILLS));
-    sender.sendMessage("- Time played: "
-        + TimeUtil.toPrettyTime(player.getStatistic(Statistic.PLAY_ONE_MINUTE)));
-    sender.sendMessage("- Time since last death: "
-        + TimeUtil.toPrettyTime(player.getStatistic(Statistic.TIME_SINCE_DEATH)));
+    sender.sendMessage(
+        "- Time played: " + TimeUtil.toPrettyTime(player.getStatistic(Statistic.PLAY_ONE_MINUTE)));
+    sender.sendMessage("- Time since last death: " + TimeUtil.toPrettyTime(
+        player.getStatistic(Statistic.TIME_SINCE_DEATH)));
 
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     sender.sendMessage(
         "- Registered since: " + dateFormat.format(new Date(player.getFirstPlayed())));
 
     if (extended) {
-      sender.sendMessage("- Distance by elytra: "
-          + toSIPrefix(player.getStatistic(Statistic.AVIATE_ONE_CM)) + "m");
-      sender.sendMessage("- Distance by minecart: "
-          + toSIPrefix(player.getStatistic(Statistic.MINECART_ONE_CM)) + "m");
-      sender.sendMessage("- Distance by horse: "
-          + toSIPrefix(player.getStatistic(Statistic.HORSE_ONE_CM)) + "m");
-      sender.sendMessage("- Distance walked: "
-          + toSIPrefix(player.getStatistic(Statistic.WALK_ONE_CM)) + "m");
+      sender.sendMessage(
+          "- Distance by elytra: " + toSIPrefix(player.getStatistic(Statistic.AVIATE_ONE_CM))
+              + "m");
+      sender.sendMessage(
+          "- Distance by minecart: " + toSIPrefix(player.getStatistic(Statistic.MINECART_ONE_CM))
+              + "m");
+      sender.sendMessage(
+          "- Distance by horse: " + toSIPrefix(player.getStatistic(Statistic.HORSE_ONE_CM)) + "m");
+      sender.sendMessage(
+          "- Distance walked: " + toSIPrefix(player.getStatistic(Statistic.WALK_ONE_CM)) + "m");
       sender.sendMessage("- Damage taken: " + player.getStatistic(Statistic.DAMAGE_TAKEN));
       sender.sendMessage("- Damage dealt: " + player.getStatistic(Statistic.DAMAGE_DEALT));
       sender.sendMessage("- Times jumped: " + player.getStatistic(Statistic.JUMP));
       sender.sendMessage("- Raids won: " + player.getStatistic(Statistic.RAID_WIN));
-      sender.sendMessage("- Diamonds picked up: "
-          + player.getStatistic(Statistic.PICKUP, Material.DIAMOND));
+      sender.sendMessage(
+          "- Diamonds picked up: " + player.getStatistic(Statistic.PICKUP, Material.DIAMOND));
     }
   }
 

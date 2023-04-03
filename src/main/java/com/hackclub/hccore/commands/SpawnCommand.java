@@ -1,8 +1,13 @@
 package com.hackclub.hccore.commands;
 
+import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.format.NamedTextColor.GREEN;
+import static net.kyori.adventure.text.format.NamedTextColor.RED;
+import static net.kyori.adventure.text.format.TextDecoration.BOLD;
+
 import com.hackclub.hccore.HCCorePlugin;
 import com.hackclub.hccore.PlayerData;
-import org.bukkit.ChatColor;
+import com.hackclub.hccore.commands.general.ArgumentlessCommand;
 import org.bukkit.GameMode;
 import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
@@ -12,7 +17,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-public class SpawnCommand implements CommandExecutor {
+public class SpawnCommand extends ArgumentlessCommand implements CommandExecutor {
 
   private final HCCorePlugin plugin;
 
@@ -25,26 +30,28 @@ public class SpawnCommand implements CommandExecutor {
   public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd,
       @NotNull String alias, String[] args) {
     if (!(sender instanceof Player player)) {
-      sender.sendMessage(ChatColor.RED + "You must be a player to use this");
+      sender.sendMessage(text("You must be a player to use this").color(RED));
       return true;
     }
 
     if (player.getGameMode() == GameMode.SURVIVAL || player.getGameMode() == GameMode.ADVENTURE) {
-      // Player needs to be in the Overworld
+      // Player needs to be in an Overworld
       if (player.getWorld().getEnvironment() != Environment.NORMAL) {
-        sender.sendMessage(ChatColor.RED + "You can only use this command in the Overworld");
+        sender.sendMessage(text("You can only use this command in the Overworld").color(RED));
         return true;
       }
 
       // Player needs to be within the allowed radius from spawn
-      int distanceFromSpawn =
-          (int) player.getLocation().distance(player.getWorld().getSpawnLocation());
-      int allowedRadius =
-          this.plugin.getConfig().getInt("settings.spawn-command.allowed-radius");
+      int distanceFromSpawn = (int) player.getLocation()
+          .distance(player.getWorld().getSpawnLocation());
+      int allowedRadius = this.plugin.getConfig().getInt("settings.spawn-command.allowed-radius");
       if (distanceFromSpawn > allowedRadius) {
-        sender.sendMessage(ChatColor.RED + "You need to be within " + allowedRadius
-            + " blocks from spawn to use this command. Currently, you’re "
-            + (distanceFromSpawn - allowedRadius) + " blocks too far.");
+        sender.sendMessage(text("You need to be within").color(RED).appendSpace()
+            .append(text(allowedRadius).decorate(BOLD)).appendSpace()
+            .append(text("blocks from spawn to use this command.")).appendNewline()
+            .append(text("Currently, you’re")).appendSpace()
+            .append(text((distanceFromSpawn - allowedRadius)).decorate(BOLD)).appendSpace()
+            .append(text("blocks too far.")));
         return true;
       }
 
@@ -52,7 +59,7 @@ public class SpawnCommand implements CommandExecutor {
       // doesn't affect too much if client can spoof it.
       if (!player.isOnGround()) {
         sender.sendMessage(
-            ChatColor.RED + "You need to be standing on the ground to use this command");
+            text("You need to be standing on the ground to use this command").color(RED));
         return true;
       }
 
@@ -60,7 +67,7 @@ public class SpawnCommand implements CommandExecutor {
       Block highestBlock = player.getWorld().getHighestBlockAt(player.getLocation());
       if (player.getLocation().getY() < highestBlock.getY()) {
         sender.sendMessage(
-            ChatColor.RED + "You need be directly under the sky to use this command");
+            text("You need be directly under the sky to use this command").color(RED));
         return true;
       }
 
@@ -68,19 +75,18 @@ public class SpawnCommand implements CommandExecutor {
       PlayerData data = this.plugin.getDataManager().getData(player);
       long currentTime = System.currentTimeMillis();
       long secondsSinceLastDamaged = (currentTime - data.getLastDamagedAt()) / 1000;
-      int damageCooldown =
-          this.plugin.getConfig().getInt("settings.spawn-command.damage-cooldown");
+      int damageCooldown = this.plugin.getConfig().getInt("settings.spawn-command.damage-cooldown");
       if (secondsSinceLastDamaged < damageCooldown) {
         sender.sendMessage(
-            ChatColor.RED + "You were hurt recently—you’ll be able to use this command in "
-                + (damageCooldown - secondsSinceLastDamaged) + " seconds");
+            text("You were hurt recently — you’ll be able to use this command in").color(RED)
+                .appendSpace().append(text((damageCooldown - secondsSinceLastDamaged)))
+                .appendSpace().append(text("seconds")));
         return true;
       }
     }
 
     player.teleport(player.getWorld().getSpawnLocation());
-    sender.sendMessage(ChatColor.GREEN + "You’ve been teleported to the world spawn");
-
+    sender.sendMessage(text("You’ve been teleported to the world spawn").color(GREEN));
     return true;
   }
 }
