@@ -12,7 +12,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Statistic;
 import org.bukkit.command.Command;
@@ -66,7 +65,7 @@ public class StatsCommand implements TabExecutor {
           Statistic specificStat = Statistic.valueOf(args[2].toUpperCase());
           if (specificStat.isSubstatistic()) {
             sender.sendMessage(text("This statistic is not currently supported").color(RED));
-            // TODO
+            // TODO support it(?)
             return true;
           }
           Player player = sender.getServer().getPlayerExact(args[0]);
@@ -93,7 +92,7 @@ public class StatsCommand implements TabExecutor {
       sender.sendMessage(data.getUsableName() + "’s stats:");
       this.sendStatistics(sender, targetPlayer, extended);
     } else {
-      sender.sendMessage(ChatColor.RED + "No online player with that name was found"); // TODO
+      sender.sendMessage(text("No online player with that name was found").color(RED));
     }
 
     return true;
