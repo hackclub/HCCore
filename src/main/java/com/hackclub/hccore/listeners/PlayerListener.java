@@ -1,13 +1,16 @@
 package com.hackclub.hccore.listeners;
 
+import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.format.NamedTextColor.RED;
+import static net.kyori.adventure.text.format.TextDecoration.BOLD;
 import static net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand;
 
 import com.hackclub.hccore.HCCorePlugin;
 import com.hackclub.hccore.PlayerData;
+import com.hackclub.hccore.playerMessages.WelcomeMessage;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
-import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.BanEntry;
 import org.bukkit.BanList.Type;
@@ -59,7 +62,7 @@ public class PlayerListener implements Listener {
           PlainTextComponentSerializer.plainText().serialize(killer.displayName()));
     }
 
-    event.deathMessage(Component.text(message));
+    event.deathMessage(text(message));
   }
 
   @EventHandler(priority = EventPriority.LOWEST)
@@ -77,9 +80,9 @@ public class PlayerListener implements Listener {
         net.kyori.adventure.text.event.HoverEvent.showEntity(player.getType(), player.getUniqueId(),
             player.name()));
 
-    Component arrowComponent = Component.text(" » ").color(NamedTextColor.GOLD);
+    Component arrowComponent = text(" » ").color(NamedTextColor.GOLD);
 
-    Component chatMsgComponent = Component.text().color(messageColor)
+    Component chatMsgComponent = text().color(messageColor)
         .append(legacyAmpersand().deserialize(event.getMessage())).build();
     this.plugin.getServer().broadcast(
         Component.empty().append(nameComponent).append(arrowComponent).append(chatMsgComponent));
@@ -100,12 +103,21 @@ public class PlayerListener implements Listener {
     // NOTE: Title isn't cleared when the player leaves the server
     player.clearTitle();
     event.joinMessage(player.displayName().color(NamedTextColor.YELLOW).appendSpace()
-        .append(Component.text("joined the game")));
+        .append(text("joined the game")));
     plugin.advancementTab.showTab(event.getPlayer());
   }
 
   @EventHandler
-  public void onPlayerLogin(final PlayerLoginEvent event) {
+  public void onFirstJoin(final PlayerJoinEvent joinEvent) {
+    Player player = joinEvent.getPlayer();
+    if (player.hasPlayedBefore()) {
+      return;
+    }
+    WelcomeMessage.send(player);
+  }
+
+  @EventHandler(priority = EventPriority.HIGHEST)
+  public void onFailedLogin(final PlayerLoginEvent event) {
     if (event.getResult() == PlayerLoginEvent.Result.ALLOWED
         || event.getResult() == PlayerLoginEvent.Result.KICK_OTHER) {
       return;
@@ -113,16 +125,14 @@ public class PlayerListener implements Listener {
 
     Component message;
     switch (event.getResult()) {
-      case KICK_BANNED ->
-        message = this.getBanMessage(event.getPlayer().getUniqueId().toString());
-
-      case KICK_FULL -> message = Component.text("The server is full!").color(NamedTextColor.RED)
-          .decorate(TextDecoration.BOLD).appendNewline().appendNewline().append(
-              Component.text(
-                  "Sorry, it looks like there’s no more room. Please try again in ~20 minutes.").color(NamedTextColor.WHITE));
-      case KICK_WHITELIST ->
-          message = Component.text("You're not whitelisted!").color(NamedTextColor.RED)
-              .decorate(TextDecoration.BOLD);
+      case KICK_BANNED -> message = this.getBanMessage(event.getPlayer().getUniqueId().toString());
+      case KICK_FULL -> message = text("The server is full!").color(RED)
+          .decorate(BOLD).appendNewline().appendNewline().append(
+              text(
+                  "Sorry, it looks like there’s no more room. Please try again in ~20 minutes.").color(
+                  NamedTextColor.WHITE));
+      case KICK_WHITELIST -> message = text("You're not whitelisted!").color(RED)
+          .decorate(BOLD);
       default -> message = event.kickMessage();
     }
     event.kickMessage(message);
@@ -151,7 +161,7 @@ public class PlayerListener implements Listener {
     // NOTE: Title isn't cleared when the player leaves the server
     // event.getPlayer().resetTitle();
     event.quitMessage(event.getPlayer().displayName().color(NamedTextColor.YELLOW).appendSpace()
-        .append(Component.text("left the game")));
+        .append(text("left the game")));
 
     this.plugin.getDataManager().unregisterPlayer(event.getPlayer());
   }
@@ -175,12 +185,12 @@ public class PlayerListener implements Listener {
       reason = " no specified reason";
     }
 
-    return Component.text("You've been banned for" + reason + " :(")
-        .color(NamedTextColor.RED).decorate(
-            TextDecoration.BOLD).appendNewline().appendNewline().append(
-            Component.text("If you would like to appeal, please DM ").color(NamedTextColor.WHITE)).append(
-            Component.text("a Minecraft server admin (minecrafters team) ")
+    return text("You've been banned for" + reason + " :(")
+        .color(RED).decorate(
+            BOLD).appendNewline().appendNewline().append(
+            text("If you would like to appeal, please DM ").color(NamedTextColor.WHITE)).append(
+            text("a Minecraft server admin (minecrafters team) ")
                 .color(NamedTextColor.AQUA))
-        .append(Component.text("on Slack.").color(NamedTextColor.WHITE));
+        .append(text("on Slack.").color(NamedTextColor.WHITE));
   }
 }
