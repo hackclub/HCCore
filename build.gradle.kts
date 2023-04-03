@@ -17,7 +17,7 @@ dependencies {
     implementation("com.google.code.gson:gson:2.10.1")
     implementation("com.slack.api:bolt-socket-mode:1.28.1")
     implementation("javax.websocket:javax.websocket-api:1.1")
-    implementation("org.glassfish.tyrus.bundles:tyrus-standalone-client:2.1.3")
+    implementation("org.glassfish.tyrus.bundles:tyrus-standalone-client:1.19")
     implementation("org.slf4j:slf4j-simple:2.0.5")
     implementation("org.apache.commons:commons-text:1.10.0")
 
