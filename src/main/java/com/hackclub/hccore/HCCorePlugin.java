@@ -29,9 +29,11 @@ import com.hackclub.hccore.commands.ColorCommand;
 import com.hackclub.hccore.commands.LocCommand;
 import com.hackclub.hccore.commands.NickCommand;
 import com.hackclub.hccore.commands.PingCommand;
+import com.hackclub.hccore.commands.RulesCommand;
 import com.hackclub.hccore.commands.SlackCommand;
 import com.hackclub.hccore.commands.SpawnCommand;
 import com.hackclub.hccore.commands.StatsCommand;
+import com.hackclub.hccore.commands.WelcomeCommand;
 import com.hackclub.hccore.listeners.AFKListener;
 import com.hackclub.hccore.listeners.BeehiveInteractionListener;
 import com.hackclub.hccore.listeners.NameChangeListener;
@@ -90,6 +92,8 @@ public class HCCorePlugin extends JavaPlugin {
     registerCommand("slack", new SlackCommand(this));
     registerCommand("spawn", new SpawnCommand(this));
     registerCommand("stats", new StatsCommand(this));
+    registerCommand("rules", new RulesCommand());
+    registerCommand("welcome", new WelcomeCommand());
 
     // prepare for new emotes commands:
     // downvote       "↓"
@@ -104,9 +108,8 @@ public class HCCorePlugin extends JavaPlugin {
     // Register event listeners
     if (this.bot != null) {
       this.getServer().getPluginManager().registerEvents(this.bot, this);
-      this.advancementTab.getEventManager()
-          .register(this.bot, ProgressionUpdateEvent.class,
-              this.bot::onCustomAdvancementProgressed);
+      this.advancementTab.getEventManager().register(this.bot, ProgressionUpdateEvent.class,
+          this.bot::onCustomAdvancementProgressed);
     }
 
     this.getServer().getPluginManager().registerEvents(new AFKListener(this), this);
@@ -114,9 +117,8 @@ public class HCCorePlugin extends JavaPlugin {
     this.getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
 
     // Register packet listeners
-    this.getProtocolManager()
-        .addPacketListener(new NameChangeListener(this, ListenerPriority.NORMAL,
-            PacketType.Play.Server.PLAYER_INFO));
+    this.getProtocolManager().addPacketListener(
+        new NameChangeListener(this, ListenerPriority.NORMAL, PacketType.Play.Server.PLAYER_INFO));
 
     // Register tasks
     new AutoAFKTask(this).runTaskTimer(this,
@@ -194,20 +196,10 @@ public class HCCorePlugin extends JavaPlugin {
     AdvancementKey witherKey = new AdvancementKey(this, "wither");
     AdvancementKey wolfKey = new AdvancementKey(this, "wolf");
 
-    CoordAdapter adapter = CoordAdapter.builder()
-        .add(astraKey, 5, 3)
-        .add(bugKey, 1, 2)
-        .add(contributeKey, 2, 2)
-        .add(diamondsKey, 1, 4)
-        .add(dragonKey, 3, 4)
-        .add(elderKey, 4, 4)
-        .add(hubKey, 6, 4)
-        .add(ironGolemKey, 2, 5)
-        .add(mileKey, 5, 4)
-        .add(musicophileKey, 1, 3)
-        .add(witherKey, 3, 3)
-        .add(wolfKey, 2, 4)
-        .build();
+    CoordAdapter adapter = CoordAdapter.builder().add(astraKey, 5, 3).add(bugKey, 1, 2)
+        .add(contributeKey, 2, 2).add(diamondsKey, 1, 4).add(dragonKey, 3, 4).add(elderKey, 4, 4)
+        .add(hubKey, 6, 4).add(ironGolemKey, 2, 5).add(mileKey, 5, 4).add(musicophileKey, 1, 3)
+        .add(witherKey, 3, 3).add(wolfKey, 2, 4).build();
 
     MusicophileAdv musicophile = new MusicophileAdv(this, root, musicophileKey, adapter);
     BugAdv bug = new BugAdv(root, bugKey, adapter);
@@ -224,9 +216,7 @@ public class HCCorePlugin extends JavaPlugin {
 
     // Register all advancements
     advancementTab.registerAdvancements(root, musicophile, bug, contribute, diamonds, hub, dragon,
-        wither,
-        elder, wolf,
-        ironGolem, mile, astra);
+        wither, elder, wolf, ironGolem, mile, astra);
   }
 
   private void registerCommand(String name, CommandExecutor commandExecutor) {
