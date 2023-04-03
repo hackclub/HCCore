@@ -6,6 +6,8 @@ import static net.kyori.adventure.text.format.NamedTextColor.RED;
 
 import com.hackclub.hccore.HCCorePlugin;
 import com.hackclub.hccore.PlayerData;
+import com.hackclub.hccore.playerMessages.LinkedSlackMessage;
+import com.hackclub.hccore.playerMessages.UnlinkedSlackMessage;
 import com.slack.api.model.User;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -42,6 +44,24 @@ public class SlackCommand implements TabExecutor {
     }
 
     switch (args[0]) {
+      case "info" -> {
+        if (!(sender instanceof Player player)) {
+          sender.sendMessage(text("You must be a player to use this").color(RED));
+          return true;
+        }
+        PlayerData playerData = this.plugin.getDataManager().getData(player);
+        String slackId = playerData.getSlackId();
+        if (slackId == null) {
+          // unlinked, show slack join + link info
+          sender.sendMessage(UnlinkedSlackMessage.get());
+
+        } else {
+          // linked, show paired account info
+          sender.sendMessage(LinkedSlackMessage.get(player)); //TODO
+        }
+
+        return true;
+      }
       case "link" -> {
         if (!(sender instanceof Player player)) {
           sender.sendMessage(text("You must be a player to use this").color(RED));
@@ -133,7 +153,7 @@ public class SlackCommand implements TabExecutor {
     List<String> completions = new ArrayList<>();
     switch (args.length) {
       case 1 -> {
-        List<String> subcommands = Arrays.asList("link", "unlink", "lookup");
+        List<String> subcommands = Arrays.asList("info", "link", "unlink", "lookup");
         StringUtil.copyPartialMatches(args[0], subcommands, completions);
       }
       case 2 -> {

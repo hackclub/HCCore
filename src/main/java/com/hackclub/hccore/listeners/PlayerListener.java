@@ -113,7 +113,7 @@ public class PlayerListener implements Listener {
     if (player.hasPlayedBefore()) {
       return;
     }
-    WelcomeMessage.send(player);
+    player.sendMessage(WelcomeMessage.get());
   }
 
   @EventHandler(priority = EventPriority.HIGHEST)

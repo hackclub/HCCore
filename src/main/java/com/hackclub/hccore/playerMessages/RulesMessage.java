@@ -1,8 +1,8 @@
 package com.hackclub.hccore.playerMessages;
 
+import static net.kyori.adventure.text.minimessage.MiniMessage.miniMessage;
+
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
-import org.bukkit.command.CommandSender;
 
 public class RulesMessage {
 
@@ -21,8 +21,7 @@ public class RulesMessage {
       <b>5.</b> If not otherwise mentioned in these rules, follow the <u><click:open_url:'https://hackclub.com/conduct/'><hover:show_text:'Open in Browser'>Hack Club Code of Conduct</hover></click></u>.
       """;
 
-  public static void send(CommandSender sender) {
-    Component component = MiniMessage.miniMessage().deserialize(minimsgSource);
-    sender.sendMessage(component);
+  public static Component get() {
+    return miniMessage().deserialize(minimsgSource);
   }
 }

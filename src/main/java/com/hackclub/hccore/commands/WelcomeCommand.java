@@ -12,7 +12,7 @@ public class WelcomeCommand extends ArgumentlessCommand implements CommandExecut
   @Override
   public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command,
       @NotNull String label, @NotNull String[] args) {
-    WelcomeMessage.send(sender);
+    sender.sendMessage(WelcomeMessage.get());
     return true;
   }
 }
