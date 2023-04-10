@@ -57,7 +57,7 @@ public class SlackCommand implements TabExecutor {
 
         } else {
           // linked, show paired account info
-          sender.sendMessage(LinkedSlackMessage.get(player)); //TODO
+          player.sendMessage(LinkedSlackMessage.get(player));
         }
 
         return true;

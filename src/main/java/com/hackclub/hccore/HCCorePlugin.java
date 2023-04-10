@@ -228,4 +228,8 @@ public class HCCorePlugin extends JavaPlugin {
     command.setExecutor(commandExecutor);
   }
 
+  public static HCCorePlugin getInstance() {
+    return HCCorePlugin.getPlugin(HCCorePlugin.class);
+  }
+
 }
