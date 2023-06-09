@@ -1,15 +1,19 @@
 package com.hackclub.hccore.commands;
 
+import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.format.NamedTextColor.GREEN;
+import static net.kyori.adventure.text.format.NamedTextColor.RED;
+
 import com.hackclub.hccore.HCCorePlugin;
 import com.hackclub.hccore.PlayerData;
+import com.hackclub.hccore.playerMessages.LinkedSlackMessage;
+import com.hackclub.hccore.playerMessages.UnlinkedSlackMessage;
 import com.slack.api.model.User;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
@@ -31,8 +35,7 @@ public class SlackCommand implements TabExecutor {
   public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd,
       @NotNull String alias, String[] args) {
     if (this.plugin.getSlackBot() == null) {
-      sender.sendMessage(
-          Component.text("Slack integration is not enabled").color(NamedTextColor.RED));
+      sender.sendMessage(text("Slack integration is not enabled").color(RED));
       return true;
     }
 
@@ -41,10 +44,27 @@ public class SlackCommand implements TabExecutor {
     }
 
     switch (args[0]) {
+      case "info" -> {
+        if (!(sender instanceof Player player)) {
+          sender.sendMessage(text("You must be a player to use this").color(RED));
+          return true;
+        }
+        PlayerData playerData = this.plugin.getDataManager().getData(player);
+        String slackId = playerData.getSlackId();
+        if (slackId == null) {
+          // unlinked, show slack join + link info
+          sender.sendMessage(UnlinkedSlackMessage.get());
+
+        } else {
+          // linked, show paired account info
+          player.sendMessage(LinkedSlackMessage.get(player));
+        }
+
+        return true;
+      }
       case "link" -> {
         if (!(sender instanceof Player player)) {
-          sender.sendMessage(
-              Component.text("You must be a player to use this").color(NamedTextColor.RED));
+          sender.sendMessage(text("You must be a player to use this").color(RED));
           return true;
         }
 
@@ -54,40 +74,36 @@ public class SlackCommand implements TabExecutor {
 
         try {
           if (this.plugin.getSlackBot().getUserInfo(args[1]) == null) {
-            player.sendMessage(
-                Component.text("That Slack ID is invalid!").color(NamedTextColor.RED));
+            player.sendMessage(text("That Slack ID is invalid!").color(RED));
             return true;
           }
 
-          boolean sent = this.plugin.getSlackBot().sendVerificationMessage(args[1], player.getName(), player.getUniqueId().toString());
+          boolean sent = this.plugin.getSlackBot()
+              .sendVerificationMessage(args[1], player.getName(), player.getUniqueId().toString());
 
           if (sent) {
             player.sendMessage(
-                Component.text("A verification message has been sent to your Slack account")
-                    .color(NamedTextColor.GREEN));
+                text("A verification message has been sent to your Slack account").color(GREEN));
           } else {
             player.sendMessage(
-                Component.text("An error occurred while sending the verification message")
-                    .color(NamedTextColor.RED));
+                text("An error occurred while sending the verification message").color(RED));
           }
         } catch (IOException e) {
-          player.sendMessage(Component.text("An error occurred while linking your account")
-              .color(NamedTextColor.RED));
+          player.sendMessage(text("An error occurred while linking your account").color(RED));
           return true;
         }
         return true;
       }
       case "unlink" -> {
         if (!(sender instanceof Player player)) {
-          sender.sendMessage(
-              Component.text("You must be a player to use this").color(NamedTextColor.RED));
+          sender.sendMessage(text("You must be a player to use this").color(RED));
           return true;
         }
 
         PlayerData playerData = this.plugin.getDataManager().getData(player);
         playerData.setSlackId(null);
         player.sendMessage(
-            Component.text("Your Slack account has been unlinked").color(NamedTextColor.GREEN));
+            text("Your Slack account has been unlinked").color(GREEN));
         return true;
       }
       case "lookup" -> {
@@ -96,32 +112,27 @@ public class SlackCommand implements TabExecutor {
         }
         OfflinePlayer lookupPlayer = Bukkit.getOfflinePlayer(args[1]);
         if (!lookupPlayer.hasPlayedBefore()) {
-          sender.sendMessage(Component.text("That player has not played on this server!").color(NamedTextColor.RED));
+          sender.sendMessage(text("That player has not played on this server!").color(RED));
           return true;
         }
         PlayerData lookupData = this.plugin.getDataManager().getData(lookupPlayer);
         String slackId = lookupData.getSlackId();
         if (slackId == null) {
-          sender.sendMessage(Component.text("That player has not linked their Slack account")
-              .color(NamedTextColor.RED));
+          sender.sendMessage(text("That player has not linked their Slack account").color(RED));
           return true;
         }
         try {
           User slackUser = this.plugin.getSlackBot().getUserInfo(slackId);
 
           if (slackUser == null) {
-            sender.sendMessage(Component.text("That player has not linked their Slack account")
-                .color(NamedTextColor.RED));
+            sender.sendMessage(text("That player has not linked their Slack account").color(RED));
             return true;
           }
 
-          sender.sendMessage(Component.text(
-                  "Slack username for %s: %s".formatted(lookupPlayer.getName(),
-                      slackUser.getProfile().getDisplayName()))
-              .color(NamedTextColor.GREEN));
+          sender.sendMessage(text("Slack username for %s: %s".formatted(lookupPlayer.getName(),
+              slackUser.getProfile().getDisplayName())).color(GREEN));
         } catch (IOException e) {
-          sender.sendMessage(Component.text("There was an error while looking up that player")
-              .color(NamedTextColor.RED));
+          sender.sendMessage(text("There was an error while looking up that player").color(RED));
           return true;
         }
         return true;
@@ -142,7 +153,7 @@ public class SlackCommand implements TabExecutor {
     List<String> completions = new ArrayList<>();
     switch (args.length) {
       case 1 -> {
-        List<String> subcommands = Arrays.asList("link", "unlink", "lookup");
+        List<String> subcommands = Arrays.asList("info", "link", "unlink", "lookup");
         StringUtil.copyPartialMatches(args[0], subcommands, completions);
       }
       case 2 -> {

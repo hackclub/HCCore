@@ -1,11 +1,13 @@
 package com.hackclub.hccore.commands;
 
+import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.format.NamedTextColor.RED;
+
 import com.hackclub.hccore.HCCorePlugin;
 import com.hackclub.hccore.PlayerData;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -27,14 +29,14 @@ public class PingCommand implements TabExecutor {
     // /ping
     if (args.length == 0) {
       if (!(sender instanceof Player player)) {
-        sender.sendMessage(ChatColor.RED + "You must be a player to use this");
+        sender.sendMessage(text("You must be a player to use this").color(RED));
         return true;
       }
 
       int ping = player.getPing();
       // Failed for some reason
       if (ping == -1) {
-        sender.sendMessage(ChatColor.RED + "Failed to get your ping");
+        sender.sendMessage(text("Failed to get your ping").color(RED));
         return true;
       }
 
@@ -49,23 +51,22 @@ public class PingCommand implements TabExecutor {
       int ping = targetPlayer.getPing();
       // Failed for some reason
       if (ping == -1) {
-        sender.sendMessage(
-            ChatColor.RED + "Failed to get " + data.getUsableName() + "’s ping");
+        sender.sendMessage(text("Failed to get").color(RED).appendSpace()
+            .append(text(data.getUsableName()).append(text("’s ping"))));
         return true;
       }
 
       sender.sendMessage(data.getUsableName() + "’s ping is " + ping + "ms");
     } else {
-      sender.sendMessage(ChatColor.RED + "No online player with that name was found");
+      sender.sendMessage(text("No online player with that name was found").color(RED));
     }
 
     return true;
   }
 
   @Override
-  public List<String> onTabComplete(
-      @NotNull CommandSender sender, @NotNull Command cmd, @NotNull String alias,
-      String[] args) {
+  public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command cmd,
+      @NotNull String alias, String[] args) {
     List<String> completions = new ArrayList<>();
     if (args.length == 1) {
       for (Player player : sender.getServer().getOnlinePlayers()) {
