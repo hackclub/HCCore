@@ -15,6 +15,7 @@ import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.scoreboard.Team;
@@ -24,6 +25,7 @@ public class PlayerData {
   public static final int MAX_NICKNAME_LENGTH = 16;
   private final HCCorePlugin plugin;
   public final Player player;
+  public final OfflinePlayer offlinePlayer;
   private final File dataFile;
 
   // Session data (will be cleared when player quits)
@@ -46,8 +48,16 @@ public class PlayerData {
   public PlayerData(HCCorePlugin plugin, Player player) {
     this.plugin = plugin;
     this.player = player;
+    this.offlinePlayer = player;
     this.dataFile =
         new File(plugin.getDataManager().getDataFolder(), player.getUniqueId() + ".json");
+  }
+  public PlayerData(HCCorePlugin plugin, OfflinePlayer offlinePlayer) {
+    this.plugin = plugin;
+    this.player = offlinePlayer.getPlayer();
+    this.offlinePlayer = offlinePlayer;
+    this.dataFile =
+        new File(plugin.getDataManager().getDataFolder(), offlinePlayer.getUniqueId() + ".json");
   }
 
   public boolean isAfk() {
@@ -63,8 +73,10 @@ public class PlayerData {
     this.getTeam().color(NamedTextColor.nearestTo(newColor));
     this.getTeam().suffix(Component.text(newSuffix).color(newColor));
 
-    Event event = new PlayerAFKStatusChangeEvent(this.player, afk);
-    this.player.getServer().getPluginManager().callEvent(event);
+    if (this.player != null) {
+      Event event = new PlayerAFKStatusChangeEvent(this.player, afk);
+      this.player.getServer().getPluginManager().callEvent(event);
+    }
   }
 
   public long getLastDamagedAt() {
@@ -136,8 +148,12 @@ public class PlayerData {
   }
 
   public Team getTeam() {
-    return this.player.getServer().getScoreboardManager().getMainScoreboard()
-        .getTeam(this.player.getName());
+    if (this.player != null) {
+      return this.player.getServer().getScoreboardManager().getMainScoreboard()
+          .getTeam(this.player.getName());
+    } else {
+      return null;
+    }
   }
 
   public void load() {
@@ -146,7 +162,7 @@ public class PlayerData {
 
       if (!this.dataFile.exists()) {
         this.plugin.getLogger().log(Level.INFO,
-            "No data file found for " + this.player.getName() + ", creating…");
+            "No data file found for " + this.offlinePlayer.getName() + ", creating…");
         this.dataFile.createNewFile();
         this.save();
       }
@@ -177,7 +193,7 @@ public class PlayerData {
   }
 
   public String getUsableName() {
-    return this.getNickname() != null ? this.getNickname() : this.player.getName();
+    return this.getNickname() != null ? this.getNickname() : this.offlinePlayer.getName();
   }
 
   public TextComponent getDisplayedName() {
@@ -195,22 +211,26 @@ public class PlayerData {
   }
 
   private void updateDisplayedName() {
-    TextComponent builtDisplayName = this.getDisplayedName();
-    this.player.displayName(builtDisplayName);
-    this.player.playerListName(builtDisplayName);
-    this.refreshNameTag();
+    if (this.player != null) {
+      TextComponent builtDisplayName = this.getDisplayedName();
+      this.player.displayName(builtDisplayName);
+      this.player.playerListName(builtDisplayName);
+      this.refreshNameTag();
+    }
   }
 
   private void refreshNameTag() {
-    for (Player onlinePlayer : this.player.getServer().getOnlinePlayers()) {
-      if (onlinePlayer.equals(this.player) || !onlinePlayer.canSee(this.player)) {
-        continue;
+    if (this.player != null) {
+      for (Player onlinePlayer : this.player.getServer().getOnlinePlayers()) {
+        if (onlinePlayer.equals(this.player) || !onlinePlayer.canSee(this.player)) {
+          continue;
+        }
+        // Showing the player again after they've been hidden causes a Player Info packet to be
+        // sent, which is then intercepted by NameChangeListener. The actual modification of the
+        // name tag takes place there.
+        onlinePlayer.hidePlayer(this.plugin, this.player);
+        onlinePlayer.showPlayer(this.plugin, this.player);
       }
-      // Showing the player again after they've been hidden causes a Player Info packet to be
-      // sent, which is then intercepted by NameChangeListener. The actual modification of the
-      // name tag takes place there.
-      onlinePlayer.hidePlayer(this.plugin, this.player);
-      onlinePlayer.showPlayer(this.plugin, this.player);
     }
   }
 }
