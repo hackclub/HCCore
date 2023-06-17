@@ -36,7 +36,6 @@ import io.papermc.paper.event.player.AsyncChatEvent;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -48,6 +47,7 @@ import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.apache.commons.text.StringEscapeUtils;
+import org.apache.commons.collections4.map.PassiveExpiringMap;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -76,12 +76,13 @@ public class SlackBot implements Listener {
   private final HCCorePlugin plugin;
   private final SocketModeApp socket;
   private final String commandBase;
-  private final HashMap<UUID, String> mcUuidVerificationCodes = new HashMap<>();
+  private final PassiveExpiringMap<UUID, String> mcLinkCodes;
 
   public SlackBot(HCCorePlugin plugin) throws Exception {
     this.plugin = plugin;
     App app = new App(AppConfig.builder().singleTeamBotToken(getBotToken()).build());
     commandBase = plugin.getConfig().getString("settings.slack-link.base-command", "minecraft");
+    mcLinkCodes = new PassiveExpiringMap<>(plugin.getConfig().getLong("settings.slack-link.link-code-expiration", 60 * 10) * 1000);
 
     Pattern sdk = Pattern.compile(".*");
     app.message(sdk, (payload, ctx) -> {
@@ -265,7 +266,7 @@ public class SlackBot implements Listener {
               String code = StringArgumentType.getString(context, "code");
               UUID mcUuid = null;
 
-              for (Entry<UUID, String> entry : mcUuidVerificationCodes.entrySet()) {
+              for (Entry<UUID, String> entry : mcLinkCodes.entrySet()) {
                 if (Objects.equals(code, entry.getValue())) {
                   mcUuid = entry.getKey();
                   break;
@@ -294,7 +295,7 @@ public class SlackBot implements Listener {
 
                   data.setSlackId(context.getSource().getContext().getRequestUserId());
                   data.save();
-                  mcUuidVerificationCodes.remove(mcUuid);
+                  mcLinkCodes.remove(mcUuid);
 
                   // TODO: Make this message better to include rules and such
                   context.getSource().getContext().respond(
@@ -550,11 +551,11 @@ public class SlackBot implements Listener {
   }
 
   public String generateVerificationCode(UUID mcUuid) {
-    if (mcUuidVerificationCodes.containsKey(mcUuid)) {
-      return mcUuidVerificationCodes.get(mcUuid);
+    if (mcLinkCodes.containsKey(mcUuid)) {
+      return mcLinkCodes.get(mcUuid);
     } else {
       String code = UUID.randomUUID().toString().substring(0, 6);
-      mcUuidVerificationCodes.put(mcUuid, code);
+      mcLinkCodes.put(mcUuid, code);
       return code;
     }
   }

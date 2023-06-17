@@ -99,8 +99,8 @@ public class PlayerListener implements Listener {
     PlayerData data = this.plugin.getDataManager().getData(player);
 
     // Check if slack link is enabled & required
-    if (this.plugin.getConfig().get("settings.slack-link.enabled", false).equals(true)
-        && this.plugin.getConfig().get("settings.slack-link.required", false).equals(true)) {
+    if (this.plugin.getConfig().getBoolean("settings.slack-link.enabled", false)
+        && this.plugin.getConfig().getBoolean("settings.slack-link.required", false)) {
       // Check for slack link
       if (data == null || data.getSlackId() == null) {
         this.plugin.getLogger()
