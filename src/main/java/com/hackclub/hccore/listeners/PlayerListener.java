@@ -106,7 +106,7 @@ public class PlayerListener implements Listener {
         this.plugin.getLogger()
             .info("Kicking " + player.getName() + " because they are not linked");
         String code = this.plugin.getSlackBot()
-            .generateVerificationCode(player.getUniqueId().toString());
+            .generateVerificationCode(player.getUniqueId());
         player.kick(text("You must link your Slack account to join the server!").color(RED)
             .decorate(BOLD).appendNewline().appendNewline().append(
                 text("Please run ").color(NamedTextColor.WHITE)

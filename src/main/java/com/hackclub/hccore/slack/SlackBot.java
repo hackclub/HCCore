@@ -76,7 +76,7 @@ public class SlackBot implements Listener {
   private final HCCorePlugin plugin;
   private final SocketModeApp socket;
   private final String commandBase;
-  private final HashMap<String, String> mcUuidVerificationCodes = new HashMap<>();
+  private final HashMap<UUID, String> mcUuidVerificationCodes = new HashMap<>();
 
   public SlackBot(HCCorePlugin plugin) throws Exception {
     this.plugin = plugin;
@@ -263,9 +263,9 @@ public class SlackBot implements Listener {
             .then(LiteralArgumentBuilder.<SlashCommandRequest>literal("link").then(RequiredArgumentBuilder.<SlashCommandRequest, String>argument("code",
                 StringArgumentType.greedyString()).executes(context -> {
               String code = StringArgumentType.getString(context, "code");
-              String mcUuid = null;
+              UUID mcUuid = null;
 
-              for (Entry<String, String> entry : mcUuidVerificationCodes.entrySet()) {
+              for (Entry<UUID, String> entry : mcUuidVerificationCodes.entrySet()) {
                 if (Objects.equals(code, entry.getValue())) {
                   mcUuid = entry.getKey();
                   break;
@@ -276,7 +276,7 @@ public class SlackBot implements Listener {
                 if (mcUuid == null) {
                   context.getSource().getContext().respond("Invalid code");
                 } else {
-                  OfflinePlayer player = Bukkit.getOfflinePlayer(UUID.fromString(mcUuid));
+                  OfflinePlayer player = Bukkit.getOfflinePlayer(mcUuid);
                   PlayerData data = this.plugin.getDataManager().getData(player);
 
                   if (data == null) {
@@ -549,7 +549,7 @@ public class SlackBot implements Listener {
     }
   }
 
-  public String generateVerificationCode(String mcUuid) {
+  public String generateVerificationCode(UUID mcUuid) {
     if (mcUuidVerificationCodes.containsKey(mcUuid)) {
       return mcUuidVerificationCodes.get(mcUuid);
     } else {
