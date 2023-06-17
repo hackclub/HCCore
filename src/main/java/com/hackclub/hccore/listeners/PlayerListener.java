@@ -11,6 +11,7 @@ import com.hackclub.hccore.playerMessages.WelcomeMessage;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.BanEntry;
 import org.bukkit.BanList.Type;
@@ -96,6 +97,35 @@ public class PlayerListener implements Listener {
   public void onPlayerJoin(final PlayerJoinEvent event) {
     Player player = event.getPlayer();
     this.plugin.getDataManager().registerPlayer(player);
+    PlayerData data = this.plugin.getDataManager().getData(player);
+
+    // Check if slack link is enabled & required
+    if (this.plugin.getConfig().getBoolean("settings.slack-link.enabled", false)
+        && this.plugin.getConfig().getBoolean("settings.slack-link.required", false)) {
+      // Check for slack link
+      if (data == null || data.getSlackId() == null) {
+        this.plugin.getLogger()
+            .info("Kicking " + player.getName() + " because they are not linked");
+        String code = this.plugin.getSlackBot()
+            .generateVerificationCode(player.getUniqueId());
+        player.kick(text("You must link your Slack account to join the server!").color(RED)
+            .decorate(BOLD).appendNewline().appendNewline().append(
+                text("Please run ").color(NamedTextColor.WHITE)
+                    .append(text("/" + this.plugin.getConfig()
+                        .get("settings.slack-link.base-command", "minecraft") + " link "
+                        + code).color(NamedTextColor.GOLD))
+                    .append(text(
+                        " in the #minecraft channel in the Slack (https://slack.hackclub.com) to link your account."))
+                    .color(NamedTextColor.WHITE)).appendNewline().appendNewline().append(
+                text("This code will expire after ").append(text(
+                        this.plugin.getConfig()
+                            .getInt("settings.slack-link.link-code-expiration", 60 * 10) + " seconds"))
+                    .append(text(".")).color(NamedTextColor.WHITE).decorate(
+                        TextDecoration.ITALIC)));
+        return;
+      }
+    }
+
     // Set the initial active time
     this.plugin.getDataManager().getData(player)
         .setLastActiveAt(System.currentTimeMillis());

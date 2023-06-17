@@ -37,6 +37,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
@@ -45,6 +47,7 @@ import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.apache.commons.text.StringEscapeUtils;
+import org.apache.commons.collections4.map.PassiveExpiringMap;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -62,10 +65,6 @@ import org.jetbrains.annotations.NotNull;
 
 public class SlackBot implements Listener {
 
-  private final HCCorePlugin plugin;
-  private final SocketModeApp socket;
-  private final String commandBase;
-
   public static final String playerDeathMessageAvatarUrl = "https://cloud-4zgvoofbx-hack-club-bot.vercel.app/0image.png";
   public static final String playerAfkEnterAvatarUrl = "https://cloud-pt6yc0dyx-hack-club-bot.vercel.app/0hc-afk-icon.png";
   public static final String playerAfkLeaveAvatarUrl = "https://cloud-pt6yc0dyx-hack-club-bot.vercel.app/0hc-afk-icon.png";
@@ -74,11 +73,16 @@ public class SlackBot implements Listener {
   public static final String playerServerLeaveAvatarUrl = "https://cloud-if9tepzbn-hack-club-bot.vercel.app/0hccoreleave.png";
   public static final String playerServerJoinAvatarUrl = "https://cloud-if9tepzbn-hack-club-bot.vercel.app/1hccorejoin.png";
   public static final String playerAdvancementAvatarUrl = "https://cloud-obk2f29h4-hack-club-bot.vercel.app/0achievement.png";
+  private final HCCorePlugin plugin;
+  private final SocketModeApp socket;
+  private final String commandBase;
+  private final PassiveExpiringMap<UUID, String> mcLinkCodes;
 
   public SlackBot(HCCorePlugin plugin) throws Exception {
     this.plugin = plugin;
     App app = new App(AppConfig.builder().singleTeamBotToken(getBotToken()).build());
     commandBase = plugin.getConfig().getString("settings.slack-link.base-command", "minecraft");
+    mcLinkCodes = new PassiveExpiringMap<>(plugin.getConfig().getLong("settings.slack-link.link-code-expiration", 60 * 10) * 1000);
 
     Pattern sdk = Pattern.compile(".*");
     app.message(sdk, (payload, ctx) -> {
@@ -121,7 +125,8 @@ public class SlackBot implements Listener {
         client.chatPostMessage(
             r -> r.token(ctx.getBotToken()).channel(channelId).threadTs(messageTs).text(
                 "Hmm, it seems that the player you're trying to link doesn't exist? Please report this to a minecraft server admin"));
-        this.plugin.getLogger().warning("Player " + mcUuid + " doesn't exist, but tried to link their account");
+        this.plugin.getLogger()
+            .warning("Player " + mcUuid + " doesn't exist, but tried to link their account");
         return ctx.ack();
       }
 
@@ -153,7 +158,8 @@ public class SlackBot implements Listener {
         client.chatPostMessage(
             r -> r.token(ctx.getBotToken()).channel(channelId).threadTs(messageTs).text(
                 "Hmm, it seems that the player you're trying to deny linking doesn't exist? Please report this to a minecraft server admin"));
-        this.plugin.getLogger().warning("Player " + mcUuid + " doesn't exist, but tried to deny linking their account");
+        this.plugin.getLogger().warning(
+            "Player " + mcUuid + " doesn't exist, but tried to deny linking their account");
         return ctx.ack();
       }
 
@@ -164,7 +170,8 @@ public class SlackBot implements Listener {
 
         if (player.isOnline()) {
           player.getPlayer().sendMessage(
-              Component.text("The request to link the account was denied").color(NamedTextColor.RED));
+              Component.text("The request to link the account was denied")
+                  .color(NamedTextColor.RED));
         }
       } catch (IOException | SlackApiException e) {
         e.printStackTrace();
@@ -182,64 +189,120 @@ public class SlackBot implements Listener {
     CommandDispatcher<SlashCommandRequest> dispatcher = new CommandDispatcher<>();
     dispatcher.register(
         LiteralArgumentBuilder.<SlashCommandRequest>literal("/%s".formatted(commandBase)).then(
-            LiteralArgumentBuilder.<SlashCommandRequest>literal("players").executes(context -> {
-              Collection<? extends Player> onlinePlayers = plugin.getServer().getOnlinePlayers();
-              StringBuilder message = new StringBuilder();
-              if (onlinePlayers.size() == 0) {
-                message.append("There are currently no players online");
-              } else {
-                message.append("*Players online* (%d/%d)\n\n".formatted(onlinePlayers.size(),
-                    plugin.getServer().getMaxPlayers()));
-                for (Player player : onlinePlayers) {
-                  String displayName = plainText().serialize(player.displayName());
-                  String name = player.getName();
-                  String line = "%s%s\n".formatted(displayName,
-                      (name.equals(displayName)) ? "" : (", AKA " + name));
-                  message.append(line);
-                }
-              }
-              try {
-                ChatPostMessageResponse response = context.getSource().getContext()
-                    .say(message.toString());
-                if (!response.isOk()) {
-                  context.getSource().getContext().respond(message.toString());
-                }
-              } catch (IOException e) {
-                e.printStackTrace();
-              } catch (SlackApiException e) {
-                throw new RuntimeException(e);
-              }
-              return 1;
-            })).then(LiteralArgumentBuilder.<SlashCommandRequest>literal("lookup")
-            .then(RequiredArgumentBuilder.<SlashCommandRequest, String>argument("mention",
-                StringArgumentType.greedyString()).executes(context -> {
-              String mention = StringArgumentType.getString(context, "mention");
-              String id;
-
-              // User mention
-              if (mention.startsWith("<@") && mention.endsWith(">")) {
-                int pipeIdx = mention.indexOf('|');
-                if (pipeIdx == -1) {
-                  id = mention.substring(2, mention.length() - 1);
-                } else {
-                  id = mention.substring(2, pipeIdx);
-                }
-              } else {
-                // Try user id
-                id = mention;
-              }
-
-              try {
-                PlayerData data = this.plugin.getDataManager()
-                    .findData(pData -> pData.getSlackId().equals(id));
-
-                if (data == null) {
-                  context.getSource().getContext().respond("No linked user was found");
+                LiteralArgumentBuilder.<SlashCommandRequest>literal("players").executes(context -> {
+                  Collection<? extends Player> onlinePlayers = plugin.getServer().getOnlinePlayers();
+                  StringBuilder message = new StringBuilder();
+                  if (onlinePlayers.size() == 0) {
+                    message.append("There are currently no players online");
+                  } else {
+                    message.append("*Players online* (%d/%d)\n\n".formatted(onlinePlayers.size(),
+                        plugin.getServer().getMaxPlayers()));
+                    for (Player player : onlinePlayers) {
+                      String displayName = plainText().serialize(player.displayName());
+                      String name = player.getName();
+                      String line = "%s%s\n".formatted(displayName,
+                          (name.equals(displayName)) ? "" : (", AKA " + name));
+                      message.append(line);
+                    }
+                  }
+                  try {
+                    ChatPostMessageResponse response = context.getSource().getContext()
+                        .say(message.toString());
+                    if (!response.isOk()) {
+                      context.getSource().getContext().respond(message.toString());
+                    }
+                  } catch (IOException e) {
+                    e.printStackTrace();
+                  } catch (SlackApiException e) {
+                    throw new RuntimeException(e);
+                  }
                   return 1;
-                }
+                })).then(LiteralArgumentBuilder.<SlashCommandRequest>literal("lookup")
+                .then(RequiredArgumentBuilder.<SlashCommandRequest, String>argument("mention",
+                    StringArgumentType.greedyString()).executes(context -> {
+                  String mention = StringArgumentType.getString(context, "mention");
+                  String id;
 
-                context.getSource().getContext().respond(
-                    "The linked user is %s".formatted(data.getUsableName()));
+                  // User mention
+                  if (mention.startsWith("<@") && mention.endsWith(">")) {
+                    int pipeIdx = mention.indexOf('|');
+                    if (pipeIdx == -1) {
+                      id = mention.substring(2, mention.length() - 1);
+                    } else {
+                      id = mention.substring(2, pipeIdx);
+                    }
+                  } else {
+                    // Try user id
+                    id = mention;
+                  }
+
+                  try {
+                    PlayerData data = this.plugin.getDataManager()
+                        .findData(pData -> pData.getSlackId().equals(id));
+
+                    if (data == null) {
+                      context.getSource().getContext().respond("No linked user was found");
+                      return 1;
+                    }
+
+                    context.getSource().getContext().respond(
+                        "The linked user is %s".formatted(data.getUsableName()));
+                  } catch (IOException e) {
+                    e.printStackTrace();
+                  }
+
+                  return 1;
+                })).executes(context -> {
+                  try {
+                    context.getSource().getContext()
+                        .respond("Missing argument: slack user mention or id");
+                  } catch (IOException e) {
+                    e.printStackTrace();
+                  }
+                  return 1;
+                }))
+            .then(LiteralArgumentBuilder.<SlashCommandRequest>literal("link").then(RequiredArgumentBuilder.<SlashCommandRequest, String>argument("code",
+                StringArgumentType.greedyString()).executes(context -> {
+              String code = StringArgumentType.getString(context, "code");
+              UUID mcUuid = null;
+
+              for (Entry<UUID, String> entry : mcLinkCodes.entrySet()) {
+                if (Objects.equals(code, entry.getValue())) {
+                  mcUuid = entry.getKey();
+                  break;
+                }
+              }
+
+              try {
+                if (mcUuid == null) {
+                  context.getSource().getContext().respond("Invalid code");
+                } else {
+                  OfflinePlayer player = Bukkit.getOfflinePlayer(mcUuid);
+                  PlayerData data = this.plugin.getDataManager().getData(player);
+
+                  if (data == null) {
+                    context.getSource().getContext().respond(
+                        "Error: this player has not yet logged in");
+                    return 1;
+                  }
+
+                  if (data.getSlackId() != null) {
+                    context.getSource().getContext().respond(
+                        "This minecraft account is already linked to %s".formatted(
+                            data.getUsableName()));
+                    return 1;
+                  }
+
+                  data.setSlackId(context.getSource().getContext().getRequestUserId());
+                  data.save();
+                  mcLinkCodes.remove(mcUuid);
+
+                  // TODO: Make this message better to include rules and such
+                  context.getSource().getContext().respond(
+                      "Successfully linked your minecraft account to your slack account! You may now join the server.");
+
+                }
+                return 1;
               } catch (IOException e) {
                 e.printStackTrace();
               }
@@ -247,23 +310,16 @@ public class SlackBot implements Listener {
               return 1;
             })).executes(context -> {
               try {
-                context.getSource().getContext().respond("Missing argument: slack user mention or id");
+                List<String> usage = Arrays.asList(dispatcher.getAllUsage(dispatcher.getRoot(), null,
+                    false));
+                context.getSource().getContext()
+                    .respond("No arguments given\nPossible commands:\n%s".formatted(
+                        usage.stream().reduce((s, s2) -> s + "\n" + s2).orElse("")));
               } catch (IOException e) {
                 e.printStackTrace();
               }
               return 1;
-            })).executes(context -> {
-          try {
-            List<String> usage = Arrays.asList(dispatcher.getAllUsage(dispatcher.getRoot(), null,
-                false));
-            context.getSource().getContext()
-                .respond("No arguments given\nPossible commands:\n%s".formatted(
-                    usage.stream().reduce((s, s2) -> s + "\n" + s2).orElse("")));
-          } catch (IOException e) {
-            e.printStackTrace();
-          }
-          return 1;
-        }));
+            })));
 
     app.command("/%s".formatted(commandBase), ((slashCommandRequest, ctx) -> {
       String command = slashCommandRequest.getPayload().getCommand() + (
@@ -491,6 +547,21 @@ public class SlackBot implements Listener {
     } catch (SlackApiException e) {
       e.printStackTrace();
       return false;
+    }
+  }
+
+  public String generateVerificationCode(UUID mcUuid) {
+    if (mcLinkCodes.containsKey(mcUuid)) {
+      // refresh the time to live of the code
+      String code = mcLinkCodes.get(mcUuid);
+      mcLinkCodes.remove(mcUuid);
+      mcLinkCodes.put(mcUuid, code);
+
+      return code;
+    } else {
+      String code = UUID.randomUUID().toString().substring(0, 6);
+      mcLinkCodes.put(mcUuid, code);
+      return code;
     }
   }
 }

@@ -9,8 +9,17 @@ settings:
     # Time in seconds a player has to wait before being able to use the command again
     damage-cooldown: 10
   slack-link:
+    # Whether the Slack integration is enabled
     enabled: false
+    # Whether to require a Slack link to join the server
+    required: false
+    # Time in seconds after which the code will expire
+    link-code-expiration: 600
+    # The Slack bot token
     bot-token: ""
+    # The Slack app token
     app-token: ""
+    # The Slack channel ID to send Minecraft messages to and from
     channel-id: ""
+    # The base Slack command
     base-command: "minecraft"

@@ -20,6 +20,7 @@ dependencies {
     implementation("org.glassfish.tyrus.bundles:tyrus-standalone-client:1.19")
     implementation("org.slf4j:slf4j-simple:2.0.5")
     implementation("org.apache.commons:commons-text:1.10.0")
+    implementation("org.apache.commons:commons-collections4:4.4")
 
     compileOnly("com.frengor:ultimateadvancementapi:2.2.3")
     compileOnly("com.comphenix.protocol:ProtocolLib:5.0.0-SNAPSHOT")

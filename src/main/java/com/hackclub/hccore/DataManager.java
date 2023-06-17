@@ -14,7 +14,7 @@ public class DataManager {
 
   private final HCCorePlugin plugin;
   private final String dataFolder;
-  private final Map<UUID, PlayerData> players = new HashMap<>();
+  private final Map<UUID, PlayerData> onlinePlayers = new HashMap<>();
 
   public DataManager(HCCorePlugin plugin) {
     this.plugin = plugin;
@@ -29,15 +29,23 @@ public class DataManager {
   }
 
   public PlayerData getData(Player player) {
-    return this.players.get(player.getUniqueId());
+    return this.onlinePlayers.get(player.getUniqueId());
   }
-  public PlayerData getData(OfflinePlayer player) { return this.players.get(player.getUniqueId());}
+  public PlayerData getData(OfflinePlayer offlinePlayer) {
+    PlayerData data = this.onlinePlayers.get(offlinePlayer.getUniqueId());
+
+    if (data == null) {
+      data = new PlayerData(this.plugin, offlinePlayer);
+    }
+
+    return data;
+  }
   public PlayerData findData(Predicate<? super PlayerData> predicate) {
-    return this.players.values().stream().filter(predicate).findFirst().orElse(null);
+    return this.onlinePlayers.values().stream().filter(predicate).findFirst().orElse(null);
   }
 
   public void registerPlayer(Player player) {
-    this.players.put(player.getUniqueId(), new PlayerData(this.plugin, player));
+    this.onlinePlayers.put(player.getUniqueId(), new PlayerData(this.plugin, player));
 
     // Register player's team
     Scoreboard mainScoreboard = player.getServer().getScoreboardManager().getMainScoreboard();
@@ -65,7 +73,7 @@ public class DataManager {
 
     this.getData(player).getTeam().unregister();
 
-    this.players.remove(player.getUniqueId());
+    this.onlinePlayers.remove(player.getUniqueId());
   }
 
   public void unregisterAll() {
