@@ -11,6 +11,7 @@ import com.hackclub.hccore.playerMessages.WelcomeMessage;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.BanEntry;
 import org.bukkit.BanList.Type;
@@ -115,7 +116,12 @@ public class PlayerListener implements Listener {
                         + code).color(NamedTextColor.GOLD))
                     .append(text(
                         " in the #minecraft channel in the Slack (https://slack.hackclub.com) to link your account."))
-                    .color(NamedTextColor.WHITE)));
+                    .color(NamedTextColor.WHITE)).appendNewline().appendNewline().append(
+                text("This code will expire after ").append(text(
+                        this.plugin.getConfig()
+                            .getInt("settings.slack-link.link-code-expiration", 60 * 10) + " seconds"))
+                    .append(text(".")).color(NamedTextColor.WHITE).decorate(
+                        TextDecoration.ITALIC)));
         return;
       }
     }
