@@ -552,7 +552,12 @@ public class SlackBot implements Listener {
 
   public String generateVerificationCode(UUID mcUuid) {
     if (mcLinkCodes.containsKey(mcUuid)) {
-      return mcLinkCodes.get(mcUuid);
+      // refresh the time to live of the code
+      String code = mcLinkCodes.get(mcUuid);
+      mcLinkCodes.remove(mcUuid);
+      mcLinkCodes.put(mcUuid, code);
+
+      return code;
     } else {
       String code = UUID.randomUUID().toString().substring(0, 6);
       mcLinkCodes.put(mcUuid, code);
