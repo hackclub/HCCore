@@ -10,6 +10,7 @@ settings:
     damage-cooldown: 10
   slack-link:
     enabled: false
+    required: false
     bot-token: ""
     app-token: ""
     channel-id: ""

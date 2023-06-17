@@ -98,16 +98,26 @@ public class PlayerListener implements Listener {
     this.plugin.getDataManager().registerPlayer(player);
     PlayerData data = this.plugin.getDataManager().getData(player);
 
-    // Check for slack link
-    if (data == null || data.getSlackId() == null) {
-      this.plugin.getLogger().info("Kicking " + player.getName() + " because they are not linked");
-      String code = this.plugin.getSlackBot().generateVerificationCode(player.getUniqueId().toString());
-      player.kick(text("You must link your Slack account to join the server!").color(RED)
-          .decorate(BOLD).appendNewline().appendNewline().append(
-              text("Please run ").color(NamedTextColor.WHITE)
-                  .append(text("/" + this.plugin.getConfig().get("settings.slack-link.base-command", "minecraft") + " link " + code).color(NamedTextColor.GOLD))
-                  .append(text(" in the #minecraft channel in the Slack (https://slack.hackclub.com) to link your account.")).color(NamedTextColor.WHITE)));
-      return;
+    // Check if slack link is enabled & required
+    if (this.plugin.getConfig().get("settings.slack-link.enabled", false).equals(true)
+        && this.plugin.getConfig().get("settings.slack-link.required", false).equals(true)) {
+      // Check for slack link
+      if (data == null || data.getSlackId() == null) {
+        this.plugin.getLogger()
+            .info("Kicking " + player.getName() + " because they are not linked");
+        String code = this.plugin.getSlackBot()
+            .generateVerificationCode(player.getUniqueId().toString());
+        player.kick(text("You must link your Slack account to join the server!").color(RED)
+            .decorate(BOLD).appendNewline().appendNewline().append(
+                text("Please run ").color(NamedTextColor.WHITE)
+                    .append(text("/" + this.plugin.getConfig()
+                        .get("settings.slack-link.base-command", "minecraft") + " link "
+                        + code).color(NamedTextColor.GOLD))
+                    .append(text(
+                        " in the #minecraft channel in the Slack (https://slack.hackclub.com) to link your account."))
+                    .color(NamedTextColor.WHITE)));
+        return;
+      }
     }
 
     // Set the initial active time
