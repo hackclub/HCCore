@@ -106,7 +106,7 @@ public class PlayerListener implements Listener {
           .decorate(BOLD).appendNewline().appendNewline().append(
               text("Please run ").color(NamedTextColor.WHITE)
                   .append(text("/" + this.plugin.getConfig().get("settings.slack-link.base-command", "minecraft") + " link " + code).color(NamedTextColor.GOLD))
-                  .append(text(" in the #minecraft channel in the Slack to link your account.")).color(NamedTextColor.WHITE)));
+                  .append(text(" in the #minecraft channel in the Slack (https://slack.hackclub.com) to link your account.")).color(NamedTextColor.WHITE)));
       return;
     }
 
