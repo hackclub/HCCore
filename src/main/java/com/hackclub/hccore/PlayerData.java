@@ -65,15 +65,15 @@ public class PlayerData {
   }
 
   public void setAfk(boolean afk) {
-    this.isAfk = afk;
-    this.updateDisplayedName();
-
-    TextColor newColor = afk ? NamedTextColor.GRAY : this.getNameColor();
-    String newSuffix = afk ? " (AFK)" : "";
-    this.getTeam().color(NamedTextColor.nearestTo(newColor));
-    this.getTeam().suffix(Component.text(newSuffix).color(newColor));
-
     if (this.player != null) {
+      this.isAfk = afk;
+      this.updateDisplayedName();
+
+      TextColor newColor = afk ? NamedTextColor.GRAY : this.getNameColor();
+      String newSuffix = afk ? " (AFK)" : "";
+      this.getTeam().color(NamedTextColor.nearestTo(newColor));
+      this.getTeam().suffix(Component.text(newSuffix).color(newColor));
+
       Event event = new PlayerAFKStatusChangeEvent(this.player, afk);
       this.player.getServer().getPluginManager().callEvent(event);
     }

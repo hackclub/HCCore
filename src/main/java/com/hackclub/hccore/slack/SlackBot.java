@@ -298,7 +298,7 @@ public class SlackBot implements Listener {
 
                   // TODO: Make this message better to include rules and such
                   context.getSource().getContext().respond(
-                      "Successfully linked your minecraft account to your slack account! You may now join the server");
+                      "Successfully linked your minecraft account to your slack account! You may now join the server.");
 
                 }
                 return 1;
