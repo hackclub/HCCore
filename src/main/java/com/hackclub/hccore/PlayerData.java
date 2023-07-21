@@ -111,8 +111,12 @@ public class PlayerData {
 
     // Team#addEntry takes in a string, which in our case, will be a player name. We have to
     // remove the old name and add the new one so the game has a reference to the player.
-    this.getTeam().removeEntry(oldName);
-    this.getTeam().addEntry(this.getUsableName());
+    Team team = this.getTeam();
+    if (team != null) { // is null during pre-login event
+      team.removeEntry(oldName);
+      team.addEntry(this.getUsableName());
+    }
+
   }
 
   @SuppressWarnings("unused")
@@ -132,7 +136,10 @@ public class PlayerData {
     this.nameColor = (color != null) ? color : NamedTextColor.WHITE;
     this.updateDisplayedName();
 
-    this.getTeam().color(NamedTextColor.nearestTo(this.getNameColor()));
+    Team team = this.getTeam();
+    if (team != null) { // is null during pre-login event
+      team.color(NamedTextColor.nearestTo(this.getNameColor()));
+    }
   }
 
   public TextColor getMessageColor() {

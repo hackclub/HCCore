@@ -1,20 +1,26 @@
 package com.hackclub.hccore.listeners;
 
+import static net.kyori.adventure.text.Component.empty;
 import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.format.NamedTextColor.GOLD;
 import static net.kyori.adventure.text.format.NamedTextColor.RED;
+import static net.kyori.adventure.text.format.NamedTextColor.WHITE;
+import static net.kyori.adventure.text.format.Style.style;
 import static net.kyori.adventure.text.format.TextDecoration.BOLD;
+import static net.kyori.adventure.text.format.TextDecoration.ITALIC;
 import static net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand;
 
 import com.hackclub.hccore.HCCorePlugin;
 import com.hackclub.hccore.PlayerData;
 import com.hackclub.hccore.playerMessages.WelcomeMessage;
+import java.util.UUID;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
-import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.BanEntry;
 import org.bukkit.BanList.Type;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -22,6 +28,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerKickEvent.Cause;
@@ -81,7 +89,7 @@ public class PlayerListener implements Listener {
         net.kyori.adventure.text.event.HoverEvent.showEntity(player.getType(), player.getUniqueId(),
             player.name()));
 
-    Component arrowComponent = text(" » ").color(NamedTextColor.GOLD);
+    Component arrowComponent = text(" » ").color(GOLD);
 
     Component chatMsgComponent = text().color(messageColor)
         .append(legacyAmpersand().deserialize(event.getMessage())).build();
@@ -93,48 +101,69 @@ public class PlayerListener implements Listener {
     // only remaining thing would be to replace formatting codes
   }
 
+  public static boolean isSlackJoinAllowed(PlayerData data) {
+    if (!HCCorePlugin.getPlugin(HCCorePlugin.class).getConfig()
+        .getBoolean("settings.slack-link.enabled", false)) {
+      return true;
+    }
+    if (!HCCorePlugin.getPlugin(HCCorePlugin.class).getConfig()
+        .getBoolean("settings.slack-link.required", false)) {
+      return true;
+    }
+    return data.getSlackId() != null;
+  }
+
+
   @EventHandler(priority = EventPriority.LOWEST) // Runs foremost
-  public void onPlayerJoin(final PlayerJoinEvent event) {
+  public void onPrePlayerLogin(final AsyncPlayerPreLoginEvent event) {
+    UUID playerUUID = event.getUniqueId();
+    PlayerData data = this.plugin.getDataManager()
+        .getData(Bukkit.getServer().getOfflinePlayer(playerUUID));
+    data.load();
+
+    if (!isSlackJoinAllowed(data)) {
+      // Check for slack link
+      this.plugin.getLogger()
+          .info("Preventing " + event.getName() + "'s join because they are not linked");
+      Component kickMessage = getSlackLinkMessage(playerUUID);
+      event.disallow(Result.KICK_WHITELIST, kickMessage);
+    }
+  }
+
+  public static Component getSlackLinkMessage(UUID playerUUID) {
+    String code = HCCorePlugin.getPlugin(HCCorePlugin.class).getSlackBot()
+        .generateVerificationCode(playerUUID);
+    int codeExpires = HCCorePlugin.getPlugin(HCCorePlugin.class).getConfig()
+        .getInt("settings.slack-link.link-code-expiration", 60 * 10);
+    String slackLinkCommand =
+        HCCorePlugin.getInstance().getConfig().get("settings.slack-link.base-command", "minecraft")
+            + " link " + code;
+    return
+        empty().append(text("You must link your Slack account to join the server!",
+                style(RED, BOLD))).appendNewline().appendNewline().append(
+                text("Please run ", WHITE).append(text("/" + slackLinkCommand, GOLD))
+                    .append(text(
+                        " in the #minecraft channel in the Slack (https://slack.hackclub.com) to link your account.",
+                        WHITE)))
+            .appendNewline()
+            .append(text("This code expires in ", style(WHITE, ITALIC)).append(
+                text(codeExpires + " seconds.")));
+  }
+
+  @EventHandler(priority = EventPriority.MONITOR)
+  public void onJoin(final PlayerJoinEvent event) {
     Player player = event.getPlayer();
     this.plugin.getDataManager().registerPlayer(player);
-    PlayerData data = this.plugin.getDataManager().getData(player);
-
-    // Check if slack link is enabled & required
-    if (this.plugin.getConfig().getBoolean("settings.slack-link.enabled", false)
-        && this.plugin.getConfig().getBoolean("settings.slack-link.required", false)) {
-      // Check for slack link
-      if (data == null || data.getSlackId() == null) {
-        this.plugin.getLogger()
-            .info("Kicking " + player.getName() + " because they are not linked");
-        String code = this.plugin.getSlackBot()
-            .generateVerificationCode(player.getUniqueId());
-        player.kick(text("You must link your Slack account to join the server!").color(RED)
-            .decorate(BOLD).appendNewline().appendNewline().append(
-                text("Please run ").color(NamedTextColor.WHITE)
-                    .append(text("/" + this.plugin.getConfig()
-                        .get("settings.slack-link.base-command", "minecraft") + " link "
-                        + code).color(NamedTextColor.GOLD))
-                    .append(text(
-                        " in the #minecraft channel in the Slack (https://slack.hackclub.com) to link your account."))
-                    .color(NamedTextColor.WHITE)).appendNewline().appendNewline().append(
-                text("This code will expire after ").append(text(
-                        this.plugin.getConfig()
-                            .getInt("settings.slack-link.link-code-expiration", 60 * 10) + " seconds"))
-                    .append(text(".")).color(NamedTextColor.WHITE).decorate(
-                        TextDecoration.ITALIC)));
-        return;
-      }
-    }
-
-    // Set the initial active time
     this.plugin.getDataManager().getData(player)
         .setLastActiveAt(System.currentTimeMillis());
 
     // NOTE: Title isn't cleared when the player leaves the server
     player.clearTitle();
-    event.joinMessage(player.displayName().color(NamedTextColor.YELLOW).appendSpace()
-        .append(text("joined the game")));
-    plugin.advancementTab.showTab(event.getPlayer());
+    event.joinMessage(
+        player.displayName().hoverEvent(event.getPlayer()).color(NamedTextColor.YELLOW)
+            .appendSpace()
+            .append(text("joined the game")));
+    plugin.advancementTab.showTab(player);
   }
 
   @EventHandler
@@ -148,8 +177,7 @@ public class PlayerListener implements Listener {
 
   @EventHandler(priority = EventPriority.HIGHEST)
   public void onFailedLogin(final PlayerLoginEvent event) {
-    if (event.getResult() == PlayerLoginEvent.Result.ALLOWED
-        || event.getResult() == PlayerLoginEvent.Result.KICK_OTHER) {
+    if (event.getResult() == PlayerLoginEvent.Result.ALLOWED) {
       return;
     }
 
@@ -160,9 +188,7 @@ public class PlayerListener implements Listener {
           .decorate(BOLD).appendNewline().appendNewline().append(
               text(
                   "Sorry, it looks like there’s no more room. Please try again in ~20 minutes.").color(
-                  NamedTextColor.WHITE));
-      case KICK_WHITELIST -> message = text("You're not whitelisted!").color(RED)
-          .decorate(BOLD);
+                  WHITE));
       default -> message = event.kickMessage();
     }
     event.kickMessage(message);
@@ -190,8 +216,10 @@ public class PlayerListener implements Listener {
   public void onPlayerQuit(final PlayerQuitEvent event) {
     // NOTE: Title isn't cleared when the player leaves the server
     // event.getPlayer().resetTitle();
-    event.quitMessage(event.getPlayer().displayName().color(NamedTextColor.YELLOW).appendSpace()
-        .append(text("left the game")));
+    event.quitMessage(
+        event.getPlayer().displayName().hoverEvent(event.getPlayer()).color(NamedTextColor.YELLOW)
+            .appendSpace()
+            .append(text("left the game")));
 
     this.plugin.getDataManager().unregisterPlayer(event.getPlayer());
   }
@@ -218,9 +246,9 @@ public class PlayerListener implements Listener {
     return text("You've been banned for" + reason + " :(")
         .color(RED).decorate(
             BOLD).appendNewline().appendNewline().append(
-            text("If you would like to appeal, please DM ").color(NamedTextColor.WHITE)).append(
+            text("If you would like to appeal, please DM ").color(WHITE)).append(
             text("a Minecraft server admin (minecrafters team) ")
                 .color(NamedTextColor.AQUA))
-        .append(text("on Slack.").color(NamedTextColor.WHITE));
+        .append(text("on Slack.").color(WHITE));
   }
 }
