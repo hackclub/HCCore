@@ -1,10 +1,13 @@
 package com.hackclub.hccore.listeners;
 
+import static net.kyori.adventure.text.Component.empty;
 import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.format.NamedTextColor.GOLD;
 import static net.kyori.adventure.text.format.NamedTextColor.RED;
+import static net.kyori.adventure.text.format.NamedTextColor.WHITE;
 import static net.kyori.adventure.text.format.Style.style;
 import static net.kyori.adventure.text.format.TextDecoration.BOLD;
+import static net.kyori.adventure.text.format.TextDecoration.ITALIC;
 import static net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand;
 
 import com.hackclub.hccore.HCCorePlugin;
@@ -14,7 +17,6 @@ import java.util.UUID;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
-import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.BanEntry;
 import org.bukkit.BanList.Type;
@@ -131,21 +133,21 @@ public class PlayerListener implements Listener {
   public static Component getSlackLinkMessage(UUID playerUUID) {
     String code = HCCorePlugin.getPlugin(HCCorePlugin.class).getSlackBot()
         .generateVerificationCode(playerUUID);
+    int codeExpires = HCCorePlugin.getPlugin(HCCorePlugin.class).getConfig()
+        .getInt("settings.slack-link.link-code-expiration", 60 * 10);
+    String slackLinkCommand =
+        HCCorePlugin.getInstance().getConfig().get("settings.slack-link.base-command", "minecraft")
+            + " link " + code;
     return
-        text("You must link your Slack account to join the server!",
-            style(RED, BOLD)).appendNewline().appendNewline().append(
-            text("Please run ").color(NamedTextColor.WHITE)
-                .append(text("/" + HCCorePlugin.getPlugin(HCCorePlugin.class).getConfig()
-                    .get("settings.slack-link.base-command", "minecraft") + " link "
-                    + code, style(GOLD)))
-                .append(text(
-                    " in the #minecraft channel in the Slack (https://slack.hackclub.com) to link your account."))
-                .color(NamedTextColor.WHITE)).appendNewline().appendNewline().append(
-            text("This code will expire after ").append(text(
-                    HCCorePlugin.getPlugin(HCCorePlugin.class).getConfig()
-                        .getInt("settings.slack-link.link-code-expiration", 60 * 10) + " seconds"))
-                .append(text(".")).color(NamedTextColor.WHITE).decorate(
-                    TextDecoration.ITALIC));
+        empty().append(text("You must link your Slack account to join the server!",
+                style(RED, BOLD))).appendNewline().appendNewline().append(
+                text("Please run ", WHITE).append(text("/" + slackLinkCommand, GOLD))
+                    .append(text(
+                        " in the #minecraft channel in the Slack (https://slack.hackclub.com) to link your account.",
+                        WHITE)))
+            .appendNewline()
+            .append(text("This code expires in ", style(WHITE, ITALIC)).append(
+                text(codeExpires + " seconds.")));
   }
 
   @EventHandler(priority = EventPriority.MONITOR)
@@ -186,7 +188,7 @@ public class PlayerListener implements Listener {
           .decorate(BOLD).appendNewline().appendNewline().append(
               text(
                   "Sorry, it looks like there’s no more room. Please try again in ~20 minutes.").color(
-                  NamedTextColor.WHITE));
+                  WHITE));
       default -> message = event.kickMessage();
     }
     event.kickMessage(message);
@@ -244,9 +246,9 @@ public class PlayerListener implements Listener {
     return text("You've been banned for" + reason + " :(")
         .color(RED).decorate(
             BOLD).appendNewline().appendNewline().append(
-            text("If you would like to appeal, please DM ").color(NamedTextColor.WHITE)).append(
+            text("If you would like to appeal, please DM ").color(WHITE)).append(
             text("a Minecraft server admin (minecrafters team) ")
                 .color(NamedTextColor.AQUA))
-        .append(text("on Slack.").color(NamedTextColor.WHITE));
+        .append(text("on Slack.").color(WHITE));
   }
 }
