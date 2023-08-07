@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/HCCore.iml" filepath="$PROJECT_DIR$/.idea/modules/HCCore.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.hackclub.hccore.HCCore.main.iml" filepath="$PROJECT_DIR$/.idea/modules/com.hackclub.hccore.HCCore.main.iml" />
     </modules>
   </component>
 </project>
