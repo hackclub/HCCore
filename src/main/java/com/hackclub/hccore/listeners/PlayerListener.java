@@ -247,7 +247,7 @@ public class PlayerListener implements Listener {
         .color(RED).decorate(
             BOLD).appendNewline().appendNewline().append(
             text("If you would like to appeal, please DM ").color(WHITE)).append(
-            text("a Minecraft server admin (minecrafters team) ")
+            text("a Minecraft server admin (@minecraft-admins user group) ")
                 .color(NamedTextColor.AQUA))
         .append(text("on Slack.").color(WHITE));
   }
