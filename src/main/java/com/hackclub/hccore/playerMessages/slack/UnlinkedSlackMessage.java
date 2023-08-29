@@ -1,4 +1,4 @@
-package com.hackclub.hccore.playerMessages;
+package com.hackclub.hccore.playerMessages.slack;
 
 import static net.kyori.adventure.text.minimessage.MiniMessage.miniMessage;
 

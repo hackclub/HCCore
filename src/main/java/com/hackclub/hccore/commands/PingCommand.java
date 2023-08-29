@@ -1,10 +1,11 @@
 package com.hackclub.hccore.commands;
 
-import static net.kyori.adventure.text.Component.text;
-import static net.kyori.adventure.text.format.NamedTextColor.RED;
-
 import com.hackclub.hccore.HCCorePlugin;
 import com.hackclub.hccore.PlayerData;
+import com.hackclub.hccore.playerMessages.MustBePlayerMessage;
+import com.hackclub.hccore.playerMessages.NoOnlinePlayerMessage;
+import com.hackclub.hccore.playerMessages.ping.PingFailMessage;
+import com.hackclub.hccore.playerMessages.ping.PingMessage;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -29,18 +30,18 @@ public class PingCommand implements TabExecutor {
     // /ping
     if (args.length == 0) {
       if (!(sender instanceof Player player)) {
-        sender.sendMessage(text("You must be a player to use this").color(RED));
+        sender.sendMessage(MustBePlayerMessage.get());
         return true;
       }
 
       int ping = player.getPing();
       // Failed for some reason
       if (ping == -1) {
-        sender.sendMessage(text("Failed to get your ping").color(RED));
+        sender.sendMessage(PingFailMessage.get("your"));
         return true;
       }
 
-      sender.sendMessage("Your ping is " + ping + "ms");
+      sender.sendMessage(PingMessage.get("Your", ping));
       return true;
     }
 
@@ -51,14 +52,13 @@ public class PingCommand implements TabExecutor {
       int ping = targetPlayer.getPing();
       // Failed for some reason
       if (ping == -1) {
-        sender.sendMessage(text("Failed to get").color(RED).appendSpace()
-            .append(text(data.getUsableName()).append(text("’s ping"))));
+        sender.sendMessage(PingFailMessage.get(data.getUsableName() + "'s"));
         return true;
       }
 
-      sender.sendMessage(data.getUsableName() + "’s ping is " + ping + "ms");
+      sender.sendMessage(PingMessage.get(data.getUsableName() + "'s", ping));
     } else {
-      sender.sendMessage(text("No online player with that name was found").color(RED));
+      sender.sendMessage(NoOnlinePlayerMessage.get());
     }
 
     return true;

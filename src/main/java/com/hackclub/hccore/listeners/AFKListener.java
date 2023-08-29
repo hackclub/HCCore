@@ -3,12 +3,13 @@ package com.hackclub.hccore.listeners;
 import com.hackclub.hccore.HCCorePlugin;
 import com.hackclub.hccore.PlayerData;
 import com.hackclub.hccore.events.player.PlayerAFKStatusChangeEvent;
+import com.hackclub.hccore.playerMessages.afk.IsAFKMessage;
+import com.hackclub.hccore.playerMessages.afk.NotAFKMessage;
+import com.hackclub.hccore.playerMessages.afk.RunAFKMessage;
+import com.hackclub.hccore.playerMessages.afk.YouAFKMessage;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -27,9 +28,8 @@ public class AFKListener implements Listener {
   public AFKListener(HCCorePlugin plugin) {
     this.plugin = plugin;
 
-    this.afkTitle = Title.title(Component.text("You are AFK").color(
-            NamedTextColor.RED).decorate(TextDecoration.BOLD),
-        Component.text("Run /afk to mark yourself as active"), Title.Times.times(
+    this.afkTitle = Title.title(YouAFKMessage.get(),
+        RunAFKMessage.get(), Title.Times.times(
             Duration.of(500, ChronoUnit.MILLIS), Duration.of(12, ChronoUnit.HOURS),
             Duration.of(1, ChronoUnit.SECONDS)));
   }
@@ -41,10 +41,10 @@ public class AFKListener implements Listener {
 
     if (event.getNewValue()) {
       player.showTitle(afkTitle);
-      player.getServer().broadcast(Component.text(data.getUsableName() + " is now AFK"));
+      player.getServer().broadcast(IsAFKMessage.get(data.getUsableName(), data.getNameColor()));
     } else {
       player.clearTitle();
-      player.getServer().broadcast(Component.text(data.getUsableName() + " is no longer AFK"));
+      player.getServer().broadcast(NotAFKMessage.get(data.getUsableName(), data.getNameColor()));
     }
   }
 
