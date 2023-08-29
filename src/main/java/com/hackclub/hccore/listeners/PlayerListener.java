@@ -84,7 +84,7 @@ public class PlayerListener implements Listener {
         net.kyori.adventure.text.event.HoverEvent.showEntity(player.getType(), player.getUniqueId(),
             player.name()));
 
-    this.plugin.getServer().broadcast(ChatMessage.get(nameComponent, event.getMessage()));
+    this.plugin.getServer().broadcast(ChatMessage.get(nameComponent, event.getMessage(), messageColor));
 
     // TODO: find out how to do chat without cancelling the event
     // it seems that the new event, AsyncChatEvent takes / receives direct components
