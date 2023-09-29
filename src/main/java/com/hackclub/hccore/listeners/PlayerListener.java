@@ -1,25 +1,20 @@
 package com.hackclub.hccore.listeners;
 
-import static net.kyori.adventure.text.Component.empty;
 import static net.kyori.adventure.text.Component.text;
-import static net.kyori.adventure.text.format.NamedTextColor.GOLD;
-import static net.kyori.adventure.text.format.NamedTextColor.RED;
-import static net.kyori.adventure.text.format.NamedTextColor.WHITE;
-import static net.kyori.adventure.text.format.Style.style;
-import static net.kyori.adventure.text.format.TextDecoration.BOLD;
-import static net.kyori.adventure.text.format.TextDecoration.ITALIC;
-import static net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand;
 
 import com.hackclub.hccore.HCCorePlugin;
 import com.hackclub.hccore.PlayerData;
 import com.hackclub.hccore.playerMessages.WelcomeMessage;
+import com.hackclub.hccore.playerMessages.player.BanMessage;
+import com.hackclub.hccore.playerMessages.player.ChatMessage;
+import com.hackclub.hccore.playerMessages.player.JoinMessage;
+import com.hackclub.hccore.playerMessages.player.LeaveMessage;
+import com.hackclub.hccore.playerMessages.player.MustLinkMessage;
+import com.hackclub.hccore.playerMessages.player.ServerFullMessage;
 import java.util.UUID;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-import org.bukkit.BanEntry;
-import org.bukkit.BanList.Type;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -89,12 +84,7 @@ public class PlayerListener implements Listener {
         net.kyori.adventure.text.event.HoverEvent.showEntity(player.getType(), player.getUniqueId(),
             player.name()));
 
-    Component arrowComponent = text(" » ").color(GOLD);
-
-    Component chatMsgComponent = text().color(messageColor)
-        .append(legacyAmpersand().deserialize(event.getMessage())).build();
-    this.plugin.getServer().broadcast(
-        Component.empty().append(nameComponent).append(arrowComponent).append(chatMsgComponent));
+    this.plugin.getServer().broadcast(ChatMessage.get(nameComponent, event.getMessage(), messageColor));
 
     // TODO: find out how to do chat without cancelling the event
     // it seems that the new event, AsyncChatEvent takes / receives direct components
@@ -135,19 +125,9 @@ public class PlayerListener implements Listener {
         .generateVerificationCode(playerUUID);
     int codeExpires = HCCorePlugin.getPlugin(HCCorePlugin.class).getConfig()
         .getInt("settings.slack-link.link-code-expiration", 60 * 10);
-    String slackLinkCommand =
-        HCCorePlugin.getInstance().getConfig().get("settings.slack-link.base-command", "minecraft")
-            + " link " + code;
-    return
-        empty().append(text("You must link your Slack account to join the server!",
-                style(RED, BOLD))).appendNewline().appendNewline().append(
-                text("Please run ", WHITE).append(text("/" + slackLinkCommand, GOLD))
-                    .append(text(
-                        " in the #minecraft channel in the Slack (https://slack.hackclub.com) to link your account.",
-                        WHITE)))
-            .appendNewline()
-            .append(text("This code expires in ", style(WHITE, ITALIC)).append(
-                text(codeExpires + " seconds.")));
+    String baseCommand =
+        (String)HCCorePlugin.getInstance().getConfig().get("settings.slack-link.base-command", "minecraft");
+    return MustLinkMessage.get(baseCommand, code, codeExpires);
   }
 
   @EventHandler(priority = EventPriority.MONITOR)
@@ -160,9 +140,7 @@ public class PlayerListener implements Listener {
     // NOTE: Title isn't cleared when the player leaves the server
     player.clearTitle();
     event.joinMessage(
-        player.displayName().hoverEvent(event.getPlayer()).color(NamedTextColor.YELLOW)
-            .appendSpace()
-            .append(text("joined the game")));
+        JoinMessage.get(player.displayName().hoverEvent(event.getPlayer())));
     plugin.advancementTab.showTab(player);
   }
 
@@ -183,12 +161,8 @@ public class PlayerListener implements Listener {
 
     Component message;
     switch (event.getResult()) {
-      case KICK_BANNED -> message = this.getBanMessage(event.getPlayer().getUniqueId().toString());
-      case KICK_FULL -> message = text("The server is full!").color(RED)
-          .decorate(BOLD).appendNewline().appendNewline().append(
-              text(
-                  "Sorry, it looks like there’s no more room. Please try again in ~20 minutes.").color(
-                  WHITE));
+      case KICK_BANNED -> message = BanMessage.get(event.getPlayer().getUniqueId().toString());
+      case KICK_FULL -> message = ServerFullMessage.get();
       default -> message = event.kickMessage();
     }
     event.kickMessage(message);
@@ -198,7 +172,7 @@ public class PlayerListener implements Listener {
   public void onPlayerKick(final PlayerKickEvent event) {
     Component message;
     if (event.getCause() == Cause.BANNED) {
-      message = this.getBanMessage(event.getPlayer().getUniqueId().toString());
+      message = BanMessage.get(event.getPlayer().getUniqueId().toString());
     } else {
       message = event.reason();
     }
@@ -217,38 +191,9 @@ public class PlayerListener implements Listener {
     // NOTE: Title isn't cleared when the player leaves the server
     // event.getPlayer().resetTitle();
     event.quitMessage(
-        event.getPlayer().displayName().hoverEvent(event.getPlayer()).color(NamedTextColor.YELLOW)
-            .appendSpace()
-            .append(text("left the game")));
+        LeaveMessage.get(
+            event.getPlayer().displayName().hoverEvent(event.getPlayer())));
 
     this.plugin.getDataManager().unregisterPlayer(event.getPlayer());
-  }
-
-  private Component getBanMessage(String uuid) {
-    BanEntry banEntry = this.plugin.getServer().getBanList(Type.NAME)
-        .getBanEntry(uuid);
-    String reason;
-    if (banEntry != null) {
-      reason = banEntry.getReason();
-      if (reason != null) {
-        if (!reason.equals("Banned by an operator.")) {
-          reason = ": " + reason;
-        } else {
-          reason = " no specified reason";
-        }
-      } else {
-        reason = " no specified reason";
-      }
-    } else {
-      reason = " no specified reason";
-    }
-
-    return text("You've been banned for" + reason + " :(")
-        .color(RED).decorate(
-            BOLD).appendNewline().appendNewline().append(
-            text("If you would like to appeal, please DM ").color(WHITE)).append(
-            text("a Minecraft server admin (@minecraft-admins user group) ")
-                .color(NamedTextColor.AQUA))
-        .append(text("on Slack.").color(WHITE));
   }
 }

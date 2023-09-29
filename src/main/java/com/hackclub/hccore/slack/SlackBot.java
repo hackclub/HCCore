@@ -13,6 +13,9 @@ import com.fren_gor.ultimateAdvancementAPI.util.AdvancementKey;
 import com.hackclub.hccore.HCCorePlugin;
 import com.hackclub.hccore.PlayerData;
 import com.hackclub.hccore.events.player.PlayerAFKStatusChangeEvent;
+import com.hackclub.hccore.playerMessages.slack.AccountLinkedMessage;
+import com.hackclub.hccore.playerMessages.slack.LinkDeniedMessage;
+import com.hackclub.hccore.playerMessages.slack.SlackChatMessage;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -46,10 +49,9 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-import org.apache.commons.text.StringEscapeUtils;
 import org.apache.commons.collections4.map.PassiveExpiringMap;
+import org.apache.commons.text.StringEscapeUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.entity.Player;
@@ -82,7 +84,8 @@ public class SlackBot implements Listener {
     this.plugin = plugin;
     App app = new App(AppConfig.builder().singleTeamBotToken(getBotToken()).build());
     commandBase = plugin.getConfig().getString("settings.slack-link.base-command", "minecraft");
-    mcLinkCodes = new PassiveExpiringMap<>(plugin.getConfig().getLong("settings.slack-link.link-code-expiration", 60 * 10) * 1000);
+    mcLinkCodes = new PassiveExpiringMap<>(
+        plugin.getConfig().getLong("settings.slack-link.link-code-expiration", 60 * 10) * 1000);
 
     Pattern sdk = Pattern.compile(".*");
     app.message(sdk, (payload, ctx) -> {
@@ -98,18 +101,10 @@ public class SlackBot implements Listener {
           .usersProfileGet(r -> r.token(ctx.getBotToken()).user(userId));
       String displayName = result.getProfile().getDisplayName();
 
-      TextComponent prefixComponent = Component.text("[Slack] ").color(NamedTextColor.BLUE);
-
       TextComponent nameComponent = Component.text(displayName).color(NamedTextColor.WHITE)
           .hoverEvent(Component.text(result.getProfile().getRealName()));
 
-      TextComponent arrowComponent = Component.text(" » ").color(NamedTextColor.GOLD);
-
-      TextComponent playerChatComponent = Component.text(
-          ChatColor.translateAlternateColorCodes('&', text)).color(NamedTextColor.GRAY);
-
-      plugin.getServer().broadcast(
-          prefixComponent.append(nameComponent).append(arrowComponent).append(playerChatComponent));
+      plugin.getServer().broadcast(SlackChatMessage.get(nameComponent, text));
 
       return ctx.ack();
     });
@@ -137,8 +132,7 @@ public class SlackBot implements Listener {
             r -> r.token(ctx.getBotToken()).channel(channelId).threadTs(messageTs)
                 .text("Your accounts have been linked!"));
         if (player.isOnline()) {
-          player.getPlayer().sendMessage(
-              Component.text("Your accounts have been linked!").color(NamedTextColor.GREEN));
+          player.getPlayer().sendMessage(AccountLinkedMessage.get());
         }
       } catch (IOException | SlackApiException e) {
         e.printStackTrace();
@@ -169,9 +163,7 @@ public class SlackBot implements Listener {
                 .text("Denied link request"));
 
         if (player.isOnline()) {
-          player.getPlayer().sendMessage(
-              Component.text("The request to link the account was denied")
-                  .color(NamedTextColor.RED));
+          player.getPlayer().sendMessage(LinkDeniedMessage.get());
         }
       } catch (IOException | SlackApiException e) {
         e.printStackTrace();
@@ -261,65 +253,67 @@ public class SlackBot implements Listener {
                   }
                   return 1;
                 }))
-            .then(LiteralArgumentBuilder.<SlashCommandRequest>literal("link").then(RequiredArgumentBuilder.<SlashCommandRequest, String>argument("code",
-                StringArgumentType.greedyString()).executes(context -> {
-              String code = StringArgumentType.getString(context, "code");
-              UUID mcUuid = null;
+            .then(LiteralArgumentBuilder.<SlashCommandRequest>literal("link")
+                .then(RequiredArgumentBuilder.<SlashCommandRequest, String>argument("code",
+                    StringArgumentType.greedyString()).executes(context -> {
+                  String code = StringArgumentType.getString(context, "code");
+                  UUID mcUuid = null;
 
-              for (Entry<UUID, String> entry : mcLinkCodes.entrySet()) {
-                if (Objects.equals(code, entry.getValue())) {
-                  mcUuid = entry.getKey();
-                  break;
-                }
-              }
-
-              try {
-                if (mcUuid == null) {
-                  context.getSource().getContext().respond("Invalid code");
-                } else {
-                  OfflinePlayer player = Bukkit.getOfflinePlayer(mcUuid);
-                  PlayerData data = this.plugin.getDataManager().getData(player);
-
-                  if (data == null) {
-                    context.getSource().getContext().respond(
-                        "Error: this player has not yet logged in");
-                    return 1;
+                  for (Entry<UUID, String> entry : mcLinkCodes.entrySet()) {
+                    if (Objects.equals(code, entry.getValue())) {
+                      mcUuid = entry.getKey();
+                      break;
+                    }
                   }
 
-                  if (data.getSlackId() != null) {
-                    context.getSource().getContext().respond(
-                        "This minecraft account is already linked to %s".formatted(
-                            data.getUsableName()));
+                  try {
+                    if (mcUuid == null) {
+                      context.getSource().getContext().respond("Invalid code");
+                    } else {
+                      OfflinePlayer player = Bukkit.getOfflinePlayer(mcUuid);
+                      PlayerData data = this.plugin.getDataManager().getData(player);
+
+                      if (data == null) {
+                        context.getSource().getContext().respond(
+                            "Error: this player has not yet logged in");
+                        return 1;
+                      }
+
+                      if (data.getSlackId() != null) {
+                        context.getSource().getContext().respond(
+                            "This minecraft account is already linked to %s".formatted(
+                                data.getUsableName()));
+                        return 1;
+                      }
+
+                      data.setSlackId(context.getSource().getContext().getRequestUserId());
+                      data.save();
+                      mcLinkCodes.remove(mcUuid);
+
+                      // TODO: Make this message better to include rules and such
+                      context.getSource().getContext().respond(
+                          "Successfully linked your minecraft account to your slack account! You may now join the server. Don't forget to read the server info and rules in the Canvas in the #minecraft channel!");
+
+                    }
                     return 1;
+                  } catch (IOException e) {
+                    e.printStackTrace();
                   }
 
-                  data.setSlackId(context.getSource().getContext().getRequestUserId());
-                  data.save();
-                  mcLinkCodes.remove(mcUuid);
-
-                  // TODO: Make this message better to include rules and such
-                  context.getSource().getContext().respond(
-                      "Successfully linked your minecraft account to your slack account! You may now join the server.");
-
-                }
-                return 1;
-              } catch (IOException e) {
-                e.printStackTrace();
-              }
-
-              return 1;
-            })).executes(context -> {
-              try {
-                List<String> usage = Arrays.asList(dispatcher.getAllUsage(dispatcher.getRoot(), null,
-                    false));
-                context.getSource().getContext()
-                    .respond("No arguments given\nPossible commands:\n%s".formatted(
-                        usage.stream().reduce((s, s2) -> s + "\n" + s2).orElse("")));
-              } catch (IOException e) {
-                e.printStackTrace();
-              }
-              return 1;
-            })));
+                  return 1;
+                })).executes(context -> {
+                  try {
+                    List<String> usage = Arrays.asList(
+                        dispatcher.getAllUsage(dispatcher.getRoot(), null,
+                            false));
+                    context.getSource().getContext()
+                        .respond("No arguments given\nPossible commands:\n%s".formatted(
+                            usage.stream().reduce((s, s2) -> s + "\n" + s2).orElse("")));
+                  } catch (IOException e) {
+                    e.printStackTrace();
+                  }
+                  return 1;
+                })));
 
     app.command("/%s".formatted(commandBase), ((slashCommandRequest, ctx) -> {
       String command = slashCommandRequest.getPayload().getCommand() + (

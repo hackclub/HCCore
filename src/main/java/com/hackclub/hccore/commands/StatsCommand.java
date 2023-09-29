@@ -1,10 +1,15 @@
 package com.hackclub.hccore.commands;
 
-import static net.kyori.adventure.text.Component.text;
-import static net.kyori.adventure.text.format.NamedTextColor.RED;
-
 import com.hackclub.hccore.HCCorePlugin;
 import com.hackclub.hccore.PlayerData;
+import com.hackclub.hccore.playerMessages.MustBePlayerMessage;
+import com.hackclub.hccore.playerMessages.NoOnlinePlayerMessage;
+import com.hackclub.hccore.playerMessages.stats.IncludePlayerStatMessage;
+import com.hackclub.hccore.playerMessages.stats.InvalidStatMessage;
+import com.hackclub.hccore.playerMessages.stats.SpecificStatMessage;
+import com.hackclub.hccore.playerMessages.stats.StatMessage;
+import com.hackclub.hccore.playerMessages.stats.UnsupportedStatMessage;
+import com.hackclub.hccore.playerMessages.stats.YourStatsMessage;
 import com.hackclub.hccore.utils.TimeUtil;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -40,10 +45,10 @@ public class StatsCommand implements TabExecutor {
     // /stats
     if (args.length == 0) {
       if (sender instanceof Player) {
-        sender.sendMessage("Your stats:");
+        sender.sendMessage(YourStatsMessage.get("Your"));
         this.sendStatistics(sender, (Player) sender, false);
       } else {
-        sender.sendMessage(text("You must be a player to use this").color(RED));
+        sender.sendMessage(MustBePlayerMessage.get());
       }
       return true;
     }
@@ -54,28 +59,26 @@ public class StatsCommand implements TabExecutor {
             extended = true;
         case "only" -> { // /stats <player> only <statistic>
           if (args.length < 3) {
-            sender.sendMessage(
-                text("You must include both a player and statistic name").color(RED));
+            sender.sendMessage(IncludePlayerStatMessage.get());
             return true;
           }
           if (!STATISTIC_NAMES.contains(args[2].toLowerCase())) {
-            sender.sendMessage(text("Not a valid statistic").color(RED));
+            sender.sendMessage(InvalidStatMessage.get());
             return true;
           }
           Statistic specificStat = Statistic.valueOf(args[2].toUpperCase());
           if (specificStat.isSubstatistic()) {
-            sender.sendMessage(text("This statistic is not currently supported").color(RED));
+            sender.sendMessage(UnsupportedStatMessage.get());
             // TODO support it(?)
             return true;
           }
           Player player = sender.getServer().getPlayerExact(args[0]);
           if (player != null) {
             PlayerData data = this.plugin.getDataManager().getData(player);
-            sender.sendMessage(text(data.getUsableName()).append(text("’s")).appendSpace()
-                .append(text(args[2].toLowerCase())).appendSpace().append(text("statistic:"))
-                .appendSpace().append(text(player.getStatistic(specificStat))));
+            sender.sendMessage(SpecificStatMessage.get(data.getUsableName(), args[2].toLowerCase(),
+                String.valueOf(player.getStatistic(specificStat))));
           } else {
-            sender.sendMessage(text("No online player with that name was found").color(RED));
+            sender.sendMessage(NoOnlinePlayerMessage.get());
           }
           return true;
         }
@@ -89,10 +92,10 @@ public class StatsCommand implements TabExecutor {
     Player targetPlayer = sender.getServer().getPlayerExact(args[0]);
     if (targetPlayer != null) {
       PlayerData data = this.plugin.getDataManager().getData(targetPlayer);
-      sender.sendMessage(data.getUsableName() + "’s stats:");
+      sender.sendMessage(YourStatsMessage.get(data.getUsableName()));
       this.sendStatistics(sender, targetPlayer, extended);
     } else {
-      sender.sendMessage(text("No online player with that name was found").color(RED));
+      sender.sendMessage(NoOnlinePlayerMessage.get());
     }
 
     return true;
@@ -133,35 +136,48 @@ public class StatsCommand implements TabExecutor {
   }
 
   private void sendStatistics(CommandSender sender, Player player, Boolean extended) {
-    sender.sendMessage("- Deaths: " + player.getStatistic(Statistic.DEATHS));
-    sender.sendMessage("- Mob kills: " + player.getStatistic(Statistic.MOB_KILLS));
-    sender.sendMessage("- Player kills: " + player.getStatistic(Statistic.PLAYER_KILLS));
     sender.sendMessage(
-        "- Time played: " + TimeUtil.toPrettyTime(player.getStatistic(Statistic.PLAY_ONE_MINUTE)));
-    sender.sendMessage("- Time since last death: " + TimeUtil.toPrettyTime(
-        player.getStatistic(Statistic.TIME_SINCE_DEATH)));
+        StatMessage.get("Deaths", String.valueOf(player.getStatistic(Statistic.DEATHS))));
+    sender.sendMessage(
+        StatMessage.get("Mob kills", String.valueOf(player.getStatistic(Statistic.MOB_KILLS))));
+    sender.sendMessage(StatMessage.get("Player kills",
+        String.valueOf(player.getStatistic(Statistic.PLAYER_KILLS))));
+    sender.sendMessage(
+        StatMessage.get("Time played",
+            TimeUtil.toPrettyTime(player.getStatistic(Statistic.PLAY_ONE_MINUTE))));
+    sender.sendMessage(StatMessage.get("Time since last death", TimeUtil.toPrettyTime(
+        player.getStatistic(Statistic.TIME_SINCE_DEATH))));
 
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     sender.sendMessage(
-        "- Registered since: " + dateFormat.format(new Date(player.getFirstPlayed())));
+        StatMessage.get("Registered since", dateFormat.format(new Date(player.getFirstPlayed()))));
 
     if (extended) {
       sender.sendMessage(
-          "- Distance by elytra: " + toSIPrefix(player.getStatistic(Statistic.AVIATE_ONE_CM))
-              + "m");
+          StatMessage.get("Distance by elytra",
+              toSIPrefix(player.getStatistic(Statistic.AVIATE_ONE_CM))
+                  + "m"));
       sender.sendMessage(
-          "- Distance by minecart: " + toSIPrefix(player.getStatistic(Statistic.MINECART_ONE_CM))
-              + "m");
+          StatMessage.get("Distance by minecart",
+              toSIPrefix(player.getStatistic(Statistic.MINECART_ONE_CM))
+                  + "m"));
       sender.sendMessage(
-          "- Distance by horse: " + toSIPrefix(player.getStatistic(Statistic.HORSE_ONE_CM)) + "m");
+          StatMessage.get("Distance by horse",
+              toSIPrefix(player.getStatistic(Statistic.HORSE_ONE_CM)) + "m"));
       sender.sendMessage(
-          "- Distance walked: " + toSIPrefix(player.getStatistic(Statistic.WALK_ONE_CM)) + "m");
-      sender.sendMessage("- Damage taken: " + player.getStatistic(Statistic.DAMAGE_TAKEN));
-      sender.sendMessage("- Damage dealt: " + player.getStatistic(Statistic.DAMAGE_DEALT));
-      sender.sendMessage("- Times jumped: " + player.getStatistic(Statistic.JUMP));
-      sender.sendMessage("- Raids won: " + player.getStatistic(Statistic.RAID_WIN));
+          StatMessage.get("Distance walked",
+              toSIPrefix(player.getStatistic(Statistic.WALK_ONE_CM)) + "m"));
+      sender.sendMessage(StatMessage.get("Damage taken",
+          String.valueOf(player.getStatistic(Statistic.DAMAGE_TAKEN))));
+      sender.sendMessage(StatMessage.get("Damage dealt",
+          String.valueOf(player.getStatistic(Statistic.DAMAGE_DEALT))));
       sender.sendMessage(
-          "- Diamonds picked up: " + player.getStatistic(Statistic.PICKUP, Material.DIAMOND));
+          StatMessage.get("Times jumped", String.valueOf(player.getStatistic(Statistic.JUMP))));
+      sender.sendMessage(
+          StatMessage.get("Raids won", String.valueOf(player.getStatistic(Statistic.RAID_WIN))));
+      sender.sendMessage(
+          StatMessage.get("Diamonds picked up",
+              String.valueOf(player.getStatistic(Statistic.PICKUP, Material.DIAMOND))));
     }
   }
 

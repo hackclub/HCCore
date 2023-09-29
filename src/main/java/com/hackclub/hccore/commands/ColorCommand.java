@@ -1,10 +1,11 @@
 package com.hackclub.hccore.commands;
 
-import static net.kyori.adventure.text.Component.text;
-import static net.kyori.adventure.text.format.NamedTextColor.RED;
-
 import com.hackclub.hccore.HCCorePlugin;
 import com.hackclub.hccore.PlayerData;
+import com.hackclub.hccore.playerMessages.MustBePlayerMessage;
+import com.hackclub.hccore.playerMessages.color.ColorResetMessage;
+import com.hackclub.hccore.playerMessages.color.ColorSetMessage;
+import com.hackclub.hccore.playerMessages.color.InvalidColorMessage;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -30,7 +31,7 @@ public class ColorCommand implements TabExecutor {
   public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd,
       @NotNull String alias, String[] args) {
     if (!(sender instanceof Player player)) {
-      sender.sendMessage(text("You must be a player to use this").color(RED));
+      sender.sendMessage(MustBePlayerMessage.get());
       return true;
     }
 
@@ -52,7 +53,7 @@ public class ColorCommand implements TabExecutor {
       }
 
       if (newColor == null) {
-        sender.sendMessage(text("Invalid color specified").color(RED));
+        sender.sendMessage(InvalidColorMessage.get());
       }
 
 
@@ -63,23 +64,21 @@ public class ColorCommand implements TabExecutor {
       case "chat" -> {
         if (args.length == 1) {
           data.setMessageColor(null);
-          sender.sendMessage("Your chat color has been reset");
+          sender.sendMessage(ColorResetMessage.get("chat"));
           break;
         }
         data.setMessageColor(newColor);
-        sender.sendMessage(
-            text("Your chat color has been set to ").append(text("this color").color(newColor)));
+        sender.sendMessage(ColorSetMessage.get("chat", newColor));
       }
       // /color name [color]
       case "name" -> {
         if (args.length == 1) {
           data.setNameColor(null);
-          sender.sendMessage("Your name color has been reset");
+          sender.sendMessage(ColorResetMessage.get("chat"));
           break;
         }
         data.setNameColor(newColor);
-        sender.sendMessage(
-            text("Your name color has been set to ").append(text("this color").color(newColor)));
+        sender.sendMessage(ColorSetMessage.get("name", newColor));
       }
       default -> {
         return false;

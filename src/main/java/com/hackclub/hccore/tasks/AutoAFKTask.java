@@ -2,7 +2,7 @@ package com.hackclub.hccore.tasks;
 
 import com.hackclub.hccore.HCCorePlugin;
 import com.hackclub.hccore.PlayerData;
-import org.bukkit.ChatColor;
+import com.hackclub.hccore.playerMessages.afk.AutoAFKMessage;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -27,8 +27,7 @@ public class AutoAFKTask extends BukkitRunnable {
           (System.currentTimeMillis() - data.getLastActiveAt()) / 1000;
       if (secondsSinceLastActive > this.plugin.getConfig().getInt("settings.auto-afk-time")) {
         data.setAfk(true);
-        player.sendMessage(ChatColor.GRAY + ChatColor.ITALIC.toString()
-            + "You’ve been automatically set to AFK due to inactivity.");
+        player.sendMessage(AutoAFKMessage.get());
       }
     }
   }

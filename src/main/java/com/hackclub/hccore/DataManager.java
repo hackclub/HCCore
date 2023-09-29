@@ -31,6 +31,7 @@ public class DataManager {
   public PlayerData getData(Player player) {
     return this.onlinePlayers.get(player.getUniqueId());
   }
+
   public PlayerData getData(OfflinePlayer offlinePlayer) {
     PlayerData data = this.onlinePlayers.get(offlinePlayer.getUniqueId());
 
@@ -40,6 +41,7 @@ public class DataManager {
 
     return data;
   }
+
   public PlayerData findData(Predicate<? super PlayerData> predicate) {
     return this.onlinePlayers.values().stream().filter(predicate).findFirst().orElse(null);
   }

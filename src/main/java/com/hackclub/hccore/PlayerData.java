@@ -52,6 +52,7 @@ public class PlayerData {
     this.dataFile =
         new File(plugin.getDataManager().getDataFolder(), player.getUniqueId() + ".json");
   }
+
   public PlayerData(HCCorePlugin plugin, OfflinePlayer offlinePlayer) {
     this.plugin = plugin;
     this.player = offlinePlayer.getPlayer();

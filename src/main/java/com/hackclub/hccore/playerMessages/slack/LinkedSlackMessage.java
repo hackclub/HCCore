@@ -1,4 +1,4 @@
-package com.hackclub.hccore.playerMessages;
+package com.hackclub.hccore.playerMessages.slack;
 
 import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.format.NamedTextColor.RED;
@@ -17,6 +17,7 @@ import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.entity.Player;
 
 public class LinkedSlackMessage {
+
   final static String minimsgSource = """
       <b><green>Your MC account is linked to Slack!</green></b>
       <hover:show_text:'<b>Your MC account</b>

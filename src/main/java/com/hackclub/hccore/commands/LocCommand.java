@@ -1,12 +1,23 @@
 package com.hackclub.hccore.commands;
 
-import static net.kyori.adventure.text.Component.text;
-import static net.kyori.adventure.text.format.NamedTextColor.AQUA;
-import static net.kyori.adventure.text.format.NamedTextColor.GREEN;
-import static net.kyori.adventure.text.format.NamedTextColor.RED;
-
 import com.hackclub.hccore.HCCorePlugin;
 import com.hackclub.hccore.PlayerData;
+import com.hackclub.hccore.playerMessages.MustBePlayerMessage;
+import com.hackclub.hccore.playerMessages.NoOnlinePlayerMessage;
+import com.hackclub.hccore.playerMessages.loc.HasLocationMessage;
+import com.hackclub.hccore.playerMessages.loc.LocationAddMessage;
+import com.hackclub.hccore.playerMessages.loc.LocationExistsMessage;
+import com.hackclub.hccore.playerMessages.loc.LocationGetMessage;
+import com.hackclub.hccore.playerMessages.loc.LocationListMessage;
+import com.hackclub.hccore.playerMessages.loc.LocationNotFoundMessage;
+import com.hackclub.hccore.playerMessages.loc.LocationRemovedMessage;
+import com.hackclub.hccore.playerMessages.loc.LocationRenamedMessage;
+import com.hackclub.hccore.playerMessages.loc.NoLocationsMessage;
+import com.hackclub.hccore.playerMessages.loc.RecipSharedMessage;
+import com.hackclub.hccore.playerMessages.loc.SelfShareMessage;
+import com.hackclub.hccore.playerMessages.loc.SendSharedMessage;
+import com.hackclub.hccore.playerMessages.loc.SpecifyLocationMessage;
+import com.hackclub.hccore.playerMessages.loc.SpecifyShareMessage;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -32,7 +43,7 @@ public class LocCommand implements TabExecutor {
   public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd,
       @NotNull String alias, String[] args) {
     if (!(sender instanceof Player player)) {
-      sender.sendMessage(text("You must be a player to use this").color(RED));
+      sender.sendMessage(MustBePlayerMessage.get());
       return true;
     }
 
@@ -46,146 +57,121 @@ public class LocCommand implements TabExecutor {
       // /loc del <name>
       case "del" -> {
         if (args.length < 2) {
-          sender.sendMessage(text("Please specify the location name").color(RED));
+          sender.sendMessage(SpecifyLocationMessage.get());
           break;
         }
 
         if (!data.getSavedLocations().containsKey(locationName)) {
-          sender.sendMessage(text("No location with that name was found").color(RED));
+          sender.sendMessage(LocationNotFoundMessage.get());
           break;
         }
 
         data.getSavedLocations().remove(locationName);
-        sender.sendMessage(
-            text("Removed").color(GREEN).appendSpace().append(text(locationName)).appendSpace()
-                .append(text("from saved locations")));
+        sender.sendMessage(LocationRemovedMessage.get(locationName));
       }
 
       // /loc get <name>
       case "get" -> {
         if (args.length < 2) {
-          sender.sendMessage(text("Please specify the location name").color(RED));
+          sender.sendMessage(SpecifyLocationMessage.get());
           break;
         }
         if (!data.getSavedLocations().containsKey(locationName)) {
-          sender.sendMessage(text("No location with that name was found").color(RED));
+          sender.sendMessage(LocationNotFoundMessage.get());
           break;
         }
 
         Location savedLocation = data.getSavedLocations().get(locationName);
-        sender.sendMessage(locationName + ": " + savedLocation.getWorld().getName() + " @ "
-            + savedLocation.getBlockX() + ", " + savedLocation.getBlockY() + ", "
-            + savedLocation.getBlockZ());
+        sender.sendMessage(LocationGetMessage.get(locationName, savedLocation.getWorld().getName(),
+            savedLocation.getBlockX(), savedLocation.getBlockY(), savedLocation.getBlockZ()));
       }
 
       // /loc list
       case "list" -> {
         Map<String, Location> savedLocations = data.getSavedLocations();
         if (savedLocations.isEmpty()) {
-          sender.sendMessage("You have no saved locations");
+          sender.sendMessage(NoLocationsMessage.get());
           break;
         }
-        sender.sendMessage(
-            text("Your saved locations (").color(AQUA).append(text(savedLocations.size()))
-                .append(text("):")));
-        for (Map.Entry<String, Location> entry : savedLocations.entrySet()) {
-          Location savedLocation = entry.getValue();
-          sender.sendMessage(
-              "- " + entry.getKey() + ": " + savedLocation.getWorld().getName() + " @ "
-                  + savedLocation.getBlockX() + ", " + savedLocation.getBlockY() + ", "
-                  + savedLocation.getBlockZ());
-        }
+
+        sender.sendMessage(LocationListMessage.get(savedLocations));
       }
 
       // /loc rename <old name> <new name>
       case "rename" -> {
         if (args.length < 3) {
-          sender.sendMessage("/loc rename <old name> <new name>");
+          sender.sendMessage(this.plugin.getCommand("loc").getUsage());
           break;
         }
         String oldName = args[1];
         String newName = String.join("_", Arrays.copyOfRange(args, 2, args.length));
         Location targetLoc = data.getSavedLocations().get(oldName);
         if (!data.getSavedLocations().containsKey(oldName)) {
-          sender.sendMessage(text("No location with that name was found").color(RED));
+          sender.sendMessage(LocationNotFoundMessage.get());
           break;
         }
         if (data.getSavedLocations().containsKey(newName)) {
-          sender.sendMessage(text("A location with that name already exists").color(RED));
+          sender.sendMessage(LocationExistsMessage.get());
           break;
         }
         data.getSavedLocations().put(newName, targetLoc);
         data.getSavedLocations().remove(oldName);
-        sender.sendMessage(
-            text("Renamed from").color(GREEN).appendSpace().append(text(oldName)).appendSpace()
-                .append(text("to")).appendSpace().append(text(newName)));
+        sender.sendMessage(LocationRenamedMessage.get(oldName, newName));
       }
 
       // /loc save <name>
       case "save" -> {
         if (args.length < 2) {
-          sender.sendMessage(text("Please specify the location name").color(RED));
+          sender.sendMessage(SpecifyLocationMessage.get());
           break;
         }
         if (data.getSavedLocations().containsKey(locationName)) {
-          sender.sendMessage(text("A location with that name already exists").color(RED));
+          sender.sendMessage(LocationExistsMessage.get());
           break;
         }
 
         Location currentLocation = player.getLocation();
         data.getSavedLocations().put(locationName, currentLocation);
         sender.sendMessage(
-            text("Added").color(GREEN).appendSpace().append(text(locationName)).appendSpace()
-                .append(text("(")).append(text(currentLocation.getWorld().getName())).appendSpace()
-                .append(text("@")).appendSpace().append(text(currentLocation.getBlockX()))
-                .append(text(",")).appendSpace().append(text(currentLocation.getBlockY()))
-                .append(text(",")).appendSpace().append(text(currentLocation.getBlockZ()))
-                .append(text(") to saved locations")));
+            LocationAddMessage.get(locationName, currentLocation.getWorld().getName(),
+                currentLocation));
       }
 
       // /loc share <name> <player>
       case "share" -> {
         if (args.length < 3) {
-          sender.sendMessage(text(
-              "Please specify the location name and the player you want to share it with").color(
-              RED));
+          sender.sendMessage(SpecifyShareMessage.get());
         }
         locationName = args[1];
         String recipientName = args[2];
 
         if (!data.getSavedLocations().containsKey(locationName)) {
-          sender.sendMessage(text("No location with that name was found").color(RED));
+          sender.sendMessage(LocationNotFoundMessage.get());
           break;
         }
         Location sendLocation = data.getSavedLocations().get(locationName);
         // Get the player we're sending to
         Player recipient = sender.getServer().getPlayer(recipientName);
         if (recipient == null) {
-          sender.sendMessage(text("No online player with that name was found").color(RED));
+          sender.sendMessage(NoOnlinePlayerMessage.get());
           break;
         }
         if (recipientName.equals(player.getName())) {
-          sender.sendMessage(text("You can’t share a location with yourself!").color(RED));
+          sender.sendMessage(SelfShareMessage.get());
           break;
         }
         PlayerData recipData = this.plugin.getDataManager().getData(recipient);
         String shareLocName = player.getName() + " " + locationName;
 
         if (recipData.getSavedLocations().containsKey(player.getName() + ":" + shareLocName)) {
-          sender.sendMessage(text(recipientName).color(RED).appendSpace()
-              .append(text("already has a location called")).appendSpace()
-              .append(text(shareLocName)));
+          sender.sendMessage(HasLocationMessage.get(recipientName, locationName));
           break;
         }
 
-        String locationString =
-            "(" + sendLocation.getWorld().getName() + " @ " + sendLocation.getBlockX() + ", "
-                + sendLocation.getBlockY() + ", " + sendLocation.getBlockZ() + ")";
-        player.sendMessage(
-            text(String.format("Shared %s with %s", locationName, recipientName)).color(GREEN));
-        recipient.sendMessage(text(
-            String.format("%s has shared a location: %s (%s)", player.getName(), locationName,
-                locationString)).color(GREEN));
+        player.sendMessage(SendSharedMessage.get(locationName, recipientName));
+        player.sendMessage(RecipSharedMessage.get(player.getName(), locationName,
+            sendLocation.getWorld().getName(), sendLocation.getBlockX(), sendLocation.getBlockY(),
+            sendLocation.getBlockZ()));
         recipData.getSavedLocations().put(player.getName() + ":" + locationName, sendLocation);
       }
       default -> {
