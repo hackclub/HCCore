@@ -117,17 +117,11 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: built-plugin
-      - name: install sshpass
-        uses: awalsh128/cache-apt-pkgs-action@v1
-        with:
-          packages: "sshpass"
-      - name: SFTP Deploy
+      - name: SCP Deploy
         env:
-          SSHPASS: ${{ secrets.DEPLOY_SSH_PASSWORD }}
+          SSH_PRIVATE_KEY: ${{ secrets.MINECRAFT_DEPLOY_SSH_KEY }}
         run: |
-          sshpass -e sftp -4 -oStrictHostKeyChecking=false -oBatchMode=no -b - sftp://github-deploy@mc-admin.hackclub.com:2225 << !
-            -rm /plugins/update/HCCore-Shadow-*.jar
-            put HCCore-Shadow-*.jar /plugins/update/
-            bye
-          !
+          cat "$SSH_PRIVATE_KEY" > .ssh_private_key
+          scp -i .ssh_private_key HCCore-Shadow-*.jar github-deploy@mc-admin.hackclub.com:/opt/minecraft/data/plugins/update
+          rm .ssh_private_key
           
