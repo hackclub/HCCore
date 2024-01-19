@@ -15,7 +15,7 @@ java {
 
 dependencies {
     implementation("com.google.code.gson:gson:2.10.1")
-    implementation("com.slack.api:bolt-socket-mode:1.28.1")
+    implementation("com.slack.api:bolt-socket-mode:1.37.0")
     implementation("javax.websocket:javax.websocket-api:1.1")
     implementation("org.glassfish.tyrus.bundles:tyrus-standalone-client:1.19")
     implementation("org.slf4j:slf4j-simple:2.0.5")
@@ -24,7 +24,7 @@ dependencies {
 
     compileOnly("com.frengor:ultimateadvancementapi:2.2.3")
     compileOnly("com.comphenix.protocol:ProtocolLib:5.0.0-SNAPSHOT")
-    compileOnly("io.papermc.paper:paper-api:1.19.4-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.20.1")
     compileOnly("com.mojang:brigadier:1.0.18")
 }
 
