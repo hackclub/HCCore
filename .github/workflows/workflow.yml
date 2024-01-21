@@ -122,6 +122,7 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.MINECRAFT_DEPLOY_SSH_KEY }}
         run: |
           echo "$SSH_PRIVATE_KEY" > .ssh_private_key
+          chmod 700 .ssh_private_key
           scp -i .ssh_private_key HCCore-Shadow-*.jar github-deploy@mc-admin.hackclub.com:/opt/minecraft/plugins/update
           rm .ssh_private_key
           
