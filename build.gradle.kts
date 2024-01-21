@@ -24,7 +24,7 @@ dependencies {
 
     compileOnly("com.frengor:ultimateadvancementapi:2.2.3")
     compileOnly("com.comphenix.protocol:ProtocolLib:5.0.0-SNAPSHOT")
-    compileOnly("io.papermc.paper:paper-api:1.20.1")
+    compileOnly("io.papermc.paper:paper-api:1.20.1-R0.1-SNAPSHOT")
     compileOnly("com.mojang:brigadier:1.0.18")
 }
 
