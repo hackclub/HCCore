@@ -123,6 +123,10 @@ jobs:
         run: |
           echo "$SSH_PRIVATE_KEY" > .ssh_private_key
           chmod 700 .ssh_private_key
+          mkdir -p ~/.ssh/ && touch ~/.ssh/known_hosts
+          ssh-keyscan mc-admin.hackclub.com >> ~/.ssh/known_hosts
+          eval $(ssh-agent)
+          ssh-add - <<< "$SSH_PRIVATE_KEY"
           scp -i .ssh_private_key HCCore-Shadow-*.jar github-deploy@mc-admin.hackclub.com:/opt/minecraft/plugins/update
           rm .ssh_private_key
           
