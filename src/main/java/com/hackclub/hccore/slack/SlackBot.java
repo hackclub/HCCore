@@ -21,18 +21,16 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.slack.api.Slack;
 import com.slack.api.bolt.App;
 import com.slack.api.bolt.AppConfig;
+import com.slack.api.bolt.jetty.SlackAppServer;
 import com.slack.api.bolt.request.builtin.SlashCommandRequest;
-import com.slack.api.bolt.socket_mode.SocketModeApp;
 import com.slack.api.methods.MethodsClient;
 import com.slack.api.methods.SlackApiException;
 import com.slack.api.methods.response.chat.ChatPostMessageResponse;
 import com.slack.api.methods.response.users.profile.UsersProfileGetResponse;
 import com.slack.api.model.User;
 import com.slack.api.model.event.MessageBotEvent;
-import com.slack.api.model.event.MessageChannelJoinEvent;
 import com.slack.api.model.event.MessageDeletedEvent;
 import com.slack.api.model.event.MessageEvent;
 import io.papermc.paper.event.player.AsyncChatEvent;
@@ -43,6 +41,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 import net.kyori.adventure.text.Component;
@@ -50,7 +49,6 @@ import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.apache.commons.collections4.map.PassiveExpiringMap;
-import org.apache.commons.text.StringEscapeUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.advancement.Advancement;
@@ -76,13 +74,14 @@ public class SlackBot implements Listener {
   public static final String playerServerJoinAvatarUrl = "https://cloud-if9tepzbn-hack-club-bot.vercel.app/1hccorejoin.png";
   public static final String playerAdvancementAvatarUrl = "https://cloud-obk2f29h4-hack-club-bot.vercel.app/0achievement.png";
   private final HCCorePlugin plugin;
-  private final SocketModeApp socket;
+  private final App app;
+  private final SlackAppServer server;
   private final String commandBase;
   private final PassiveExpiringMap<UUID, String> mcLinkCodes;
 
   public SlackBot(HCCorePlugin plugin) throws Exception {
     this.plugin = plugin;
-    App app = new App(AppConfig.builder().singleTeamBotToken(getBotToken()).build());
+    this.app = new App(AppConfig.builder().singleTeamBotToken(getBotToken()).signingSecret(getSigningSecret()).build());
     commandBase = plugin.getConfig().getString("settings.slack-link.base-command", "minecraft");
     mcLinkCodes = new PassiveExpiringMap<>(
         plugin.getConfig().getLong("settings.slack-link.link-code-expiration", 60 * 10) * 1000);
@@ -90,7 +89,9 @@ public class SlackBot implements Listener {
     Pattern sdk = Pattern.compile(".*");
     app.message(sdk, (payload, ctx) -> {
       MessageEvent event = payload.getEvent();
-      String text = StringEscapeUtils.unescapeHtml4(event.getText());
+      // Weird bug with this right now...
+      // String text = StringEscapeUtils.unescapeHtml4(event.getText());
+      String text = event.getText();
       String channelId = event.getChannel();
       String mainChannel = getSlackChannel();
       if (!channelId.equals(mainChannel)) {
@@ -175,8 +176,6 @@ public class SlackBot implements Listener {
     app.event(MessageBotEvent.class, (payload, ctx) -> ctx.ack());
 
     app.event(MessageDeletedEvent.class, (payload, ctx) -> ctx.ack());
-
-    app.event(MessageChannelJoinEvent.class, (payload, ctx) -> ctx.ack());
 
     CommandDispatcher<SlashCommandRequest> dispatcher = new CommandDispatcher<>();
     dispatcher.register(
@@ -333,9 +332,15 @@ public class SlackBot implements Listener {
       return ctx.ack();
     }));
 
-    SocketModeApp socket = new SocketModeApp(getAppToken(), app);
-    this.socket = socket;
-    socket.startAsync();
+    SlackAppServer server = new SlackAppServer(app);
+    this.server = server;
+    CompletableFuture.runAsync(() -> {
+      try {
+        server.start();
+      } catch(Exception e) {
+        e.printStackTrace();
+      }
+    });
     this.plugin.getLogger().info("HackCraft Slack started!");
     sendMessage(":large_green_circle: *Server Started*", serverConsoleAvatarUrl, "Console");
   }
@@ -347,7 +352,7 @@ public class SlackBot implements Listener {
 
   public void disconnect() throws Exception {
     sendMessage(":tw_octagonal_sign: *Server Stopped*", serverConsoleAvatarUrl, "Console");
-    this.socket.stop();
+    this.server.stop();
   }
 
 
@@ -475,18 +480,18 @@ public class SlackBot implements Listener {
     return botToken;
   }
 
-  private String getAppToken() {
-    String appToken = this.plugin.getConfig().getString("settings.slack-link.app-token");
+  private String getSigningSecret() {
+    String signingSecret = this.plugin.getConfig().getString("settings.slack-link.signing-secret");
 
-    if (appToken == null) {
-      throw new IllegalStateException("Slack app token is not set!");
+    if (signingSecret == null) {
+      throw new IllegalStateException("Slack signing secret is not set!");
     }
 
-    return appToken;
+    return signingSecret;
   }
 
   public User getUserInfo(String id) throws IOException {
-    MethodsClient client = this.socket.getApp().getClient();
+    MethodsClient client = app.getClient();
     try {
       var res = client.usersInfo(r -> r.token(getBotToken()).user(id));
 
@@ -497,7 +502,7 @@ public class SlackBot implements Listener {
   }
 
   void sendMessage(String msg, String iconURL, String username) throws IOException {
-    MethodsClient client = Slack.getInstance().methods();
+    MethodsClient client = app.getClient();
 
     try {
       var res = client.chatPostMessage(
@@ -513,7 +518,7 @@ public class SlackBot implements Listener {
   }
 
   public boolean sendVerificationMessage(String id, String mcName, String uuid) throws IOException {
-    MethodsClient client = this.socket.getApp().getClient();
+    MethodsClient client = app.getClient();
 
     try {
       var res = client.chatPostMessage(r -> r.token(getBotToken()).channel(id).text(

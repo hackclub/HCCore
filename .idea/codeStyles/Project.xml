@@ -69,34 +69,6 @@
       <option name="ALIGN_INIT_LIST_IN_COLUMNS" value="false" />
       <option name="SPACE_BEFORE_SUPERCLASS_COLON" value="false" />
     </Objective-C>
-    <Objective-C-extensions>
-      <option name="GENERATE_INSTANCE_VARIABLES_FOR_PROPERTIES" value="ASK" />
-      <option name="RELEASE_STYLE" value="IVAR" />
-      <option name="TYPE_QUALIFIERS_PLACEMENT" value="BEFORE" />
-      <file>
-        <option name="com.jetbrains.cidr.lang.util.OCDeclarationKind" value="Import" />
-        <option name="com.jetbrains.cidr.lang.util.OCDeclarationKind" value="Macro" />
-        <option name="com.jetbrains.cidr.lang.util.OCDeclarationKind" value="Typedef" />
-        <option name="com.jetbrains.cidr.lang.util.OCDeclarationKind" value="Enum" />
-        <option name="com.jetbrains.cidr.lang.util.OCDeclarationKind" value="Constant" />
-        <option name="com.jetbrains.cidr.lang.util.OCDeclarationKind" value="Global" />
-        <option name="com.jetbrains.cidr.lang.util.OCDeclarationKind" value="Struct" />
-        <option name="com.jetbrains.cidr.lang.util.OCDeclarationKind" value="FunctionPredecl" />
-        <option name="com.jetbrains.cidr.lang.util.OCDeclarationKind" value="Function" />
-      </file>
-      <class>
-        <option name="com.jetbrains.cidr.lang.util.OCDeclarationKind" value="Property" />
-        <option name="com.jetbrains.cidr.lang.util.OCDeclarationKind" value="Synthesize" />
-        <option name="com.jetbrains.cidr.lang.util.OCDeclarationKind" value="InitMethod" />
-        <option name="com.jetbrains.cidr.lang.util.OCDeclarationKind" value="StaticMethod" />
-        <option name="com.jetbrains.cidr.lang.util.OCDeclarationKind" value="InstanceMethod" />
-        <option name="com.jetbrains.cidr.lang.util.OCDeclarationKind" value="DeallocMethod" />
-      </class>
-      <extensions>
-        <pair source="cc" header="h" />
-        <pair source="c" header="h" />
-      </extensions>
-    </Objective-C-extensions>
     <Python>
       <option name="USE_CONTINUATION_INDENT_FOR_ARGUMENTS" value="true" />
     </Python>
@@ -106,6 +78,12 @@
     <XML>
       <option name="XML_ALIGN_ATTRIBUTES" value="false" />
     </XML>
+    <files>
+      <extensions>
+        <pair source="cc" header="h" fileNamingConvention="NONE" />
+        <pair source="c" header="h" fileNamingConvention="NONE" />
+      </extensions>
+    </files>
     <codeStyleSettings language="CSS">
       <indentOptions>
         <option name="INDENT_SIZE" value="2" />
@@ -197,17 +175,6 @@
       </indentOptions>
     </codeStyleSettings>
     <codeStyleSettings language="ObjectiveC">
-      <option name="RIGHT_MARGIN" value="80" />
-      <option name="KEEP_BLANK_LINES_BEFORE_RBRACE" value="1" />
-      <option name="BLANK_LINES_BEFORE_IMPORTS" value="0" />
-      <option name="BLANK_LINES_AFTER_IMPORTS" value="0" />
-      <option name="BLANK_LINES_AROUND_CLASS" value="0" />
-      <option name="BLANK_LINES_AROUND_METHOD" value="0" />
-      <option name="BLANK_LINES_AROUND_METHOD_IN_INTERFACE" value="0" />
-      <option name="ALIGN_MULTILINE_BINARY_OPERATION" value="false" />
-      <option name="BINARY_OPERATION_SIGN_ON_NEXT_LINE" value="true" />
-      <option name="FOR_STATEMENT_WRAP" value="1" />
-      <option name="ASSIGNMENT_WRAP" value="1" />
       <indentOptions>
         <option name="INDENT_SIZE" value="2" />
         <option name="CONTINUATION_INDENT_SIZE" value="4" />
@@ -222,10 +189,8 @@
       </indentOptions>
     </codeStyleSettings>
     <codeStyleSettings language="Python">
-      <option name="KEEP_BLANK_LINES_IN_CODE" value="1" />
       <option name="RIGHT_MARGIN" value="80" />
       <option name="ALIGN_MULTILINE_PARAMETERS" value="false" />
-      <option name="PARENT_SETTINGS_INSTALLED" value="true" />
       <indentOptions>
         <option name="INDENT_SIZE" value="2" />
         <option name="CONTINUATION_INDENT_SIZE" value="4" />

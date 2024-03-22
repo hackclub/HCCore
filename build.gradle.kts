@@ -15,11 +15,13 @@ java {
 
 dependencies {
     implementation("com.google.code.gson:gson:2.10.1")
-    implementation("com.slack.api:bolt-socket-mode:1.37.0")
+    implementation("com.slack.api:bolt:1.38.3")
+    implementation("com.slack.api:bolt-servlet:1.38.3")
+    implementation("com.slack.api:bolt-jetty:1.38.3")
     implementation("javax.websocket:javax.websocket-api:1.1")
     implementation("org.glassfish.tyrus.bundles:tyrus-standalone-client:1.19")
     implementation("org.slf4j:slf4j-simple:2.0.5")
-    implementation("org.apache.commons:commons-text:1.10.0")
+    implementation("org.apache.commons:commons-text:1.11.0")
     implementation("org.apache.commons:commons-collections4:4.4")
 
     compileOnly("com.frengor:ultimateadvancementapi:2.2.3")
