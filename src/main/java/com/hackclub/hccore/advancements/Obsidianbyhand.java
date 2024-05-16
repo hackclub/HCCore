@@ -8,25 +8,24 @@ import com.fren_gor.ultimateAdvancementAPI.util.AdvancementKey;
 import com.fren_gor.ultimateAdvancementAPI.util.CoordAdapter;
 import org.bukkit.Material;
 import org.bukkit.Statistic;
-import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.block.BlockBreakEvent;
 
-public class MileAdv extends BaseAdvancement {
+public class ObsidianMinerAdv extends BaseAdvancement {
   static final AdvancementDisplayBuilder<AdvancementDisplay.Builder, AdvancementDisplay> displayBuilder =
-      new AdvancementDisplay.Builder(Material.OBSIDIAN_BLOCK, "Do your fingers hurt?")
+      new AdvancementDisplay.Builder(Material.OBSIDIAN, "Do your fingers hurt?")
           .challengeFrame()
           .announceChat()
           .showToast()
-          .description(
-              "Mine one full stack of Obsidian by hand");
-  static final int maxProgression = 1;
+          .description("Mine 10 pieces of Obsidian by hand");
+  static final int maxProgression = 10;
 
-  public MileAdv(Advancement root, AdvancementKey key,
+  public ObsidianMinerAdv(Advancement root, AdvancementKey key,
       CoordAdapter adapter) {
     super(key.getKey(), displayBuilder.coords(adapter, key).build(), root, maxProgression);
 
-    registerEvent(PlayerMoveEvent.class, e -> {
-      if (e.getPlayer().getStatistic(Statistic.WALK_ONE_CM) >= 1609.344 * 100 * 1000) {
-        grant(e.getPlayer());
+    registerEvent(BlockBreakEvent.class, e -> {
+      if (e.getBlock().getType() == Material.OBSIDIAN && e.getPlayer().getInventory().getItemInMainHand().getType() == Material.AIR) {
+        incrementProgression(e.getPlayer());
       }
     });
   }
