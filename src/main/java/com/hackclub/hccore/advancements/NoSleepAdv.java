@@ -10,16 +10,16 @@ import org.bukkit.Material;
 import org.bukkit.Statistic;
 import org.bukkit.event.player.PlayerBedEnterEvent;
 
-public class SleeplessAdv extends BaseAdvancement {
+public class NoSleepAdv extends BaseAdvancement {
   static final AdvancementDisplayBuilder<AdvancementDisplay.Builder, AdvancementDisplay> displayBuilder =
-      new AdvancementDisplay.Builder(Material.BED, "No Sleep???")
+      new AdvancementDisplay.Builder(Material.RED_BED, "No Sleep???")
           .challengeFrame()
           .announceChat()
           .showToast()
           .description("Stay awake for one full week");
   static final int maxProgression = 1;
 
-  public SleeplessAdv(Advancement root, AdvancementKey key,
+  public NoSleepAdv(Advancement root, AdvancementKey key,
       CoordAdapter adapter) {
     super(key.getKey(), displayBuilder.coords(adapter, key).build(), root, maxProgression);
 
