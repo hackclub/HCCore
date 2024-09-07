@@ -10,7 +10,7 @@ group = "com.hackclub.hccore"
 description = "Main plugin for the Hack Club Minecraft server."
 
 java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 }
 
 dependencies {
@@ -25,8 +25,8 @@ dependencies {
     implementation("org.apache.commons:commons-collections4:4.4")
 
     compileOnly("com.frengor:ultimateadvancementapi:2.2.3")
-    compileOnly("com.comphenix.protocol:ProtocolLib:5.0.0-SNAPSHOT")
-    compileOnly("io.papermc.paper:paper-api:1.20.1-R0.1-SNAPSHOT")
+    compileOnly("com.comphenix.protocol:ProtocolLib:5.1.0")
+    compileOnly("io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT")
     compileOnly("com.mojang:brigadier:1.0.18")
 }
 
@@ -38,7 +38,7 @@ tasks {
 
     compileJava {
         options.encoding = Charsets.UTF_8.name()
-        options.release.set(17)
+        options.release.set(21)
         // show deprecation warnings: paper deprecated lots of pure string functions for chat components
 //      options.isDeprecation = true
     }
@@ -59,7 +59,7 @@ tasks {
 
 
     runServer {
-        minecraftVersion("1.19.4")
+        minecraftVersion("1.21")
         systemProperty("net.kyori.adventure.text.warnWhenLegacyFormattingDetected", false)
     }
 }
