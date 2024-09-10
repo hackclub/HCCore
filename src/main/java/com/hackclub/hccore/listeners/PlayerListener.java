@@ -92,15 +92,20 @@ public class PlayerListener implements Listener {
   }
 
   public static boolean isSlackJoinAllowed(PlayerData data) {
-    if (!HCCorePlugin.getPlugin(HCCorePlugin.class).getConfig()
+    HCCorePlugin plugin = HCCorePlugin.getPlugin(HCCorePlugin.class);
+
+    if (!plugin.getConfig()
         .getBoolean("settings.slack-link.enabled", false)) {
       return true;
     }
-    if (!HCCorePlugin.getPlugin(HCCorePlugin.class).getConfig()
+    if (!plugin.getConfig()
         .getBoolean("settings.slack-link.required", false)) {
       return true;
     }
-    return data.getSlackId() != null;
+
+    String id = data.getSlackId();
+
+    return !plugin.getSlackBot().isDeactivated(id);
   }
 
 

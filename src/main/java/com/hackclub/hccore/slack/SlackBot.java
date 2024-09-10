@@ -460,6 +460,21 @@ public class SlackBot implements Listener {
     }
   }
 
+  public boolean isDeactivated(String id) {
+    MethodsClient client = app.getClient();
+
+    try {
+      var res = client.usersInfo(r -> r.token(getBotToken()).user(id));
+
+      return res.getUser().isDeleted();
+    } catch (SlackApiException e) {
+      return true;
+    } catch (IOException e) {
+      e.printStackTrace();
+      return true;
+    }
+  }
+
   private String getSlackChannel() {
     String id = this.plugin.getConfig().getString("settings.slack-link.channel-id");
 
