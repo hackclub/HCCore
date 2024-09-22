@@ -9,6 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.logging.Level;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -44,6 +45,8 @@ public class PlayerData {
   private TextColor messageColor = NamedTextColor.GRAY;
   @Expose
   private Map<String, Location> savedLocations = new LinkedHashMap<>();
+  @Expose
+  private UUID lastPlayerChattingWith = null;
 
   public PlayerData(HCCorePlugin plugin, Player player) {
     this.plugin = plugin;
@@ -182,6 +185,7 @@ public class PlayerData {
       this.setSlackId(data.slackId);
       this.setNameColor(data.nameColor);
       this.setMessageColor(data.messageColor);
+      this.setLastPlayerChattingWith(data.lastPlayerChattingWith);
       this.savedLocations = data.savedLocations;
     } catch (IOException e) {
       e.printStackTrace();
@@ -240,5 +244,13 @@ public class PlayerData {
         onlinePlayer.showPlayer(this.plugin, this.player);
       }
     }
+  }
+
+  public void setLastPlayerChattingWith(UUID lastPlayerChattingWith) {
+    this.lastPlayerChattingWith = lastPlayerChattingWith;
+  }
+
+  public UUID getLastPlayerChattingWith() {
+    return this.lastPlayerChattingWith;
   }
 }

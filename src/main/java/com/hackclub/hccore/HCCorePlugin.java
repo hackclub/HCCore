@@ -34,6 +34,8 @@ import com.hackclub.hccore.commands.SlackCommand;
 import com.hackclub.hccore.commands.SpawnCommand;
 import com.hackclub.hccore.commands.StatsCommand;
 import com.hackclub.hccore.commands.WelcomeCommand;
+import com.hackclub.hccore.commands.messaging.MessageCommand;
+import com.hackclub.hccore.commands.messaging.ReplyCommand;
 import com.hackclub.hccore.listeners.AFKListener;
 import com.hackclub.hccore.listeners.BeehiveInteractionListener;
 import com.hackclub.hccore.listeners.NameChangeListener;
@@ -94,6 +96,10 @@ public class HCCorePlugin extends JavaPlugin {
     registerCommand("stats", new StatsCommand(this));
     registerCommand("rules", new RulesCommand());
     registerCommand("welcome", new WelcomeCommand());
+    registerCommand("msg", new MessageCommand(this));
+    registerCommand("whisper", new MessageCommand(this));
+    registerCommand("reply", new ReplyCommand(this));
+    registerCommand("r", new ReplyCommand(this));
 
     // prepare for new emotes commands:
     // downvote       "↓"

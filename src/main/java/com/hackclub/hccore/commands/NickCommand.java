@@ -2,11 +2,11 @@ package com.hackclub.hccore.commands;
 
 import com.hackclub.hccore.HCCorePlugin;
 import com.hackclub.hccore.PlayerData;
-import com.hackclub.hccore.playerMessages.MustBePlayerMessage;
-import com.hackclub.hccore.playerMessages.nickname.NicknameLengthMessage;
-import com.hackclub.hccore.playerMessages.nickname.NicknameResetMessage;
-import com.hackclub.hccore.playerMessages.nickname.NicknameSetMessage;
-import com.hackclub.hccore.playerMessages.nickname.SaharshMessage;
+import com.hackclub.hccore.playermessages.MustBePlayerMessage;
+import com.hackclub.hccore.playermessages.nickname.NicknameLengthMessage;
+import com.hackclub.hccore.playermessages.nickname.NicknameResetMessage;
+import com.hackclub.hccore.playermessages.nickname.NicknameSetMessage;
+import com.hackclub.hccore.playermessages.nickname.SaharshMessage;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;

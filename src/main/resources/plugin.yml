@@ -43,3 +43,15 @@ commands:
   rules:
     description: gets the rules
     usage: /<command>
+  msg:
+    description: message a player
+    usage: /<command> <player> <message>
+  whisper:
+      description: message a player
+      usage: /<command> <player> <message>
+  reply:
+    description: reply to a player
+    usage: /<command> <message>
+  r:
+    description: reply to a player
+    usage: /<command> <message>

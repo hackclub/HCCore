@@ -2,10 +2,10 @@ package com.hackclub.hccore.commands;
 
 import com.hackclub.hccore.HCCorePlugin;
 import com.hackclub.hccore.PlayerData;
-import com.hackclub.hccore.playerMessages.MustBePlayerMessage;
-import com.hackclub.hccore.playerMessages.NoOnlinePlayerMessage;
-import com.hackclub.hccore.playerMessages.ping.PingFailMessage;
-import com.hackclub.hccore.playerMessages.ping.PingMessage;
+import com.hackclub.hccore.playermessages.MustBePlayerMessage;
+import com.hackclub.hccore.playermessages.NoOnlinePlayerMessage;
+import com.hackclub.hccore.playermessages.ping.PingFailMessage;
+import com.hackclub.hccore.playermessages.ping.PingMessage;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

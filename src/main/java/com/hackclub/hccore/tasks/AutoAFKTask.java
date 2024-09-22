@@ -2,7 +2,7 @@ package com.hackclub.hccore.tasks;
 
 import com.hackclub.hccore.HCCorePlugin;
 import com.hackclub.hccore.PlayerData;
-import com.hackclub.hccore.playerMessages.afk.AutoAFKMessage;
+import com.hackclub.hccore.playermessages.afk.AutoAFKMessage;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
