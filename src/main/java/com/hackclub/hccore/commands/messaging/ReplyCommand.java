@@ -25,7 +25,6 @@ public class ReplyCommand implements CommandExecutor {
   public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
     if (args.length < 1) return false;
 
-    //TODO: Allow console to send messages as "Console" in red.
     if (!(sender instanceof Player sendingPlayer)) {
       sender.sendMessage(MustBePlayerMessage.get());
       return true;

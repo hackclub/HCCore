@@ -97,9 +97,7 @@ public class HCCorePlugin extends JavaPlugin {
     registerCommand("rules", new RulesCommand());
     registerCommand("welcome", new WelcomeCommand());
     registerCommand("msg", new MessageCommand(this));
-    registerCommand("whisper", new MessageCommand(this));
     registerCommand("reply", new ReplyCommand(this));
-    registerCommand("r", new ReplyCommand(this));
 
     // prepare for new emotes commands:
     // downvote       "↓"

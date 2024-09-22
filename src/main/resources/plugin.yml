@@ -46,12 +46,10 @@ commands:
   msg:
     description: message a player
     usage: /<command> <player> <message>
-  whisper:
-      description: message a player
-      usage: /<command> <player> <message>
+    aliases:
+      - whisper
   reply:
     description: reply to a player
     usage: /<command> <message>
-  r:
-    description: reply to a player
-    usage: /<command> <message>
+    aliases:
+      - r
