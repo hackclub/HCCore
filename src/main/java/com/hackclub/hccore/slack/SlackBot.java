@@ -465,8 +465,13 @@ public class SlackBot implements Listener {
 
     try {
       var res = client.usersInfo(r -> r.token(getBotToken()).user(id));
+      var user = res.getUser();
 
-      return res.getUser().isDeleted();
+      if (user == null) {
+        return true;
+      } else {
+        return user.isDeleted();
+      }
     } catch (SlackApiException e) {
       return true;
     } catch (IOException e) {
