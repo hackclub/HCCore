@@ -3,7 +3,7 @@ package com.hackclub.hccore.commands;
 import com.hackclub.hccore.HCCorePlugin;
 import com.hackclub.hccore.PlayerData;
 import com.hackclub.hccore.commands.general.ArgumentlessCommand;
-import com.hackclub.hccore.playerMessages.MustBePlayerMessage;
+import com.hackclub.hccore.playermessages.MustBePlayerMessage;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;

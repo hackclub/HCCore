@@ -2,10 +2,10 @@ package com.hackclub.hccore.commands;
 
 import com.hackclub.hccore.HCCorePlugin;
 import com.hackclub.hccore.PlayerData;
-import com.hackclub.hccore.playerMessages.MustBePlayerMessage;
-import com.hackclub.hccore.playerMessages.color.ColorResetMessage;
-import com.hackclub.hccore.playerMessages.color.ColorSetMessage;
-import com.hackclub.hccore.playerMessages.color.InvalidColorMessage;
+import com.hackclub.hccore.playermessages.MustBePlayerMessage;
+import com.hackclub.hccore.playermessages.color.ColorResetMessage;
+import com.hackclub.hccore.playermessages.color.ColorSetMessage;
+import com.hackclub.hccore.playermessages.color.InvalidColorMessage;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;

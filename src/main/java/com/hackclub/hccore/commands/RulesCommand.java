@@ -1,7 +1,7 @@
 package com.hackclub.hccore.commands;
 
 import com.hackclub.hccore.commands.general.ArgumentlessCommand;
-import com.hackclub.hccore.playerMessages.RulesMessage;
+import com.hackclub.hccore.playermessages.RulesMessage;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
