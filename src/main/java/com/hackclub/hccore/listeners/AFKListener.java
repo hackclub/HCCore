@@ -23,11 +23,9 @@ public class AFKListener implements Listener {
 
   private final Title afkTitle;
 
-  private final HCCorePlugin plugin;
+  private final HCCorePlugin plugin = HCCorePlugin.getInstance();
 
-  public AFKListener(HCCorePlugin plugin) {
-    this.plugin = plugin;
-
+  public AFKListener() {
     this.afkTitle = Title.title(YouAFKMessage.get(),
         RunAFKMessage.get(), Title.Times.times(
             Duration.of(500, ChronoUnit.MILLIS), Duration.of(12, ChronoUnit.HOURS),

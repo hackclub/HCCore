@@ -202,13 +202,4 @@ public class HCCorePlugin extends JavaPlugin {
         wither, elder, wolf, ironGolem, mile, astra);
   }
 
-  private void registerCommand(String name, CommandExecutor commandExecutor) {
-    PluginCommand command = this.getCommand(name);
-    if (command == null) {
-      this.getLogger().severe("Command %s not found in plugin.yml".formatted(name));
-      return;
-    }
-    command.setExecutor(commandExecutor);
-  }
-
 }
