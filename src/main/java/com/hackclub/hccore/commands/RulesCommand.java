@@ -1,18 +1,17 @@
 package com.hackclub.hccore.commands;
 
-import com.hackclub.hccore.commands.general.ArgumentlessCommand;
+import com.hackclub.hccore.commands.general.AbstractCommand;
 import com.hackclub.hccore.playermessages.RulesMessage;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.incendo.cloud.annotations.Command;
 import org.jetbrains.annotations.NotNull;
 
-public class RulesCommand extends ArgumentlessCommand implements CommandExecutor {
+public class RulesCommand extends AbstractCommand {
 
-  @Override
-  public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command,
-      @NotNull String label, @NotNull String[] args) {
+  @Command("rules")
+  public void execute(
+      final @NotNull CommandSender sender
+  ) {
     sender.sendMessage(RulesMessage.get());
-    return true;
   }
 }

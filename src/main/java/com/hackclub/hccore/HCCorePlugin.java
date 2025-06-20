@@ -90,19 +90,6 @@ public class HCCorePlugin extends JavaPlugin {
       }
     }
 
-    // Register commands
-
-    registerCommand("afk", new AFKCommand(this));
-    registerCommand("color", new ColorCommand(this));
-    registerCommand("loc", new LocCommand(this));
-    registerCommand("nick", new NickCommand(this));
-    registerCommand("ping", new PingCommand(this));
-    registerCommand("slack", new SlackCommand(this));
-    registerCommand("spawn", new SpawnCommand(this));
-    registerCommand("stats", new StatsCommand(this));
-    registerCommand("rules", new RulesCommand());
-    registerCommand("welcome", new WelcomeCommand());
-
     // emojis in chat
     // :downvote:       "↓"
     // :shrug:          "¯\_(ツ)_/¯"

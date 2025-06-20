@@ -1,82 +1,48 @@
 package com.hackclub.hccore.commands;
 
-import com.hackclub.hccore.HCCorePlugin;
 import com.hackclub.hccore.PlayerData;
+import com.hackclub.hccore.commands.general.AbstractCommand;
 import com.hackclub.hccore.playermessages.MustBePlayerMessage;
-import com.hackclub.hccore.playermessages.NoOnlinePlayerMessage;
 import com.hackclub.hccore.playermessages.ping.PingFailMessage;
 import com.hackclub.hccore.playermessages.ping.PingMessage;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
-import org.bukkit.util.StringUtil;
+import org.incendo.cloud.annotations.Argument;
+import org.incendo.cloud.annotations.Command;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public class PingCommand implements TabExecutor {
+public class PingCommand extends AbstractCommand {
 
-  private final HCCorePlugin plugin;
-
-  public PingCommand(HCCorePlugin plugin) {
-    this.plugin = plugin;
-  }
-
-  @Override
-  public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd,
-      @NotNull String alias, String[] args) {
-    // /ping
-    if (args.length == 0) {
+  @Command("ping [player]")
+  public void execute(
+      final @NotNull CommandSender sender,
+      final @Nullable @Argument("player") Player target
+  ) {
+    if (target == null) {
       if (!(sender instanceof Player player)) {
         sender.sendMessage(MustBePlayerMessage.get());
-        return true;
+        return;
       }
-
       int ping = player.getPing();
       // Failed for some reason
       if (ping == -1) {
         sender.sendMessage(PingFailMessage.get("your"));
-        return true;
+        return;
       }
 
       sender.sendMessage(PingMessage.get("Your", ping));
-      return true;
+      return;
     }
 
-    // /ping [player]
-    Player targetPlayer = sender.getServer().getPlayerExact(args[0]);
-    if (targetPlayer != null) {
-      PlayerData data = this.plugin.getDataManager().getData(targetPlayer);
-      int ping = targetPlayer.getPing();
-      // Failed for some reason
-      if (ping == -1) {
-        sender.sendMessage(PingFailMessage.get(data.getUsableName() + "'s"));
-        return true;
-      }
-
-      sender.sendMessage(PingMessage.get(data.getUsableName() + "'s", ping));
-    } else {
-      sender.sendMessage(NoOnlinePlayerMessage.get());
+    PlayerData data = this.plugin.getDataManager().getData(target);
+    int ping = target.getPing();
+    // Failed for some reason
+    if (ping == -1) {
+      sender.sendMessage(PingFailMessage.get(data.getUsableName() + "'s"));
+      return;
     }
 
-    return true;
-  }
-
-  @Override
-  public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command cmd,
-      @NotNull String alias, String[] args) {
-    List<String> completions = new ArrayList<>();
-    if (args.length == 1) {
-      for (Player player : sender.getServer().getOnlinePlayers()) {
-        if (StringUtil.startsWithIgnoreCase(player.getName(), args[0])) {
-          completions.add(player.getName());
-        }
-      }
-    }
-
-    Collections.sort(completions);
-    return completions;
+    sender.sendMessage(PingMessage.get(data.getUsableName() + "'s", ping));
   }
 }

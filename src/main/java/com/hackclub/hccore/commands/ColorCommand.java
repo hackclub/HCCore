@@ -1,68 +1,50 @@
 package com.hackclub.hccore.commands;
 
-import com.hackclub.hccore.HCCorePlugin;
 import com.hackclub.hccore.PlayerData;
-import com.hackclub.hccore.playermessages.MustBePlayerMessage;
+import com.hackclub.hccore.commands.general.AbstractCommand;
 import com.hackclub.hccore.playermessages.color.ColorResetMessage;
 import com.hackclub.hccore.playermessages.color.ColorSetMessage;
 import com.hackclub.hccore.playermessages.color.InvalidColorMessage;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
-import org.bukkit.util.StringUtil;
+import org.incendo.cloud.annotations.Argument;
+import org.incendo.cloud.annotations.Command;
+import org.incendo.cloud.annotations.suggestion.Suggestions;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public class ColorCommand implements TabExecutor {
+public class ColorCommand extends AbstractCommand {
 
-  private final HCCorePlugin plugin;
-
-  public ColorCommand(HCCorePlugin plugin) {
-    this.plugin = plugin;
-  }
-
-  @Override
-  public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd,
-      @NotNull String alias, String[] args) {
-    if (!(sender instanceof Player player)) {
-      sender.sendMessage(MustBePlayerMessage.get());
-      return true;
-    }
-
-    if (args.length == 0) {
-      return false;
-    }
-
-    PlayerData data = this.plugin.getDataManager().getData(player);
+  @Command("color|colour <type> [color]")
+  public void execute(
+      final @NotNull Player sender,
+      final @NotNull @Argument("type") ColorType type,
+      final @Nullable @Argument(value = "color", suggestions = "colors") String color
+  ) {
+    PlayerData data = this.plugin.getDataManager().getData(sender);
 
     // Validate selected color
     TextColor newColor = null;
-    if (args.length > 1) {
-      newColor = NamedTextColor.NAMES.keyToValue().get(args[1]);
+    if (color != null) {
+      newColor = NamedTextColor.NAMES.keyToValue().get(color);
       if (newColor == null) {
-        newColor = TextColor.fromCSSHexString(args[1]);
+        newColor = TextColor.fromCSSHexString(color);
       }
       if (newColor == null) {
-        newColor = TextColor.fromHexString(args[1]);
+        newColor = TextColor.fromHexString(color);
       }
 
       if (newColor == null) {
         sender.sendMessage(InvalidColorMessage.get());
       }
-
-
     }
 
-    switch (args[0].toLowerCase()) {
+    switch (type) {
       // /color chat [color]
-      case "chat" -> {
-        if (args.length == 1) {
+      case CHAT -> {
+        if (color == null) {
           data.setMessageColor(null);
           sender.sendMessage(ColorResetMessage.get("chat"));
           break;
@@ -71,8 +53,8 @@ public class ColorCommand implements TabExecutor {
         sender.sendMessage(ColorSetMessage.get("chat", newColor));
       }
       // /color name [color]
-      case "name" -> {
-        if (args.length == 1) {
+      case NAME -> {
+        if (color == null) {
           data.setNameColor(null);
           sender.sendMessage(ColorResetMessage.get("chat"));
           break;
@@ -81,37 +63,17 @@ public class ColorCommand implements TabExecutor {
         sender.sendMessage(ColorSetMessage.get("name", newColor));
       }
       default -> {
-        return false;
+        return;
       }
     }
-
-    return true;
   }
 
-  @Override
-  public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command cmd,
-      @NotNull String alias, String[] args) {
-    if (!(sender instanceof Player)) {
-      return null;
-    }
+  public enum ColorType {
+    CHAT,NAME
+  }
 
-    List<String> completions = new ArrayList<>();
-    switch (args.length) {
-      // Complete subcommand
-      case 1 -> {
-        List<String> subcommands = Arrays.asList("chat", "name");
-        StringUtil.copyPartialMatches(args[0], subcommands, completions);
-      }
-      // Complete color name for /color chat and /color name
-      case 2 -> {
-        if (!(args[0].equalsIgnoreCase("chat") || args[0].equalsIgnoreCase("name"))) {
-          break;
-        }
-        StringUtil.copyPartialMatches(args[1], NamedTextColor.NAMES.keys(), completions);
-      }
-    }
-
-    Collections.sort(completions);
-    return completions;
+  @Suggestions("colors")
+  public Set<String> colors() {
+    return NamedTextColor.NAMES.keys();
   }
 }
