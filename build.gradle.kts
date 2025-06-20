@@ -23,11 +23,21 @@ dependencies {
     implementation("org.slf4j:slf4j-simple:2.0.5")
     implementation("org.apache.commons:commons-text:1.11.0")
     implementation("org.apache.commons:commons-collections4:4.4")
+    implementation("org.incendo:cloud-core:2.0.0")
+    implementation("org.incendo:cloud-annotations:2.0.0")
+    implementation("org.incendo:cloud-minecraft-extras:2.0.0-beta.10")
+    implementation("org.incendo:cloud-paper:2.0.0-beta.10")
 
     compileOnly("com.frengor:ultimateadvancementapi:2.2.3")
     compileOnly("com.comphenix.protocol:ProtocolLib:5.1.0")
     compileOnly("io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT")
     compileOnly("com.mojang:brigadier:1.0.18")
+    compileOnly("org.projectlombok:lombok:1.18.38")
+
+    annotationProcessor("org.projectlombok:lombok:1.18.38")
+
+    testCompileOnly("org.projectlombok:lombok:1.18.38")
+    testAnnotationProcessor("org.projectlombok:lombok:1.18.38")
 }
 
 tasks {
@@ -81,4 +91,7 @@ repositories {
 
     // brigadier
     maven("https://libraries.minecraft.net")
+
+    // cloud
+    maven("https://oss.sonatype.org/content/groups/public/")
 }

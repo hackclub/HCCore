@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Predicate;
+import lombok.Getter;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
@@ -13,6 +14,7 @@ import org.bukkit.scoreboard.Team;
 public class DataManager {
 
   private final HCCorePlugin plugin;
+  @Getter
   private final String dataFolder;
   private final Map<UUID, PlayerData> onlinePlayers = new HashMap<>();
 
@@ -22,10 +24,6 @@ public class DataManager {
 
     File folder = new File(this.dataFolder);
     folder.mkdirs();
-  }
-
-  public String getDataFolder() {
-    return this.dataFolder;
   }
 
   public PlayerData getData(Player player) {

@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/HCCore.iml" filepath="$PROJECT_DIR$/.idea/modules/HCCore.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/HCCore.main.iml" filepath="$PROJECT_DIR$/.idea/modules/HCCore.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/HCCore.test.iml" filepath="$PROJECT_DIR$/.idea/modules/HCCore.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.hackclub.hccore.HCCore.main.iml" filepath="$PROJECT_DIR$/.idea/modules/com.hackclub.hccore.HCCore.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.hackclub.hccore.HCCore.main~1.iml" filepath="$PROJECT_DIR$/.idea/modules/com.hackclub.hccore.HCCore.main~1.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.hackclub.hccore.HCCore.main~2.iml" filepath="$PROJECT_DIR$/.idea/modules/com.hackclub.hccore.HCCore.main~2.iml" />

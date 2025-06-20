@@ -34,8 +34,6 @@ import com.hackclub.hccore.commands.SlackCommand;
 import com.hackclub.hccore.commands.SpawnCommand;
 import com.hackclub.hccore.commands.StatsCommand;
 import com.hackclub.hccore.commands.WelcomeCommand;
-import com.hackclub.hccore.commands.messaging.MessageCommand;
-import com.hackclub.hccore.commands.messaging.ReplyCommand;
 import com.hackclub.hccore.listeners.AFKListener;
 import com.hackclub.hccore.listeners.BeehiveInteractionListener;
 import com.hackclub.hccore.listeners.NameChangeListener;
@@ -45,6 +43,7 @@ import com.hackclub.hccore.tasks.AutoAFKTask;
 import com.hackclub.hccore.utils.TimeUtil;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Getter;
 import org.bukkit.DyeColor;
 import org.bukkit.GameRule;
 import org.bukkit.Material;
@@ -59,12 +58,18 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class HCCorePlugin extends JavaPlugin {
 
+  @Getter
   private DataManager dataManager;
+  @Getter
   private ProtocolManager protocolManager;
-  private SlackBot bot;
+  @Getter
+  private SlackBot slackBot;
+  @Getter
+  private static HCCorePlugin instance;
 
   @Override
   public void onEnable() {
+    instance = this;
     // enable default advancement announcements, should probably leave default, but removes need to re-enable on each server
     for (World world : this.getServer().getWorlds()) {
       world.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, true);
@@ -79,11 +84,12 @@ public class HCCorePlugin extends JavaPlugin {
 
     if (this.getConfig().getBoolean("settings.slack-link.enabled", false)) {
       try {
-        this.bot = new SlackBot(this);
+        this.slackBot = new SlackBot(this);
       } catch (Exception e) {
         e.printStackTrace();
       }
     }
+
     // Register commands
 
     registerCommand("afk", new AFKCommand(this));
@@ -96,29 +102,27 @@ public class HCCorePlugin extends JavaPlugin {
     registerCommand("stats", new StatsCommand(this));
     registerCommand("rules", new RulesCommand());
     registerCommand("welcome", new WelcomeCommand());
-    registerCommand("msg", new MessageCommand(this));
-    registerCommand("reply", new ReplyCommand(this));
 
-    // prepare for new emotes commands:
-    // downvote       "↓"
-    // shrug          "¯\_(ツ)_/¯"
-    // tableflip      "(╯°□°）╯︵ ┻━┻"
-    // upvote         "↑"
-    // angry          "ಠ_ಠ"
+    // emojis in chat
+    // :downvote:       "↓"
+    // :shrug:          "¯\_(ツ)_/¯"
+    // :tableflip:      "(╯°□°）╯︵ ┻━┻"
+    // :upvote:         "↑"
+    // :angry:          "ಠ_ಠ"
 
     // Register advancements
     this.registerAdvancements();
 
     // Register event listeners
-    if (this.bot != null) {
-      this.getServer().getPluginManager().registerEvents(this.bot, this);
-      this.advancementTab.getEventManager().register(this.bot, ProgressionUpdateEvent.class,
-          this.bot::onCustomAdvancementProgressed);
+    if (this.slackBot != null) {
+      this.getServer().getPluginManager().registerEvents(this.slackBot, this);
+      this.advancementTab.getEventManager().register(this.slackBot, ProgressionUpdateEvent.class,
+          this.slackBot::onCustomAdvancementProgressed);
     }
 
-    this.getServer().getPluginManager().registerEvents(new AFKListener(this), this);
+    this.getServer().getPluginManager().registerEvents(new AFKListener(), this);
     this.getServer().getPluginManager().registerEvents(new BeehiveInteractionListener(), this);
-    this.getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
+    this.getServer().getPluginManager().registerEvents(new PlayerListener(), this);
 
     // Register packet listeners
     this.getProtocolManager().addPacketListener(
@@ -138,27 +142,15 @@ public class HCCorePlugin extends JavaPlugin {
   public void onDisable() {
     this.getDataManager().unregisterAll();
 
-    if (this.bot != null) {
+    if (this.slackBot != null) {
       try {
-        this.bot.disconnect();
+        this.slackBot.disconnect();
       } catch (Exception e) {
         e.printStackTrace();
       }
 
-      this.bot = null;
+      this.slackBot = null;
     }
-  }
-
-  public DataManager getDataManager() {
-    return this.dataManager;
-  }
-
-  public ProtocolManager getProtocolManager() {
-    return this.protocolManager;
-  }
-
-  public SlackBot getSlackBot() {
-    return this.bot;
   }
 
   public AdvancementTab advancementTab;
@@ -230,10 +222,6 @@ public class HCCorePlugin extends JavaPlugin {
       return;
     }
     command.setExecutor(commandExecutor);
-  }
-
-  public static HCCorePlugin getInstance() {
-    return HCCorePlugin.getPlugin(HCCorePlugin.class);
   }
 
 }
