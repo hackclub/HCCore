@@ -1,5 +1,6 @@
 package com.hackclub.hccore.commands.messaging;
 
+import com.hackclub.hccore.annotations.annotations.RegisteredCommand;
 import com.hackclub.hccore.commands.general.AbstractCommand;
 import com.hackclub.hccore.playermessages.NoOnlinePlayerMessage;
 import com.hackclub.hccore.playermessages.messages.PrivateMessage;
@@ -11,6 +12,7 @@ import org.incendo.cloud.annotations.Argument;
 import org.incendo.cloud.annotations.Command;
 import org.jetbrains.annotations.NotNull;
 
+@RegisteredCommand
 public class ReplyCommand extends AbstractCommand {
 
   @Command("r|reply <message>")

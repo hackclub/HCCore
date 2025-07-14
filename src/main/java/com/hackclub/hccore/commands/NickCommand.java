@@ -1,6 +1,7 @@
 package com.hackclub.hccore.commands;
 
 import com.hackclub.hccore.PlayerData;
+import com.hackclub.hccore.annotations.annotations.RegisteredCommand;
 import com.hackclub.hccore.commands.general.AbstractCommand;
 import com.hackclub.hccore.playermessages.nickname.NicknameLengthMessage;
 import com.hackclub.hccore.playermessages.nickname.NicknameResetMessage;
@@ -13,6 +14,7 @@ import org.incendo.cloud.annotations.Command;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+@RegisteredCommand
 public class NickCommand extends AbstractCommand {
 
   @Command("nick|nickname [nickname]")

@@ -1,6 +1,7 @@
 package com.hackclub.hccore.commands;
 
 import com.hackclub.hccore.PlayerData;
+import com.hackclub.hccore.annotations.annotations.RegisteredCommand;
 import com.hackclub.hccore.commands.general.AbstractCommand;
 import com.hackclub.hccore.playermessages.spawn.OverworldCommandMessage;
 import com.hackclub.hccore.playermessages.spawn.SpawnGroundMessage;
@@ -15,6 +16,7 @@ import org.bukkit.entity.Player;
 import org.incendo.cloud.annotations.Command;
 import org.jetbrains.annotations.NotNull;
 
+@RegisteredCommand
 public class SpawnCommand extends AbstractCommand {
 
   @SuppressWarnings("deprecation")

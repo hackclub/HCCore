@@ -1,5 +1,6 @@
 package com.hackclub.hccore.commands.messaging;
 
+import com.hackclub.hccore.annotations.annotations.RegisteredCommand;
 import com.hackclub.hccore.commands.general.AbstractCommand;
 import com.hackclub.hccore.enums.Color;
 import com.hackclub.hccore.playermessages.messages.PrivateMessage;
@@ -12,6 +13,7 @@ import org.incendo.cloud.annotations.Argument;
 import org.incendo.cloud.annotations.Command;
 import org.jetbrains.annotations.NotNull;
 
+@RegisteredCommand
 public class MessageCommand extends AbstractCommand {
 
   @Command("message|msg|w|whisper <player> <message>")

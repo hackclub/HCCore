@@ -1,6 +1,7 @@
 package com.hackclub.hccore.commands;
 
 import com.hackclub.hccore.PlayerData;
+import com.hackclub.hccore.annotations.annotations.RegisteredCommand;
 import com.hackclub.hccore.commands.general.AbstractCommand;
 import com.hackclub.hccore.playermessages.color.ColorResetMessage;
 import com.hackclub.hccore.playermessages.color.ColorSetMessage;
@@ -15,6 +16,7 @@ import org.incendo.cloud.annotations.suggestion.Suggestions;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+@RegisteredCommand
 public class ColorCommand extends AbstractCommand {
 
   @Command("color|colour <type> [color]")

@@ -18,7 +18,6 @@ public class CommandManager {
   public static void registerCommands(HCCorePlugin instance, BukkitScheduler scheduler, AnnotationParser<CommandSender> annotationParser) {
     String[] packages = {
         "commands",
-        "commands.general",
         "commands.messaging"
     };
 

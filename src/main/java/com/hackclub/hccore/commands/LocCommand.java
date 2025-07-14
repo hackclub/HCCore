@@ -2,6 +2,7 @@ package com.hackclub.hccore.commands;
 
 import com.hackclub.hccore.HCCorePlugin;
 import com.hackclub.hccore.PlayerData;
+import com.hackclub.hccore.annotations.annotations.RegisteredCommand;
 import com.hackclub.hccore.commands.general.AbstractCommand;
 import com.hackclub.hccore.playermessages.MustBePlayerMessage;
 import com.hackclub.hccore.playermessages.NoOnlinePlayerMessage;
@@ -33,6 +34,7 @@ import org.incendo.cloud.context.CommandContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+@RegisteredCommand
 @Command("loc|locations")
 public class LocCommand extends AbstractCommand{
 
