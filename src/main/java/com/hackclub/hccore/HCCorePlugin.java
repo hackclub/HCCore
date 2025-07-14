@@ -24,6 +24,7 @@ import com.hackclub.hccore.advancements.MileAdv;
 import com.hackclub.hccore.advancements.MusicophileAdv;
 import com.hackclub.hccore.advancements.WitherAdv;
 import com.hackclub.hccore.advancements.WolfAdv;
+import com.hackclub.hccore.annotations.managers.CommandManager;
 import com.hackclub.hccore.commands.AFKCommand;
 import com.hackclub.hccore.commands.ColorCommand;
 import com.hackclub.hccore.commands.LocCommand;
@@ -51,10 +52,16 @@ import org.bukkit.World;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.block.banner.PatternType;
 import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BannerMeta;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.incendo.cloud.SenderMapper;
+import org.incendo.cloud.annotations.AnnotationParser;
+import org.incendo.cloud.execution.ExecutionCoordinator;
+import org.incendo.cloud.minecraft.extras.MinecraftHelp;
+import org.incendo.cloud.paper.LegacyPaperCommandManager;
 
 public class HCCorePlugin extends JavaPlugin {
 
@@ -89,6 +96,16 @@ public class HCCorePlugin extends JavaPlugin {
         e.printStackTrace();
       }
     }
+
+    final LegacyPaperCommandManager<CommandSender> manager = new LegacyPaperCommandManager<>(
+        instance,
+        ExecutionCoordinator.simpleCoordinator(),
+        SenderMapper.identity()
+    );
+    manager.captionRegistry().registerProvider(MinecraftHelp.defaultCaptionsProvider());
+    var annotationParser = new AnnotationParser<>(manager, CommandSender.class);
+
+    CommandManager.registerCommands(instance, instance.getServer().getScheduler(), annotationParser);
 
     // emojis in chat
     // :downvote:       "↓"

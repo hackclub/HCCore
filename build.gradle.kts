@@ -27,6 +27,7 @@ dependencies {
     implementation("org.incendo:cloud-annotations:2.0.0")
     implementation("org.incendo:cloud-minecraft-extras:2.0.0-beta.10")
     implementation("org.incendo:cloud-paper:2.0.0-beta.10")
+    implementation("org.reflections:reflections:0.10.2")
 
     compileOnly("com.frengor:ultimateadvancementapi:2.2.3")
     compileOnly("com.comphenix.protocol:ProtocolLib:5.1.0")
