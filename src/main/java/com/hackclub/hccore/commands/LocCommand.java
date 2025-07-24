@@ -124,7 +124,7 @@ public class LocCommand extends AbstractCommand{
   @Command("save [name]")
   public void executeSave(
       final @NotNull Player sender,
-      @Nullable @Argument(value = "old", suggestions = "locations") String name
+      @Nullable @Argument(value = "name", suggestions = "locations") String name
   ) {
     if (name == null) {
       sender.sendMessage(SpecifyLocationMessage.get());

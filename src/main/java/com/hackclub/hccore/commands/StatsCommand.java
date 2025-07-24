@@ -16,6 +16,7 @@ import org.bukkit.Material;
 import org.bukkit.Statistic;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.incendo.cloud.annotations.Argument;
 import org.incendo.cloud.annotations.Command;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -26,9 +27,9 @@ public class StatsCommand extends AbstractCommand {
   @Command("stats [player] [option] [statistic]")
   public void execute(
       final @NotNull CommandSender sender,
-      final @Nullable Player target,
-      final @Nullable Option option,
-      final @Nullable Statistic statistic
+      final @Nullable @Argument("player") Player target,
+      final @Nullable @Argument("option") Option option,
+      final @Nullable @Argument("statistic") Statistic statistic
   ) {
     boolean extended = false;
 
