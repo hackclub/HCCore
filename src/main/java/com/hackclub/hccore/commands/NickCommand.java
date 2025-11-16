@@ -3,6 +3,7 @@ package com.hackclub.hccore.commands;
 import com.hackclub.hccore.HCCorePlugin;
 import com.hackclub.hccore.PlayerData;
 import com.hackclub.hccore.playermessages.MustBePlayerMessage;
+import com.hackclub.hccore.playermessages.nickname.NicknameAlreadyUsedMessage;
 import com.hackclub.hccore.playermessages.nickname.NicknameLengthMessage;
 import com.hackclub.hccore.playermessages.nickname.NicknameResetMessage;
 import com.hackclub.hccore.playermessages.nickname.NicknameSetMessage;
@@ -41,6 +42,13 @@ public class NickCommand implements CommandExecutor {
       player.kick(SaharshMessage.get());
       return true;
     }
+
+    if (plugin.getDataManager().findData(data -> data.getNickname().equals(newNickname)) != null) {
+      sender.sendMessage(NicknameAlreadyUsedMessage.get(newNickname,
+        plugin.getDataManager().getData(player).getNameColor()));
+        return true;
+    }
+
 
     if (newNickname.length() > PlayerData.MAX_NICKNAME_LENGTH) {
       sender.sendMessage(NicknameLengthMessage.get(
