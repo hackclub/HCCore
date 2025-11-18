@@ -34,73 +34,76 @@ public class MusicophileAdv extends BaseAdvancement {
       Material.MUSIC_DISC_PIGSTEP, Material.MUSIC_DISC_RELIC, Material.MUSIC_DISC_CREATOR,
       Material.MUSIC_DISC_CREATOR_MUSIC_BOX, Material.MUSIC_DISC_PRECIPICE};
 
+  private final HCCorePlugin plugin;
+
   @SuppressWarnings("unchecked")
   public MusicophileAdv(HCCorePlugin plugin, Advancement root, AdvancementKey key,
       CoordAdapter adapter) {
     super(key.getKey(), displayBuilder.coords(adapter, key).build(), root, musicDiscs.length);
+    this.plugin = plugin;
 
-    for (Material disc : musicDiscs) {
-      registerEvent(InventoryClickEvent.class, e -> {
-        ItemStack currentItem = e.getCurrentItem();
-        if (currentItem == null) {
-          return;
+
++    registerEvent(InventoryClickEvent.class, this::handleInventoryClick);
++    registerEvent(EntityPickupItemEvent.class, this::handleItemPickup);
+
+    private void handleInventoryClick(InventoryClickEvent event) {
+      ItemStack currentItem = event.getCurrentItem();
+      if (currentItem == null) {
+        return;
+      }
+
+      if (!(event.getWhoClicked() instanceof Player player)) {
+        return;
+      }
+
+      if (!musicDiscs.contains(currentItem.getType())) {
+        return;
+      }
+
+      handleDiscCollection(player, currentItem.getType());
+    }
+
+    private void handleItemPickup(EntityPickupItemEvent event) {
+      if (!(event.getEntity() instanceof Player player)) {
+        return;
+      }
+
+      Material itemType = event.getItem().getItemStack().getType();
+
+      if (!musicDiscs.contains(itemType)) {
+        return;
+      }
+
+      handleDiscCollection(player, itemType);
+    }
+
+    @SuppressWarnings("unchecked")
+    private void handleDiscCollection(Player player, Material disc) {
+      List<String> collectedDiscs = null;
+
+      if (player.hasMetadata("hccore_discs")) {
+        List<?> metadataList = player.getMetadata("hccore_discs");
+        if (!metadataList.isEmpty()) {
+          Object metaValue = metadataList.get(0).value();
+          if (metaValue instanceof List<?>) {
+            collectedDiscs = (List<String>) metaValue;
+          }
         }
-        if (currentItem.getType() == disc) {
-          HumanEntity entity = e.getWhoClicked();
+      }
 
-          if (!(entity instanceof Player)) {
-            return;
-          }
+      if (collectedDiscs == null) {
+        collectedDiscs = new ArrayList<>();
+      }
 
-          List<String> metadataDiscs = null;
-          if (entity.hasMetadata("hccore_discs")) {
-            metadataDiscs = (List<String>) entity.getMetadata("hccore_discs").get(0).value();
-          }
+      String discName = disc.toString();
+      if (collectedDiscs.contains(discName)) {
+        return;
+      }
 
-          if (metadataDiscs == null) {
-            metadataDiscs = new ArrayList<>();
-          }
+      collectedDiscs.add(discName);
+      player.setMetadata("hccore_discs", new FixedMetadataValue(plugin, collectedDiscs));
 
-          if (metadataDiscs.contains(disc.toString())) {
-            return;
-          }
-          metadataDiscs.add(disc.toString());
-
-          entity.setMetadata("hccore_discs",
-              new FixedMetadataValue(plugin, metadataDiscs));
-
-          incrementProgression(entity.getUniqueId());
-        }
-      });
-
-      registerEvent(EntityPickupItemEvent.class, e -> {
-        if (e.getItem().getItemStack().getType() == disc) {
-          LivingEntity entity = e.getEntity();
-
-          if (!(entity instanceof Player)) {
-            return;
-          }
-
-          List<String> metadataDiscs = null;
-          if (entity.hasMetadata("hccore_discs")) {
-            metadataDiscs = (List<String>) entity.getMetadata("hccore_discs").get(0).value();
-          }
-
-          if (metadataDiscs == null) {
-            metadataDiscs = new ArrayList<>();
-          }
-
-          if (metadataDiscs.contains(disc.toString())) {
-            return;
-          }
-          metadataDiscs.add(disc.toString());
-
-          entity.setMetadata("hccore_discs",
-              new FixedMetadataValue(plugin, metadataDiscs));
-
-          incrementProgression(e.getEntity().getUniqueId());
-        }
-      });
+      incrementProgression(player.getUniqueId());
     }
   }
 }
