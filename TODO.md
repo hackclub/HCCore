@@ -7,8 +7,8 @@ order by priority
 - [x] `onCommand` in `LocCommand.java` on line 103-106: Array out of bounds: missing `return true;` after error message when `args.length < 3`
 - [x] `Constructor` in `MileAdv.java` on line 24-28: Severe performance issue: checks statistic on every PlayerMoveEvent without checking if advancement already granted
 - [x] `Constructor` in `AstraAdv.java` on line 25-31: Severe performance issue: checks location on every PlayerMoveEvent without checking if advancement already granted
-- [ ] `Constructor` in `MusicophileAdv.java` on line 29-92: Data loss across sessions: disc collection stored in entity metadata which is not persisted
-- [ ] `onlinePlayers` in `DataManager.java` on line 16: Thread safety issue: HashMap accessed from async thread in `onPrePlayerLogin`, needs ConcurrentHashMap
+- [x] `Constructor` in `MusicophileAdv.java` on line 29-92: Data loss across sessions: disc collection stored in entity metadata which is not persisted
+- [x] `onlinePlayers` in `DataManager.java` on line 16: Thread safety issue: HashMap accessed from async thread in `onPrePlayerLogin`, needs ConcurrentHashMap
 - [ ] `onCommand` in `LocCommand.java` on line 110-111: Wrong recipient: second message sent to sender instead of recipient
 
 ## 🟡 Medium
