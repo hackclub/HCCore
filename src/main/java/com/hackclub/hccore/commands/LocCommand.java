@@ -141,6 +141,7 @@ public class LocCommand implements TabExecutor {
       case "share" -> {
         if (args.length < 3) {
           sender.sendMessage(SpecifyShareMessage.get());
+          break;
         }
         locationName = args[1];
         String recipientName = args[2];
