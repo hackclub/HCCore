@@ -9,7 +9,7 @@ order by priority
 - [x] `Constructor` in `AstraAdv.java` on line 25-31: Severe performance issue: checks location on every PlayerMoveEvent without checking if advancement already granted
 - [x] `Constructor` in `MusicophileAdv.java` on line 29-92: Data loss across sessions: disc collection stored in entity metadata which is not persisted
 - [x] `onlinePlayers` in `DataManager.java` on line 16: Thread safety issue: HashMap accessed from async thread in `onPrePlayerLogin`, needs ConcurrentHashMap
-- [ ] `onCommand` in `LocCommand.java` on line 110-111: Wrong recipient: second message sent to sender instead of recipient
+- [x] `onCommand` in `LocCommand.java` on line 110-111: Wrong recipient: second message sent to sender instead of recipient
 
 ## 🟡 Medium
 - [ ] `onCommand` in `LocCommand.java` on line 115: Potential NPE: `sendLocation.getWorld()` can return null if world is unloaded
