@@ -18,8 +18,8 @@ order by priority
 - [ ] `onCommand` in `ColorCommand.java` on line 63: Wrong message type: reset message says "chat" instead of "name"
 - [ ] `setNickname` in `PlayerData.java` on line 113: Edge case: `oldName` could be null if both nickname and offlinePlayer.getName() are null
 - [x] `Constructor` in `MusicophileAdv.java` on line 29-92: Inefficient design: registers 30 event handlers (15 discs × 2 events) instead of 2 handlers
-- [ ] `load` in `PlayerData.java` on line 162: Resource leak: FileReader never closed
-- [ ] `save` in `PlayerData.java` on line 180: Resource leak: FileWriter not using try-with-resources
+- [x] `load` in `PlayerData.java` on line 162: Resource leak: FileReader never closed
+- [x] `save` in `PlayerData.java` on line 180: Resource leak: FileWriter not using try-with-resources
 
 ## 🟢 Low
 - [x] `toSIPrefix` in `StatsCommand.java` on line 135: Unreachable code: final `return null;` is unreachable, all cases covered

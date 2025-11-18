@@ -181,43 +181,42 @@ public class PlayerData {
   public boolean addCollectedMusicDisc(String disc) {
     return this.collectedMusicDiscs.add(disc);
   }
-  
-  public void load() {
+
+public void load() {
     try {
-      this.dataFile.getParentFile().mkdirs();
-
-      if (!this.dataFile.exists()) {
-        this.plugin.getLogger().log(Level.INFO,
-            "No data file found for " + this.offlinePlayer.getName() + ", creating…");
-        this.dataFile.createNewFile();
-        this.save();
-      }
-
-      // Populate this instance
-      PlayerData data = GsonUtil.getInstance().fromJson(new FileReader(this.dataFile),
-          PlayerData.class);
-      this.setNickname(data.nickname);
-      this.setSlackId(data.slackId);
-      this.setNameColor(data.nameColor);
-      this.setMessageColor(data.messageColor);
-      this.setLastPlayerChattingWith(data.lastPlayerChattingWith);
-      this.savedLocations = data.savedLocations;
+        this.dataFile.getParentFile().mkdirs();
+        if (!this.dataFile.exists()) {
+            this.plugin.getLogger().log(Level.INFO,
+                "No data file found for " + this.offlinePlayer.getName() + ", creating…");
+            this.dataFile.createNewFile();
+            this.save();
+            return;
+        }
+        // population except for uhhh try :thumbsup:
+        try (FileReader reader = new FileReader(this.dataFile)) {
+            PlayerData data = GsonUtil.getInstance().fromJson(reader, PlayerData.class);
+            this.setNickname(data.nickname);
+            this.setSlackId(data.slackId);
+            this.setNameColor(data.nameColor);
+            this.setMessageColor(data.messageColor);
+            this.setLastPlayerChattingWith(data.lastPlayerChattingWith);
+            this.savedLocations = data.savedLocations;
+        }
     } catch (IOException e) {
-      e.printStackTrace();
+        e.printStackTrace();
     }
-  }
+}
 
-  public void save() {
+public void save() {
     try {
-      this.dataFile.getParentFile().mkdirs();
-
-      FileWriter writer = new FileWriter(this.dataFile);
-      GsonUtil.getInstance().toJson(this, writer);
-      writer.close();
+        this.dataFile.getParentFile().mkdirs();
+        try (FileWriter writer = new FileWriter(this.dataFile)) {
+            GsonUtil.getInstance().toJson(this, writer);
+        }
     } catch (IOException e) {
-      e.printStackTrace();
+        e.printStackTrace();
     }
-  }
+}
 
   public String getUsableName() {
     return this.getNickname() != null ? this.getNickname() : this.offlinePlayer.getName();
