@@ -77,33 +77,23 @@ public class MusicophileAdv extends BaseAdvancement {
       handleDiscCollection(player, itemType);
     }
 
-    @SuppressWarnings("unchecked")
     private void handleDiscCollection(Player player, Material disc) {
-      List<String> collectedDiscs = null;
-
-      if (player.hasMetadata("hccore_discs")) {
-        List<?> metadataList = player.getMetadata("hccore_discs");
-        if (!metadataList.isEmpty()) {
-          Object metaValue = metadataList.get(0).value();
-          if (metaValue instanceof List<?>) {
-            collectedDiscs = (List<String>) metaValue;
-          }
-        }
-      }
-
-      if (collectedDiscs == null) {
-        collectedDiscs = new ArrayList<>();
-      }
-
       String discName = disc.toString();
-      if (collectedDiscs.contains(discName)) {
+
+      PlayerData data = plugin.getDataManager().getData(player);
+      if (data == null) {
         return;
       }
 
-      collectedDiscs.add(discName);
-      player.setMetadata("hccore_discs", new FixedMetadataValue(plugin, collectedDiscs));
+      if (data.getCollectedMusicDiscs().contains(discName)) {
+        return;
+      }
 
-      incrementProgression(player.getUniqueId());
+      if (data.addCollectedMusicDisc(discName)) {
+        data.save();
+
+        incrementProgression(player.getUniqueId());
+      }
     }
   }
 }

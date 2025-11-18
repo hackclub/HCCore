@@ -47,6 +47,8 @@ public class PlayerData {
   private Map<String, Location> savedLocations = new LinkedHashMap<>();
   @Expose
   private UUID lastPlayerChattingWith = null;
+  @Expose
+  private Set<String> collectedMusicDiscs = new HashSet<>();
 
   public PlayerData(HCCorePlugin plugin, Player player) {
     this.plugin = plugin;
@@ -167,6 +169,19 @@ public class PlayerData {
     }
   }
 
+
+  public Set<String> getCollectedMusicDiscs() {
+    return this.collectedMusicDiscs;
+  }
+
+  public void setCollectedMusicDiscs(Set<String> discs) {
+    this.collectedMusicDiscs = discs;
+  }
+
+  public boolean addCollectedMusicDisc(String disc) {
+    return this.collectedMusicDiscs.add(disc);
+  }
+  
   public void load() {
     try {
       this.dataFile.getParentFile().mkdirs();
