@@ -8,6 +8,7 @@ import com.hackclub.hccore.playermessages.nickname.NicknameLengthMessage;
 import com.hackclub.hccore.playermessages.nickname.NicknameResetMessage;
 import com.hackclub.hccore.playermessages.nickname.NicknameSetMessage;
 import com.hackclub.hccore.playermessages.nickname.SaharshMessage;
+import java.util.Objects;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -43,7 +44,7 @@ public class NickCommand implements CommandExecutor {
       return true;
     }
 
-    if (plugin.getDataManager().findData(data -> data.getNickname().equals(newNickname)) != null) {
+    if (plugin.getDataManager().findData(data -> Objects.equals(data.getNickname(), newNickname)) != null) {
       sender.sendMessage(NicknameAlreadyUsedMessage.get(newNickname,
         plugin.getDataManager().getData(player).getNameColor()));
         return true;
