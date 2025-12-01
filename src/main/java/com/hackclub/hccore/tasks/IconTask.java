@@ -36,7 +36,7 @@ public class IconTask implements Runnable {
       plugin.getLogger().severe(e.getMessage());
       return;
     }
-    if (ssResponse == null) {
+    if (ssResponse == null || ssResponse.body() == null) {
       plugin.getLogger().severe("Failed to get the current icon from Shrimp Shuffler!");
       return;
     }
