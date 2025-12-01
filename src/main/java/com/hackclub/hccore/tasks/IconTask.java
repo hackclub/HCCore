@@ -48,7 +48,7 @@ public class IconTask implements Runnable {
     HttpResponse<Path> cdnResponse;
     try {
       cdnResponse = client.send(cdnRequest,
-          HttpResponse.BodyHandlers.ofFile(Paths.get(plugin.getDataPath().toString(), "temp.png")));
+          HttpResponse.BodyHandlers.ofFile(Paths.get(plugin.getDataPath().toString(), "icon.png")));
     } catch (IOException | InterruptedException | SecurityException e) {
       plugin.getLogger().severe("Failed to get the current icon from the Hack Club CDN!");
       plugin.getLogger().severe(e.getMessage());
