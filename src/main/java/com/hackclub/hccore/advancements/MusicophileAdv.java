@@ -27,81 +27,73 @@ public class MusicophileAdv extends BaseAdvancement {
           .showToast()
           .description("Collect every single music disc");
   static final Material[] musicDiscs = {Material.MUSIC_DISC_13, Material.MUSIC_DISC_CAT,
-      Material.MUSIC_DISC_BLOCKS,
-      Material.MUSIC_DISC_CHIRP, Material.MUSIC_DISC_FAR, Material.MUSIC_DISC_MALL,
-      Material.MUSIC_DISC_MELLOHI
-      , Material.MUSIC_DISC_STAL, Material.MUSIC_DISC_STRAD, Material.MUSIC_DISC_WARD,
-      Material.MUSIC_DISC_11,
+      Material.MUSIC_DISC_BLOCKS, Material.MUSIC_DISC_CHIRP, Material.MUSIC_DISC_FAR,
+      Material.MUSIC_DISC_MALL, Material.MUSIC_DISC_MELLOHI, Material.MUSIC_DISC_STAL,
+      Material.MUSIC_DISC_STRAD, Material.MUSIC_DISC_WARD, Material.MUSIC_DISC_11,
       Material.MUSIC_DISC_WAIT, Material.MUSIC_DISC_OTHERSIDE, Material.MUSIC_DISC_5,
-      Material.MUSIC_DISC_PIGSTEP};
+      Material.MUSIC_DISC_PIGSTEP, Material.MUSIC_DISC_RELIC, Material.MUSIC_DISC_CREATOR,
+      Material.MUSIC_DISC_CREATOR_MUSIC_BOX, Material.MUSIC_DISC_PRECIPICE};
+
+  private final HCCorePlugin plugin;
 
   @SuppressWarnings("unchecked")
   public MusicophileAdv(HCCorePlugin plugin, Advancement root, AdvancementKey key,
       CoordAdapter adapter) {
     super(key.getKey(), displayBuilder.coords(adapter, key).build(), root, musicDiscs.length);
+    this.plugin = plugin;
 
-    for (Material disc : musicDiscs) {
-      registerEvent(InventoryClickEvent.class, e -> {
-        ItemStack currentItem = e.getCurrentItem();
-        if (currentItem == null) {
-          return;
-        }
-        if (currentItem.getType() == disc) {
-          HumanEntity entity = e.getWhoClicked();
 
-          if (!(entity instanceof Player)) {
-            return;
-          }
++    registerEvent(InventoryClickEvent.class, this::handleInventoryClick);
++    registerEvent(EntityPickupItemEvent.class, this::handleItemPickup);
 
-          List<String> metadataDiscs = null;
-          if (entity.hasMetadata("hccore_discs")) {
-            metadataDiscs = (List<String>) entity.getMetadata("hccore_discs").get(0).value();
-          }
+    private void handleInventoryClick(InventoryClickEvent event) {
+      ItemStack currentItem = event.getCurrentItem();
+      if (currentItem == null) {
+        return;
+      }
 
-          if (metadataDiscs == null) {
-            metadataDiscs = new ArrayList<>();
-          }
+      if (!(event.getWhoClicked() instanceof Player player)) {
+        return;
+      }
 
-          if (metadataDiscs.contains(disc.toString())) {
-            return;
-          }
-          metadataDiscs.add(disc.toString());
+      if (!musicDiscs.contains(currentItem.getType())) {
+        return;
+      }
 
-          entity.setMetadata("hccore_discs",
-              new FixedMetadataValue(plugin, metadataDiscs));
+      handleDiscCollection(player, currentItem.getType());
+    }
 
-          incrementProgression(entity.getUniqueId());
-        }
-      });
+    private void handleItemPickup(EntityPickupItemEvent event) {
+      if (!(event.getEntity() instanceof Player player)) {
+        return;
+      }
 
-      registerEvent(EntityPickupItemEvent.class, e -> {
-        if (e.getItem().getItemStack().getType() == disc) {
-          LivingEntity entity = e.getEntity();
+      Material itemType = event.getItem().getItemStack().getType();
 
-          if (!(entity instanceof Player)) {
-            return;
-          }
+      if (!musicDiscs.contains(itemType)) {
+        return;
+      }
 
-          List<String> metadataDiscs = null;
-          if (entity.hasMetadata("hccore_discs")) {
-            metadataDiscs = (List<String>) entity.getMetadata("hccore_discs").get(0).value();
-          }
+      handleDiscCollection(player, itemType);
+    }
 
-          if (metadataDiscs == null) {
-            metadataDiscs = new ArrayList<>();
-          }
+    private void handleDiscCollection(Player player, Material disc) {
+      String discName = disc.toString();
 
-          if (metadataDiscs.contains(disc.toString())) {
-            return;
-          }
-          metadataDiscs.add(disc.toString());
+      PlayerData data = plugin.getDataManager().getData(player);
+      if (data == null) {
+        return;
+      }
 
-          entity.setMetadata("hccore_discs",
-              new FixedMetadataValue(plugin, metadataDiscs));
+      if (data.getCollectedMusicDiscs().contains(discName)) {
+        return;
+      }
 
-          incrementProgression(e.getEntity().getUniqueId());
-        }
-      });
+      if (data.addCollectedMusicDisc(discName)) {
+        data.save();
+
+        incrementProgression(player.getUniqueId());
+      }
     }
   }
 }

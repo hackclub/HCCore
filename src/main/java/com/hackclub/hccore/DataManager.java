@@ -14,7 +14,7 @@ public class DataManager {
 
   private final HCCorePlugin plugin;
   private final String dataFolder;
-  private final Map<UUID, PlayerData> onlinePlayers = new HashMap<>();
+  private final Map<UUID, PlayerData> onlinePlayers = new ConcurrentHashMap<>();
 
   public DataManager(HCCorePlugin plugin) {
     this.plugin = plugin;

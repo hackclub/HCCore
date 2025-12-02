@@ -141,6 +141,7 @@ public class LocCommand implements TabExecutor {
       case "share" -> {
         if (args.length < 3) {
           sender.sendMessage(SpecifyShareMessage.get());
+          break;
         }
         locationName = args[1];
         String recipientName = args[2];
@@ -168,8 +169,8 @@ public class LocCommand implements TabExecutor {
           break;
         }
 
-        player.sendMessage(SendSharedMessage.get(locationName, recipientName));
-        player.sendMessage(RecipSharedMessage.get(player.getName(), locationName,
+        player.sendMessage(SendSharedMessage.get(locationName, player.getName()));
+        player.sendMessage(RecipSharedMessage.get(locationName, locationName,
             sendLocation.getWorld().getName(), sendLocation.getBlockX(), sendLocation.getBlockY(),
             sendLocation.getBlockZ()));
         recipData.getSavedLocations().put(player.getName() + ":" + locationName, sendLocation);
