@@ -12,6 +12,8 @@ public class ServerListPingListener implements Listener {
   }
   @EventHandler
   public void serverListPing(PaperServerListPingEvent e) {
-    e.setServerIcon(plugin.serverIcon);
+    if (plugin.serverIcon != null) {
+      e.setServerIcon(plugin.serverIcon);
+    }
   }
 }

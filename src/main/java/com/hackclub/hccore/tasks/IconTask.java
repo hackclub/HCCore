@@ -17,15 +17,16 @@ import org.bukkit.Bukkit;
 
 public class IconTask implements Runnable {
   private final HCCorePlugin plugin;
+  private final HttpClient client;
   public IconTask(HCCorePlugin plugin) {
     this.plugin = plugin;
+    this.client = HttpClient.newHttpClient();
   }
 
   @Override
   public void run() {
     Logger logger = plugin.getLogger();
 
-    HttpClient client = HttpClient.newHttpClient();
     // get the icon url from Shrimp Shuffler
     HttpRequest ssRequest = HttpRequest.newBuilder()
         .uri(URI.create("https://shrimp-shuffler.a.hackclub.dev/api/current"))
@@ -74,12 +75,12 @@ public class IconTask implements Runnable {
       ByteArrayInputStream in = new ByteArrayInputStream(cdnResponse.body());
       image = ImageIO.read(in);
     } catch (IOException e) {
-      logger.severe("Failed to load the current icon from the file!");
+      logger.severe("Failed to load the current icon from the CDN response!");
       logger.severe(e.getMessage());
       return;
     }
     if (image == null) {
-      logger.severe("Failed to load the current icon from the file!");
+      logger.severe("Failed to load the current icon from the CDN response!");
       return;
     }
     BufferedImage serverIcon = resizeToIcon(image);
@@ -87,7 +88,7 @@ public class IconTask implements Runnable {
       try {
         plugin.serverIcon = Bukkit.loadServerIcon(serverIcon);
       } catch (Exception e) {
-        logger.severe("Failed to load the current icon from the file!");
+        logger.severe("Failed to cache the current icon!");
         logger.severe(e.getMessage());
       }
     });
