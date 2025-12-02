@@ -3,6 +3,8 @@ claim-stickers-url: "https://example.com/claim-stickers"
 settings:
   # Time in seconds after which a player will be automatically set to AFK
   auto-afk-time: 600
+  # Time in seconds between requests are made to the Shrimp Shuffler API to change the server icon.
+  icon-change-time: 600
   spawn-command:
     # Radius extending from the world spawn in which the command can be used
     allowed-radius: 2000

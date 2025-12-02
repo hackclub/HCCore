@@ -40,8 +40,10 @@ import com.hackclub.hccore.listeners.AFKListener;
 import com.hackclub.hccore.listeners.BeehiveInteractionListener;
 import com.hackclub.hccore.listeners.NameChangeListener;
 import com.hackclub.hccore.listeners.PlayerListener;
+import com.hackclub.hccore.listeners.ServerListPingListener;
 import com.hackclub.hccore.slack.SlackBot;
 import com.hackclub.hccore.tasks.AutoAFKTask;
+import com.hackclub.hccore.tasks.IconTask;
 import com.hackclub.hccore.utils.TimeUtil;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,12 +58,16 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BannerMeta;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.util.CachedServerIcon;
 
 public class HCCorePlugin extends JavaPlugin {
 
   private DataManager dataManager;
   private ProtocolManager protocolManager;
   private SlackBot bot;
+
+  // Server icon from Shrimp Shuffler
+  public volatile CachedServerIcon serverIcon = null;
 
   @Override
   public void onEnable() {
@@ -119,6 +125,7 @@ public class HCCorePlugin extends JavaPlugin {
     this.getServer().getPluginManager().registerEvents(new AFKListener(this), this);
     this.getServer().getPluginManager().registerEvents(new BeehiveInteractionListener(), this);
     this.getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
+    this.getServer().getPluginManager().registerEvents(new ServerListPingListener(this), this);
 
     // Register packet listeners
     this.getProtocolManager().addPacketListener(
@@ -128,10 +135,14 @@ public class HCCorePlugin extends JavaPlugin {
     new AutoAFKTask(this).runTaskTimer(this,
         (long) this.getConfig().getInt("settings.auto-afk-time") * TimeUtil.TICKS_PER_SECOND,
         30 * TimeUtil.TICKS_PER_SECOND);
+    getServer().getScheduler().runTaskTimerAsynchronously(this, new IconTask(this), 20, (long) this.getConfig().getInt("settings.icon-change-time") * TimeUtil.TICKS_PER_SECOND);
 
     // Register all the players that were online before this plugin was enabled (example
     // scenario: plugin reload) to prevent null pointer errors.
     this.getDataManager().registerAll();
+
+    // Add the server icon to the variable
+    serverIcon = getServer().getServerIcon();
   }
 
   @Override
