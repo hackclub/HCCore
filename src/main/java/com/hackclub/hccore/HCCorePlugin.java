@@ -24,6 +24,7 @@ import com.hackclub.hccore.advancements.MileAdv;
 import com.hackclub.hccore.advancements.MusicophileAdv;
 import com.hackclub.hccore.advancements.WitherAdv;
 import com.hackclub.hccore.advancements.WolfAdv;
+import com.hackclub.hccore.annotations.managers.CommandManager;
 import com.hackclub.hccore.commands.AFKCommand;
 import com.hackclub.hccore.commands.ColorCommand;
 import com.hackclub.hccore.commands.LocCommand;
@@ -34,8 +35,6 @@ import com.hackclub.hccore.commands.SlackCommand;
 import com.hackclub.hccore.commands.SpawnCommand;
 import com.hackclub.hccore.commands.StatsCommand;
 import com.hackclub.hccore.commands.WelcomeCommand;
-import com.hackclub.hccore.commands.messaging.MessageCommand;
-import com.hackclub.hccore.commands.messaging.ReplyCommand;
 import com.hackclub.hccore.listeners.AFKListener;
 import com.hackclub.hccore.listeners.BeehiveInteractionListener;
 import com.hackclub.hccore.listeners.NameChangeListener;
@@ -45,6 +44,7 @@ import com.hackclub.hccore.tasks.AutoAFKTask;
 import com.hackclub.hccore.utils.TimeUtil;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Getter;
 import org.bukkit.DyeColor;
 import org.bukkit.GameRule;
 import org.bukkit.Material;
@@ -52,19 +52,31 @@ import org.bukkit.World;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.block.banner.PatternType;
 import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BannerMeta;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.incendo.cloud.SenderMapper;
+import org.incendo.cloud.annotations.AnnotationParser;
+import org.incendo.cloud.execution.ExecutionCoordinator;
+import org.incendo.cloud.minecraft.extras.MinecraftHelp;
+import org.incendo.cloud.paper.LegacyPaperCommandManager;
 
 public class HCCorePlugin extends JavaPlugin {
 
+  @Getter
   private DataManager dataManager;
+  @Getter
   private ProtocolManager protocolManager;
-  private SlackBot bot;
+  @Getter
+  private SlackBot slackBot;
+  @Getter
+  private static HCCorePlugin instance;
 
   @Override
   public void onEnable() {
+    instance = this;
     // enable default advancement announcements, should probably leave default, but removes need to re-enable on each server
     for (World world : this.getServer().getWorlds()) {
       world.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, true);
@@ -79,46 +91,42 @@ public class HCCorePlugin extends JavaPlugin {
 
     if (this.getConfig().getBoolean("settings.slack-link.enabled", false)) {
       try {
-        this.bot = new SlackBot(this);
+        this.slackBot = new SlackBot(this);
       } catch (Exception e) {
         e.printStackTrace();
       }
     }
-    // Register commands
 
-    registerCommand("afk", new AFKCommand(this));
-    registerCommand("color", new ColorCommand(this));
-    registerCommand("loc", new LocCommand(this));
-    registerCommand("nick", new NickCommand(this));
-    registerCommand("ping", new PingCommand(this));
-    registerCommand("slack", new SlackCommand(this));
-    registerCommand("spawn", new SpawnCommand(this));
-    registerCommand("stats", new StatsCommand(this));
-    registerCommand("rules", new RulesCommand());
-    registerCommand("welcome", new WelcomeCommand());
-    registerCommand("msg", new MessageCommand(this));
-    registerCommand("reply", new ReplyCommand(this));
+    final LegacyPaperCommandManager<CommandSender> manager = new LegacyPaperCommandManager<>(
+        instance,
+        ExecutionCoordinator.simpleCoordinator(),
+        SenderMapper.identity()
+    );
+    manager.captionRegistry().registerProvider(MinecraftHelp.defaultCaptionsProvider());
+    var annotationParser = new AnnotationParser<>(manager, CommandSender.class);
 
-    // prepare for new emotes commands:
-    // downvote       "↓"
-    // shrug          "¯\_(ツ)_/¯"
-    // tableflip      "(╯°□°）╯︵ ┻━┻"
-    // upvote         "↑"
-    // angry          "ಠ_ಠ"
+    CommandManager.registerCommands(instance, instance.getServer().getScheduler(), annotationParser);
+
+    // emojis in chat
+    // :downvote:       "↓"
+    // :shrug:          "¯\_(ツ)_/¯"
+    // :tableflip:      "(╯°□°）╯︵ ┻━┻"
+    // :upvote:         "↑"
+    // :angry:          "ಠ_ಠ"
 
     // Register advancements
     this.registerAdvancements();
 
     // Register event listeners
-    if (this.bot != null) {
-      this.getServer().getPluginManager().registerEvents(this.bot, this);
-      this.advancementTab.getEventManager().register(this.bot, ProgressionUpdateEvent.class,
-          this.bot::onCustomAdvancementProgressed);
+    if (this.slackBot != null) {
+      this.getServer().getPluginManager().registerEvents(this.slackBot, this);
+      this.advancementTab.getEventManager().register(this.slackBot, ProgressionUpdateEvent.class,
+          this.slackBot::onCustomAdvancementProgressed);
     }
 
-    this.getServer().getPluginManager().registerEvents(new AFKListener(this), this);
+    this.getServer().getPluginManager().registerEvents(new AFKListener(), this);
     this.getServer().getPluginManager().registerEvents(new BeehiveInteractionListener(), this);
-    this.getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
+    this.getServer().getPluginManager().registerEvents(new PlayerListener(), this);
 
     // Register packet listeners
     this.getProtocolManager().addPacketListener(
@@ -138,27 +146,15 @@ public class HCCorePlugin extends JavaPlugin {
   public void onDisable() {
     this.getDataManager().unregisterAll();
 
-    if (this.bot != null) {
+    if (this.slackBot != null) {
       try {
-        this.bot.disconnect();
+        this.slackBot.disconnect();
       } catch (Exception e) {
         e.printStackTrace();
       }
 
-      this.bot = null;
+      this.slackBot = null;
     }
-  }
-
-  public DataManager getDataManager() {
-    return this.dataManager;
-  }
-
-  public ProtocolManager getProtocolManager() {
-    return this.protocolManager;
-  }
-
-  public SlackBot getSlackBot() {
-    return this.bot;
   }
 
   public AdvancementTab advancementTab;
@@ -221,19 +217,6 @@ public class HCCorePlugin extends JavaPlugin {
     // Register all advancements
     advancementTab.registerAdvancements(root, musicophile, bug, contribute, diamonds, hub, dragon,
         wither, elder, wolf, ironGolem, mile, astra);
-  }
-
-  private void registerCommand(String name, CommandExecutor commandExecutor) {
-    PluginCommand command = this.getCommand(name);
-    if (command == null) {
-      this.getLogger().severe("Command %s not found in plugin.yml".formatted(name));
-      return;
-    }
-    command.setExecutor(commandExecutor);
-  }
-
-  public static HCCorePlugin getInstance() {
-    return HCCorePlugin.getPlugin(HCCorePlugin.class);
   }
 
 }

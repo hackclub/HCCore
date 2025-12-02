@@ -4,6 +4,7 @@ import static net.kyori.adventure.text.Component.text;
 
 import com.hackclub.hccore.HCCorePlugin;
 import com.hackclub.hccore.PlayerData;
+import com.hackclub.hccore.enums.Emotes;
 import com.hackclub.hccore.playermessages.WelcomeMessage;
 import com.hackclub.hccore.playermessages.player.BanMessage;
 import com.hackclub.hccore.playermessages.player.ChatMessage;
@@ -11,8 +12,10 @@ import com.hackclub.hccore.playermessages.player.JoinMessage;
 import com.hackclub.hccore.playermessages.player.LeaveMessage;
 import com.hackclub.hccore.playermessages.player.MustLinkMessage;
 import com.hackclub.hccore.playermessages.player.ServerFullMessage;
+import io.papermc.paper.event.player.AsyncChatEvent;
 import java.util.UUID;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
@@ -22,7 +25,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -34,11 +36,7 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 
 public class PlayerListener implements Listener {
 
-  private final HCCorePlugin plugin;
-
-  public PlayerListener(HCCorePlugin plugin) {
-    this.plugin = plugin;
-  }
+  private final HCCorePlugin plugin = HCCorePlugin.getInstance();
 
   @EventHandler
   public void onEntityDamage(final EntityDamageEvent event) {
@@ -70,25 +68,22 @@ public class PlayerListener implements Listener {
   }
 
   @EventHandler(priority = EventPriority.LOWEST)
-  public void onAsyncPlayerChat(final AsyncPlayerChatEvent event) {
-    event.setCancelled(true);
-    Player player = event.getPlayer();
-
-    // Apply the player's chat color to the message and translate color codes
-
-    PlayerData data = this.plugin.getDataManager().getData(player);
-    TextColor messageColor = data.getMessageColor();
+  public void onAsyncChat(final AsyncChatEvent event) {
+    event.renderer((source, sourceDisplayName, message, viewer) -> {
+      PlayerData data = this.plugin.getDataManager().getData(source);
+      TextColor messageColor = data.getMessageColor();
 //    TextColor nameColor = data.getNameColor();
 
-    Component nameComponent = player.displayName().hoverEvent(
-        net.kyori.adventure.text.event.HoverEvent.showEntity(player.getType(), player.getUniqueId(),
-            player.name()));
+      String rawMessage = ((TextComponent) event.message()).content();
 
-    this.plugin.getServer().broadcast(ChatMessage.get(nameComponent, event.getMessage(), messageColor));
+      // Apply the player's chat color to the message and translate color codes
 
-    // TODO: find out how to do chat without cancelling the event
-    // it seems that the new event, AsyncChatEvent takes / receives direct components
-    // only remaining thing would be to replace formatting codes
+      Component nameComponent = source.displayName().hoverEvent(
+          net.kyori.adventure.text.event.HoverEvent.showEntity(source.getType(), source.getUniqueId(),
+              source.name()));
+
+      return ChatMessage.get(nameComponent, Emotes.parseString(rawMessage), messageColor);
+    });
   }
 
   public static boolean isSlackJoinAllowed(PlayerData data) {

@@ -1,57 +1,48 @@
 package com.hackclub.hccore.commands.messaging;
 
-import com.comphenix.protocol.PacketType.Play;
-import com.hackclub.hccore.HCCorePlugin;
-import com.hackclub.hccore.playermessages.MustBePlayerMessage;
+import com.hackclub.hccore.annotations.annotations.RegisteredCommand;
+import com.hackclub.hccore.commands.general.AbstractCommand;
 import com.hackclub.hccore.playermessages.NoOnlinePlayerMessage;
 import com.hackclub.hccore.playermessages.messages.PrivateMessage;
-import java.util.Arrays;
 import net.kyori.adventure.text.Component;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.entity.Player;
+import org.incendo.cloud.annotation.specifier.Greedy;
+import org.incendo.cloud.annotations.Argument;
+import org.incendo.cloud.annotations.Command;
 import org.jetbrains.annotations.NotNull;
 
-public class ReplyCommand implements CommandExecutor {
+@RegisteredCommand
+public class ReplyCommand extends AbstractCommand {
 
-  private HCCorePlugin plugin;
-
-  public ReplyCommand(HCCorePlugin plugin) {
-    this.plugin = plugin;
-  }
-
-  @Override
-  public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-    if (args.length < 1) return false;
-
-    if (!(sender instanceof Player sendingPlayer)) {
-      sender.sendMessage(MustBePlayerMessage.get());
-      return true;
-    }
-
+  @Command("r|reply <message>")
+  public void execute(
+      final @NotNull Player sender,
+      final @NotNull @Argument("message") @Greedy String message
+  ) {
     Player recipientPlayer;
     try {
-      recipientPlayer = sender.getServer().getPlayer(this.plugin.getDataManager().getData(sendingPlayer).getLastPlayerChattingWith());
+      recipientPlayer = sender.getServer().getPlayer(this.plugin.getDataManager().getData(sender).getLastPlayerChattingWith());
     } catch (Exception e) {
       sender.sendMessage(NoOnlinePlayerMessage.get());
-      return true;
+      return;
     }
 
     if (recipientPlayer == null) {
       sender.sendMessage(NoOnlinePlayerMessage.get());
-      return true;
+      return;
     }
 
-    final Component senderMessage = PrivateMessage.get("You", recipientPlayer.getName(), String.join(" ", args), null, this.plugin.getDataManager().getData(recipientPlayer).getNameColor());
-    final Component receiverMessage = PrivateMessage.get(sendingPlayer.getName(), "You", String.join(" ", args), this.plugin.getDataManager().getData(sendingPlayer).getNameColor(), null);
+    final TextColor senderColor = dataManager.getData(sender).getNameColor();
+    final TextColor recipientColor = dataManager.getData(recipientPlayer).getNameColor();
 
-    this.plugin.getDataManager().getData(recipientPlayer).setLastPlayerChattingWith(sendingPlayer.getUniqueId());
-    this.plugin.getDataManager().getData(sendingPlayer).setLastPlayerChattingWith(recipientPlayer.getUniqueId());
+    final Component senderMessage = PrivateMessage.get("You", recipientPlayer.getName(), message, null, recipientColor);
+    final Component receiverMessage = PrivateMessage.get(sender.getName(), "You", message, senderColor, null);
 
+    plugin.getDataManager().getData(recipientPlayer).setLastPlayerChattingWith((sender).getUniqueId());
+    plugin.getDataManager().getData(sender).setLastPlayerChattingWith(recipientPlayer.getUniqueId());
+
+    sender.sendMessage(senderMessage);
     recipientPlayer.sendMessage(receiverMessage);
-    sendingPlayer.sendMessage(senderMessage);
-
-    return true;
   }
 }

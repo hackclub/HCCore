@@ -2,6 +2,8 @@ package com.hackclub.hccore.commands;
 
 import com.hackclub.hccore.HCCorePlugin;
 import com.hackclub.hccore.PlayerData;
+import com.hackclub.hccore.annotations.annotations.RegisteredCommand;
+import com.hackclub.hccore.commands.general.AbstractCommand;
 import com.hackclub.hccore.playermessages.MustBePlayerMessage;
 import com.hackclub.hccore.playermessages.NoOnlinePlayerMessage;
 import com.hackclub.hccore.playermessages.loc.HasLocationMessage;
@@ -18,215 +20,182 @@ import com.hackclub.hccore.playermessages.loc.SelfShareMessage;
 import com.hackclub.hccore.playermessages.loc.SendSharedMessage;
 import com.hackclub.hccore.playermessages.loc.SpecifyLocationMessage;
 import com.hackclub.hccore.playermessages.loc.SpecifyShareMessage;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import com.hackclub.hccore.utils.ComponentBuilder;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.bukkit.Location;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
-import org.bukkit.util.StringUtil;
+import org.incendo.cloud.annotation.specifier.Greedy;
+import org.incendo.cloud.annotations.Argument;
+import org.incendo.cloud.annotations.Command;
+import org.incendo.cloud.annotations.suggestion.Suggestions;
+import org.incendo.cloud.context.CommandContext;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public class LocCommand implements TabExecutor {
+@RegisteredCommand
+@Command("loc|locations")
+public class LocCommand extends AbstractCommand{
 
-  private final HCCorePlugin plugin;
+  @Command("del [name]")
+  public void executeDel(
+      final @NotNull Player sender,
+      @Nullable @Argument(value = "name", suggestions = "locations") @Greedy String name
+  ) {
+    if (name == null) {
+      sender.sendMessage(SpecifyLocationMessage.get());
+      return;
+    }
+    PlayerData data = this.plugin.getDataManager().getData(sender);
+    name = name.replaceAll(" ", "_");
+    if (!data.getSavedLocations().containsKey(name)) {
+      sender.sendMessage(LocationNotFoundMessage.get());
+      return;
+    }
 
-  public LocCommand(HCCorePlugin plugin) {
-    this.plugin = plugin;
+    data.getSavedLocations().remove(name);
+    sender.sendMessage(LocationRemovedMessage.get(name));
   }
-
-  @Override
-  public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd,
-      @NotNull String alias, String[] args) {
-    if (!(sender instanceof Player player)) {
-      sender.sendMessage(MustBePlayerMessage.get());
-      return true;
+  
+  @Command("get [name]")
+  public void executeGet(
+      final @NotNull Player sender,
+      @Nullable @Argument(value = "name", suggestions = "locations") @Greedy String name
+  ) {
+    if (name == null) {
+      sender.sendMessage(SpecifyLocationMessage.get());
+      return;
+    }
+    PlayerData data = this.plugin.getDataManager().getData(sender);
+    name = name.replaceAll(" ", "_");
+    if (!data.getSavedLocations().containsKey(name)) {
+      sender.sendMessage(LocationNotFoundMessage.get());
+      return;
     }
 
-    if (args.length == 0) {
-      return false;
-    }
-
-    PlayerData data = this.plugin.getDataManager().getData(player);
-    String locationName = String.join("_", Arrays.copyOfRange(args, 1, args.length));
-    switch (args[0].toLowerCase()) {
-      // /loc del <name>
-      case "del" -> {
-        if (args.length < 2) {
-          sender.sendMessage(SpecifyLocationMessage.get());
-          break;
-        }
-
-        if (!data.getSavedLocations().containsKey(locationName)) {
-          sender.sendMessage(LocationNotFoundMessage.get());
-          break;
-        }
-
-        data.getSavedLocations().remove(locationName);
-        sender.sendMessage(LocationRemovedMessage.get(locationName));
-      }
-
-      // /loc get <name>
-      case "get" -> {
-        if (args.length < 2) {
-          sender.sendMessage(SpecifyLocationMessage.get());
-          break;
-        }
-        if (!data.getSavedLocations().containsKey(locationName)) {
-          sender.sendMessage(LocationNotFoundMessage.get());
-          break;
-        }
-
-        Location savedLocation = data.getSavedLocations().get(locationName);
-        sender.sendMessage(LocationGetMessage.get(locationName, savedLocation.getWorld().getName(),
-            savedLocation.getBlockX(), savedLocation.getBlockY(), savedLocation.getBlockZ()));
-      }
-
-      // /loc list
-      case "list" -> {
-        Map<String, Location> savedLocations = data.getSavedLocations();
-        if (savedLocations.isEmpty()) {
-          sender.sendMessage(NoLocationsMessage.get());
-          break;
-        }
-
-        sender.sendMessage(LocationListMessage.get(savedLocations));
-      }
-
-      // /loc rename <old name> <new name>
-      case "rename" -> {
-        if (args.length < 3) {
-          sender.sendMessage(this.plugin.getCommand("loc").getUsage());
-          break;
-        }
-        String oldName = args[1];
-        String newName = String.join("_", Arrays.copyOfRange(args, 2, args.length));
-        Location targetLoc = data.getSavedLocations().get(oldName);
-        if (!data.getSavedLocations().containsKey(oldName)) {
-          sender.sendMessage(LocationNotFoundMessage.get());
-          break;
-        }
-        if (data.getSavedLocations().containsKey(newName)) {
-          sender.sendMessage(LocationExistsMessage.get());
-          break;
-        }
-        data.getSavedLocations().put(newName, targetLoc);
-        data.getSavedLocations().remove(oldName);
-        sender.sendMessage(LocationRenamedMessage.get(oldName, newName));
-      }
-
-      // /loc save <name>
-      case "save" -> {
-        if (args.length < 2) {
-          sender.sendMessage(SpecifyLocationMessage.get());
-          break;
-        }
-        if (data.getSavedLocations().containsKey(locationName)) {
-          sender.sendMessage(LocationExistsMessage.get());
-          break;
-        }
-
-        Location currentLocation = player.getLocation();
-        data.getSavedLocations().put(locationName, currentLocation);
-        sender.sendMessage(
-            LocationAddMessage.get(locationName, currentLocation.getWorld().getName(),
-                currentLocation));
-      }
-
-      // /loc share <name> <player>
-      case "share" -> {
-        if (args.length < 3) {
-          sender.sendMessage(SpecifyShareMessage.get());
-        }
-        locationName = args[1];
-        String recipientName = args[2];
-
-        if (!data.getSavedLocations().containsKey(locationName)) {
-          sender.sendMessage(LocationNotFoundMessage.get());
-          break;
-        }
-        Location sendLocation = data.getSavedLocations().get(locationName);
-        // Get the player we're sending to
-        Player recipient = sender.getServer().getPlayer(recipientName);
-        if (recipient == null) {
-          sender.sendMessage(NoOnlinePlayerMessage.get());
-          break;
-        }
-        if (recipientName.equals(player.getName())) {
-          sender.sendMessage(SelfShareMessage.get());
-          break;
-        }
-        PlayerData recipData = this.plugin.getDataManager().getData(recipient);
-        String shareLocName = player.getName() + " " + locationName;
-
-        if (recipData.getSavedLocations().containsKey(player.getName() + ":" + shareLocName)) {
-          sender.sendMessage(HasLocationMessage.get(recipientName, locationName));
-          break;
-        }
-
-        player.sendMessage(SendSharedMessage.get(locationName, recipientName));
-        player.sendMessage(RecipSharedMessage.get(player.getName(), locationName,
-            sendLocation.getWorld().getName(), sendLocation.getBlockX(), sendLocation.getBlockY(),
-            sendLocation.getBlockZ()));
-        recipData.getSavedLocations().put(player.getName() + ":" + locationName, sendLocation);
-      }
-      default -> {
-        return false;
-      }
-    }
-
-    return true;
+    Location savedLocation = data.getSavedLocations().get(name);
+    sender.sendMessage(LocationGetMessage.get(name, savedLocation.getWorld().getName(),
+        savedLocation.getBlockX(), savedLocation.getBlockY(), savedLocation.getBlockZ()));
   }
-
-  @Override
-  public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command cmd,
-      @NotNull String alias, String[] args) {
-    if (!(sender instanceof Player)) {
-      return null;
+  
+  @Command("list")
+  public void executeList(
+      final @NotNull Player sender
+  ) {
+    PlayerData data = this.plugin.getDataManager().getData(sender);
+    Map<String, Location> savedLocations = data.getSavedLocations();
+    if (savedLocations.isEmpty()) {
+      sender.sendMessage(NoLocationsMessage.get());
+      return;
     }
 
-    List<String> completions = new ArrayList<>();
-    switch (args.length) {
-      // Complete subcommand
-      case 1 -> {
-        List<String> subcommands = Arrays.asList("del", "get", "list", "rename", "save", "share");
-        StringUtil.copyPartialMatches(args[0], subcommands, completions);
-      }
-
-      // Complete location name for everything but /loc list and /loc save
-      case 2 -> {
-        if (args[0].equalsIgnoreCase("list") || args[0].equalsIgnoreCase("save")) {
-          break;
-        }
-
-        Player player = (Player) sender;
-        PlayerData data = this.plugin.getDataManager().getData(player);
-        for (Map.Entry<String, Location> entry : data.getSavedLocations().entrySet()) {
-          if (StringUtil.startsWithIgnoreCase(entry.getKey(), args[1])) {
-            completions.add(entry.getKey());
-          }
-        }
-      }
-
-      // Complete online player name for /loc share
-      case 3 -> {
-        if (!args[0].equalsIgnoreCase("share")) {
-          break;
-        }
-
-        for (Player player : sender.getServer().getOnlinePlayers()) {
-          if (StringUtil.startsWithIgnoreCase(player.getName(), args[2])) {
-            completions.add(player.getName());
-          }
-        }
-      }
+    sender.sendMessage(LocationListMessage.get(savedLocations));
+  }
+  
+  @Command("rename [old] [new]")
+  public void executeRename(
+      final @NotNull Player sender,
+      @Nullable @Argument(value = "old", suggestions = "locations") String name,
+      @Nullable @Argument(value = "new") @Greedy String newName
+  ) {
+    if (name == null || newName == null) {
+      ComponentBuilder.newBuilder()
+          .red("Usage: /loc rename <old name> <new name>")
+          .send(sender);
+      return;
+    }
+    PlayerData data = this.plugin.getDataManager().getData(sender);
+    newName = newName.replaceAll(" ", "_");
+    Location targetLoc = data.getSavedLocations().get(name);
+    if (!data.getSavedLocations().containsKey(name)) {
+      sender.sendMessage(LocationNotFoundMessage.get());
+      return;
+    }
+    if (data.getSavedLocations().containsKey(newName)) {
+      sender.sendMessage(LocationExistsMessage.get());
+      return;
+    }
+    data.getSavedLocations().put(newName, targetLoc);
+    data.getSavedLocations().remove(name);
+    sender.sendMessage(LocationRenamedMessage.get(name, newName));
+  }
+  
+  @Command("save [name]")
+  public void executeSave(
+      final @NotNull Player sender,
+      @Nullable @Argument(value = "name", suggestions = "locations") String name
+  ) {
+    if (name == null) {
+      sender.sendMessage(SpecifyLocationMessage.get());
+      return;
+    }
+    PlayerData data = this.plugin.getDataManager().getData(sender);
+    name = name.replaceAll(" ", "_");
+    if (data.getSavedLocations().containsKey(name)) {
+      sender.sendMessage(LocationExistsMessage.get());
+      return;
     }
 
-    Collections.sort(completions);
-    return completions;
+    Location currentLocation = sender.getLocation();
+    data.getSavedLocations().put(name, currentLocation);
+    sender.sendMessage(
+        LocationAddMessage.get(name, currentLocation.getWorld().getName(),
+            currentLocation));
+  }
+  
+  @Command("share [name] [player]")
+  public void executeShare(
+      final @NotNull Player sender,
+      @Nullable @Argument(value = "name", suggestions = "locations") String name,
+      @Nullable @Argument(value = "player") Player target
+  ) {
+    if (name == null || target == null) {
+      sender.sendMessage(SpecifyShareMessage.get());
+      return;
+    }
+    PlayerData data = this.plugin.getDataManager().getData(sender);
+    if (!data.getSavedLocations().containsKey(name)) {
+      sender.sendMessage(LocationNotFoundMessage.get());
+      return;
+    }
+    Location sendLocation = data.getSavedLocations().get(name);
+    // Get the player we're sending to
+    Player recipient = sender.getServer().getPlayer(name);
+    if (recipient == null) {
+      sender.sendMessage(NoOnlinePlayerMessage.get());
+      return;
+    }
+    if (target.getName().equals(sender.getName())) {
+      sender.sendMessage(SelfShareMessage.get());
+      return;
+    }
+    PlayerData recipData = this.plugin.getDataManager().getData(recipient);
+    String shareLocName = sender.getName() + " " + name;
+
+    if (recipData.getSavedLocations().containsKey(sender.getName() + ":" + shareLocName)) {
+      sender.sendMessage(HasLocationMessage.get(target.getName(), name));
+      return;
+    }
+
+    sender.sendMessage(SendSharedMessage.get(name, target.getName()));
+    sender.sendMessage(RecipSharedMessage.get(sender.getName(), name,
+        sendLocation.getWorld().getName(), sendLocation.getBlockX(), sendLocation.getBlockY(),
+        sendLocation.getBlockZ()));
+    recipData.getSavedLocations().put(sender.getName() + ":" + name, sendLocation);
+  }
+  
+  
+
+  @Suggestions("locations")
+  public Set<String> suggestLocations(
+      final CommandContext<Player> context,
+      final String input
+  ) {
+    Player player = context.sender();
+    PlayerData data = plugin.getDataManager().getData(player);
+    return data.getSavedLocations().keySet().stream()
+        .filter(key -> key.toLowerCase().startsWith(input.toLowerCase()))
+        .collect(Collectors.toSet());
   }
 }

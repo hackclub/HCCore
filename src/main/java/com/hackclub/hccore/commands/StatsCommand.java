@@ -1,138 +1,79 @@
 package com.hackclub.hccore.commands;
 
-import com.hackclub.hccore.HCCorePlugin;
 import com.hackclub.hccore.PlayerData;
+import com.hackclub.hccore.annotations.annotations.RegisteredCommand;
+import com.hackclub.hccore.commands.general.AbstractCommand;
 import com.hackclub.hccore.playermessages.MustBePlayerMessage;
-import com.hackclub.hccore.playermessages.NoOnlinePlayerMessage;
 import com.hackclub.hccore.playermessages.stats.IncludePlayerStatMessage;
-import com.hackclub.hccore.playermessages.stats.InvalidStatMessage;
 import com.hackclub.hccore.playermessages.stats.SpecificStatMessage;
 import com.hackclub.hccore.playermessages.stats.StatMessage;
 import com.hackclub.hccore.playermessages.stats.UnsupportedStatMessage;
 import com.hackclub.hccore.playermessages.stats.YourStatsMessage;
 import com.hackclub.hccore.utils.TimeUtil;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 import org.bukkit.Material;
 import org.bukkit.Statistic;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
-import org.bukkit.util.StringUtil;
+import org.incendo.cloud.annotations.Argument;
+import org.incendo.cloud.annotations.Command;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public class StatsCommand implements TabExecutor {
+@RegisteredCommand
+public class StatsCommand extends AbstractCommand {
 
-  private static final List<String> STATISTIC_NAMES = Arrays.stream(Statistic.values())
-      .map(statistic -> statistic.name().toLowerCase()).toList();
-
-  private final HCCorePlugin plugin;
-
-  public StatsCommand(HCCorePlugin plugin) {
-    this.plugin = plugin;
-  }
-
-  @Override
-  public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd,
-      @NotNull String alias, String[] args) {
+  @Command("stats [player] [option] [statistic]")
+  public void execute(
+      final @NotNull CommandSender sender,
+      final @Nullable @Argument("player") Player target,
+      final @Nullable @Argument("option") Option option,
+      final @Nullable @Argument("statistic") Statistic statistic
+  ) {
     boolean extended = false;
 
     // /stats
-    if (args.length == 0) {
+    if (target == null) {
       if (sender instanceof Player) {
         sender.sendMessage(YourStatsMessage.get("Your"));
         this.sendStatistics(sender, (Player) sender, false);
       } else {
         sender.sendMessage(MustBePlayerMessage.get());
       }
-      return true;
+
+      return;
     }
 
-    if (args.length > 1) {
-      switch (args[1].toLowerCase()) {
-        case "extended" -> // /stats <player> extended
+    if (option != null) {
+      switch (option) {
+        case EXTENDED -> // /stats <player> extended
             extended = true;
-        case "only" -> { // /stats <player> only <statistic>
-          if (args.length < 3) {
+        case ONLY -> { // /stats <player> only <statistic>
+          if (statistic == null) {
             sender.sendMessage(IncludePlayerStatMessage.get());
-            return true;
+            return;
           }
-          if (!STATISTIC_NAMES.contains(args[2].toLowerCase())) {
-            sender.sendMessage(InvalidStatMessage.get());
-            return true;
-          }
-          Statistic specificStat = Statistic.valueOf(args[2].toUpperCase());
-          if (specificStat.isSubstatistic()) {
+
+          if (statistic.isSubstatistic()) {
             sender.sendMessage(UnsupportedStatMessage.get());
             // TODO support it(?)
-            return true;
+            return;
           }
-          Player player = sender.getServer().getPlayerExact(args[0]);
-          if (player != null) {
-            PlayerData data = this.plugin.getDataManager().getData(player);
-            sender.sendMessage(SpecificStatMessage.get(data.getUsableName(), args[2].toLowerCase(),
-                String.valueOf(player.getStatistic(specificStat))));
-          } else {
-            sender.sendMessage(NoOnlinePlayerMessage.get());
-          }
-          return true;
-        }
-        default -> {
-          return false;
+          PlayerData data = this.plugin.getDataManager().getData(target);
+          sender.sendMessage(SpecificStatMessage.get(data.getUsableName(), option.name().toLowerCase(),
+              String.valueOf(target.getStatistic(statistic))));
         }
       }
-    }
-
-    // /stats <player>
-    Player targetPlayer = sender.getServer().getPlayerExact(args[0]);
-    if (targetPlayer != null) {
-      PlayerData data = this.plugin.getDataManager().getData(targetPlayer);
-      sender.sendMessage(YourStatsMessage.get(data.getUsableName()));
-      this.sendStatistics(sender, targetPlayer, extended);
     } else {
-      sender.sendMessage(NoOnlinePlayerMessage.get());
+      PlayerData data = this.plugin.getDataManager().getData(target);
+      sender.sendMessage(YourStatsMessage.get(data.getUsableName()));
+      this.sendStatistics(sender, target, extended);
     }
-
-    return true;
   }
 
-  @Override
-  public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command cmd,
-      @NotNull String alias, String[] args) {
-    List<String> completions = new ArrayList<>();
-
-    switch (args.length) {
-      case 1 -> {
-        for (Player player : sender.getServer().getOnlinePlayers()) {
-          if (StringUtil.startsWithIgnoreCase(player.getName(), args[0])) {
-            completions.add(player.getName());
-          }
-        }
-      }
-      case 2 -> {
-        List<String> subcommands = Arrays.asList("extended", "only");
-        StringUtil.copyPartialMatches(args[1], subcommands, completions);
-      }
-      case 3 -> {
-        // Only send statistic name suggestions in /stats <player> only
-        if (!args[1].equalsIgnoreCase("only")) {
-          break;
-        }
-        for (Statistic statistic : Statistic.values()) {
-          if (StringUtil.startsWithIgnoreCase(statistic.name(), args[2])) {
-            completions.add(statistic.name().toLowerCase());
-          }
-        }
-      }
-    }
-
-    Collections.sort(completions);
-    return completions;
+  public enum Option {
+    EXTENDED,ONLY
   }
 
   private void sendStatistics(CommandSender sender, Player player, Boolean extended) {
