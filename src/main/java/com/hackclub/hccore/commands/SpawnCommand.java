@@ -12,6 +12,8 @@ import com.hackclub.hccore.playermessages.spawn.SpawnSkyMessage;
 import com.hackclub.hccore.playermessages.spawn.SpawnTeleportMessage;
 import org.bukkit.GameMode;
 import org.bukkit.World.Environment;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -35,6 +37,11 @@ public class SpawnCommand extends ArgumentlessCommand implements CommandExecutor
       sender.sendMessage(MustBePlayerMessage.get());
       return true;
     }
+
+    Location safeSpawn = player.getWorld().getSpawnLocation();
+    int spawnX = (int) safeSpawn.getX();
+    int spawnZ = (int) safeSpawn.getZ();
+    World world = player.getWorld();
 
     if (player.getGameMode() == GameMode.SURVIVAL || player.getGameMode() == GameMode.ADVENTURE) {
       // Player needs to be in an Overworld
@@ -76,9 +83,36 @@ public class SpawnCommand extends ArgumentlessCommand implements CommandExecutor
         sender.sendMessage(SpawnHurtMessage.get(damageCooldown - secondsSinceLastDamaged));
         return true;
       }
+
+      // Finds a safe spawn location near the world spawn to counter holes/pits/etc
+      Block highestSpawnBlock = world.getHighestBlockAt(spawnX, spawnZ);
+      int safeY = -1;
+
+      // Search downward from the highest block to find a safe spawn point
+      for (int y = highestSpawnBlock.getY(); y > world.getMinHeight(); y--) {
+        Block blockAtY = world.getBlockAt(spawnX, y, spawnZ);
+        Block blockBelow = world.getBlockAt(spawnX, y - 1, spawnZ);
+        Block blockAbove = world.getBlockAt(spawnX, y + 1, spawnZ);
+
+        // make sure the block below is solid and not liquid (could be lava), and the block at Y and above are passable
+        if (blockBelow.getType().isSolid() &&
+            !blockBelow.isLiquid() &&
+            blockAtY.isPassable() &&
+            blockAbove.isPassable()) {
+          safeY = y;
+          break;
+        }
+      }
+
+      // update safeSpawn if a safe Y was found
+      if (safeY != -1) {
+        safeSpawn = new Location(world, spawnX + 0.5, safeY, spawnZ + 0.5);
+      }
+
+      // otherwise, no safe spot found, just use the original spawn location
     }
 
-    player.teleport(player.getWorld().getSpawnLocation());
+    player.teleport(safeSpawn);
     sender.sendMessage(SpawnTeleportMessage.get());
     return true;
   }
