@@ -67,7 +67,7 @@ public class HCCorePlugin extends JavaPlugin {
   private SlackBot bot;
 
   // Server icon from Shrimp Shuffler
-  public CachedServerIcon serverIcon = getServer().getServerIcon();
+  public volatile CachedServerIcon serverIcon = null;
 
   @Override
   public void onEnable() {
@@ -135,11 +135,14 @@ public class HCCorePlugin extends JavaPlugin {
     new AutoAFKTask(this).runTaskTimer(this,
         (long) this.getConfig().getInt("settings.auto-afk-time") * TimeUtil.TICKS_PER_SECOND,
         30 * TimeUtil.TICKS_PER_SECOND);
-    getServer().getScheduler().runTaskTimer(this, new IconTask(this), 20, 12000);
+    getServer().getScheduler().runTaskTimerAsynchronously(this, new IconTask(this), 20, (long) this.getConfig().getInt("settings.icon-change-time") * TimeUtil.TICKS_PER_SECOND);
 
     // Register all the players that were online before this plugin was enabled (example
     // scenario: plugin reload) to prevent null pointer errors.
     this.getDataManager().registerAll();
+
+    // Add the server icon to the variable
+    serverIcon = getServer().getServerIcon();
   }
 
   @Override

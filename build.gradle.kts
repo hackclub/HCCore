@@ -59,7 +59,7 @@ tasks {
 
 
     runServer {
-        minecraftVersion("1.21")
+        minecraftVersion("1.21.10")
         systemProperty("net.kyori.adventure.text.warnWhenLegacyFormattingDetected", false)
     }
 }
