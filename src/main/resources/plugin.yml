@@ -8,6 +8,7 @@ depend:
 softdepend:
   - SuperVanish
   - PremiumVanish
+  - PlaceholderAPI
 commands:
   afk:
     description: Toggles your AFK status
