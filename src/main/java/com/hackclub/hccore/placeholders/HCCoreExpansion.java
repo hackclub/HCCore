@@ -28,6 +28,11 @@ public class HCCoreExpansion extends PlaceholderExpansion {
   }
 
   @Override
+  public boolean persist() {
+    return true;
+  }
+
+  @Override
   public String onRequest(OfflinePlayer player, @NotNull String params) {
     if (params.equalsIgnoreCase("displayname")) {
       LegacyComponentSerializer hexSerializer = LegacyComponentSerializer.builder()
