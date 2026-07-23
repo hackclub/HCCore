@@ -11,6 +11,7 @@ import com.hackclub.hccore.playermessages.player.JoinMessage;
 import com.hackclub.hccore.playermessages.player.LeaveMessage;
 import com.hackclub.hccore.playermessages.player.MustLinkMessage;
 import com.hackclub.hccore.playermessages.player.ServerFullMessage;
+import de.myzelyam.api.vanish.VanishAPI;
 import java.util.UUID;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
@@ -144,8 +145,15 @@ public class PlayerListener implements Listener {
 
     // NOTE: Title isn't cleared when the player leaves the server
     player.clearTitle();
-    event.joinMessage(
-        JoinMessage.get(player.displayName().hoverEvent(event.getPlayer())));
+    if (plugin.vanishPluginPresent) {
+      if (VanishAPI.isInvisible(event.getPlayer())) {
+        event.joinMessage(
+            JoinMessage.get(player.displayName().hoverEvent(event.getPlayer())));
+      }
+    } else {
+      event.joinMessage(
+          JoinMessage.get(player.displayName().hoverEvent(event.getPlayer())));
+    }
     plugin.advancementTab.showTab(player);
   }
 
@@ -195,6 +203,12 @@ public class PlayerListener implements Listener {
   public void onPlayerQuit(final PlayerQuitEvent event) {
     // NOTE: Title isn't cleared when the player leaves the server
     // event.getPlayer().resetTitle();
+    if (plugin.vanishPluginPresent) {
+      if (VanishAPI.isInvisible(event.getPlayer())) {
+        this.plugin.getDataManager().unregisterPlayer(event.getPlayer());
+        return;
+      }
+    }
     event.quitMessage(
         LeaveMessage.get(
             event.getPlayer().displayName().hoverEvent(event.getPlayer())));
