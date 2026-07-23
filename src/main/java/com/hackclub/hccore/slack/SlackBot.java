@@ -596,15 +596,15 @@ public class SlackBot implements Listener {
   }
 
   // allow vanish listeners to fake join/leave messages
-  public void sendFakeMsg(String type, String displayName) {
+  public void sendFakeMsg(String type, Component displayName) {
     try {
       switch (type) {
         case "join":
-          sendMessage("*" + displayName + "* joined the game!",
+          sendMessage("*" + plainText().serialize(displayName) + "* joined the game!",
               playerServerJoinAvatarUrl, "Join");
           break;
         case "leave":
-          sendMessage("*" + displayName + "* left the game!",
+          sendMessage("*" + plainText().serialize(displayName) + "* left the game!",
               playerServerLeaveAvatarUrl, "Leave");
           break;
       }

@@ -15,11 +15,17 @@ public class VanishListener implements Listener {
 
   @EventHandler(priority = EventPriority.MONITOR)
   public void onVanish(PlayerHideEvent e) {
-    plugin.getSlackBot().sendFakeMsg("leave", e.getPlayer().getName());
+    if (plugin.getSlackBot() == null) {
+      return;
+    }
+    plugin.getSlackBot().sendFakeMsg("leave", e.getPlayer().displayName());
   }
 
   @EventHandler(priority = EventPriority.MONITOR)
   public void onUnvanish(PlayerShowEvent e) {
-    plugin.getSlackBot().sendFakeMsg("join", e.getPlayer().getName());
+    if (plugin.getSlackBot() == null) {
+      return;
+    }
+    plugin.getSlackBot().sendFakeMsg("join", e.getPlayer().displayName());
   }
 }

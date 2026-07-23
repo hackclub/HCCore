@@ -158,7 +158,7 @@ public class LocCommand implements TabExecutor {
           break;
         }
         if (plugin.vanishPluginPresent) {
-          if (VanishAPI.isInvisible(recipient)) {
+          if (VanishAPI.isInvisible(recipient) && !VanishAPI.canSee(player, recipient)) {
             sender.sendMessage(NoOnlinePlayerMessage.get());
             break;
           }

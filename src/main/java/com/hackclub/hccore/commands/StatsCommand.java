@@ -76,7 +76,7 @@ public class StatsCommand implements TabExecutor {
           Player player = sender.getServer().getPlayerExact(args[0]);
           if (player != null) {
             if (plugin.vanishPluginPresent) {
-              if (VanishAPI.isInvisible(player) && !VanishAPI.canSee(player, (Player) sender)) {
+              if (VanishAPI.isInvisible(player) && (!(sender instanceof Player sendingPlayer) || !VanishAPI.canSee(sendingPlayer, player))) {
                 sender.sendMessage(NoOnlinePlayerMessage.get());
                 return true;
               }
@@ -99,7 +99,7 @@ public class StatsCommand implements TabExecutor {
     Player targetPlayer = sender.getServer().getPlayerExact(args[0]);
     if (targetPlayer != null) {
       if (plugin.vanishPluginPresent) {
-        if (VanishAPI.isInvisible(targetPlayer) && !VanishAPI.canSee(targetPlayer, (Player) sender)) {
+        if (VanishAPI.isInvisible(targetPlayer) && (!(sender instanceof Player sendingPlayer) || !VanishAPI.canSee(sendingPlayer, targetPlayer))) {
           sender.sendMessage(NoOnlinePlayerMessage.get());
           return true;
         }
