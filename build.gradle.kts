@@ -29,6 +29,7 @@ dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT")
     compileOnly("com.mojang:brigadier:1.0.18")
     compileOnly("com.github.LeonMangler:SuperVanish:6.2.18-3")
+    compileOnly("me.clip:placeholderapi:2.12.3")
 }
 
 tasks {
@@ -82,4 +83,7 @@ repositories {
 
     // supervanish
     maven("https://jitpack.io")
+
+    // PlaceholderAPI
+    maven("https://repo.extendedclip.com/releases/")
 }

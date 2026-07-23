@@ -42,6 +42,7 @@ import com.hackclub.hccore.listeners.NameChangeListener;
 import com.hackclub.hccore.listeners.PlayerListener;
 import com.hackclub.hccore.listeners.ServerListPingListener;
 import com.hackclub.hccore.listeners.VanishListener;
+import com.hackclub.hccore.placeholders.HCCoreExpansion;
 import com.hackclub.hccore.slack.SlackBot;
 import com.hackclub.hccore.tasks.AutoAFKTask;
 import com.hackclub.hccore.tasks.IconTask;
@@ -143,6 +144,11 @@ public class HCCorePlugin extends JavaPlugin {
         (long) this.getConfig().getInt("settings.auto-afk-time") * TimeUtil.TICKS_PER_SECOND,
         30 * TimeUtil.TICKS_PER_SECOND);
     getServer().getScheduler().runTaskTimerAsynchronously(this, new IconTask(this), 20, (long) this.getConfig().getInt("settings.icon-change-time") * TimeUtil.TICKS_PER_SECOND);
+
+    // Register placeholders if applicable
+    if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+      new HCCoreExpansion(this).register();
+    }
 
     // Register all the players that were online before this plugin was enabled (example
     // scenario: plugin reload) to prevent null pointer errors.
