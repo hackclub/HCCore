@@ -18,6 +18,7 @@ import com.hackclub.hccore.playermessages.loc.SelfShareMessage;
 import com.hackclub.hccore.playermessages.loc.SendSharedMessage;
 import com.hackclub.hccore.playermessages.loc.SpecifyLocationMessage;
 import com.hackclub.hccore.playermessages.loc.SpecifyShareMessage;
+import de.myzelyam.api.vanish.VanishAPI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -156,6 +157,12 @@ public class LocCommand implements TabExecutor {
           sender.sendMessage(NoOnlinePlayerMessage.get());
           break;
         }
+        if (plugin.vanishPluginPresent) {
+          if (VanishAPI.isInvisible(recipient) && !VanishAPI.canSee(player, recipient)) {
+            sender.sendMessage(NoOnlinePlayerMessage.get());
+            break;
+          }
+        }
         if (recipientName.equals(player.getName())) {
           sender.sendMessage(SelfShareMessage.get());
           break;
@@ -185,7 +192,7 @@ public class LocCommand implements TabExecutor {
   @Override
   public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command cmd,
       @NotNull String alias, String[] args) {
-    if (!(sender instanceof Player)) {
+    if (!(sender instanceof Player sendingPlayer)) {
       return null;
     }
 
@@ -219,6 +226,11 @@ public class LocCommand implements TabExecutor {
         }
 
         for (Player player : sender.getServer().getOnlinePlayers()) {
+          if (plugin.vanishPluginPresent) {
+            if (VanishAPI.isInvisible(player) && !VanishAPI.canSee(sendingPlayer, player)) {
+              continue;
+            }
+          }
           if (StringUtil.startsWithIgnoreCase(player.getName(), args[2])) {
             completions.add(player.getName());
           }

@@ -33,6 +33,7 @@ import com.slack.api.model.User;
 import com.slack.api.model.event.MessageBotEvent;
 import com.slack.api.model.event.MessageDeletedEvent;
 import com.slack.api.model.event.MessageEvent;
+import de.myzelyam.api.vanish.VanishAPI;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import java.io.IOException;
 import java.util.Arrays;
@@ -367,6 +368,11 @@ public class SlackBot implements Listener {
   @EventHandler(priority = EventPriority.MONITOR)
   public void onJoin(PlayerJoinEvent e) throws IOException {
     Player player = e.getPlayer();
+    if (plugin.vanishPluginPresent) {
+      if (VanishAPI.isInvisible(player)) {
+        return;
+      }
+    }
     sendMessage("*" + plainText().serialize(player.displayName()) + "* joined the game!",
         playerServerJoinAvatarUrl, "Join");
   }
@@ -374,6 +380,11 @@ public class SlackBot implements Listener {
   @EventHandler(priority = EventPriority.MONITOR)
   public void onQuit(PlayerQuitEvent e) throws IOException {
     Player player = e.getPlayer();
+    if (plugin.vanishPluginPresent) {
+      if (VanishAPI.isInvisible(player)) {
+        return;
+      }
+    }
     sendMessage("*" + plainText().serialize(player.displayName()) + "* left the game!",
         playerServerLeaveAvatarUrl, "Leave");
   }
@@ -581,6 +592,24 @@ public class SlackBot implements Listener {
       String code = UUID.randomUUID().toString().substring(0, 6);
       mcLinkCodes.put(mcUuid, code);
       return code;
+    }
+  }
+
+  // allow vanish listeners to fake join/leave messages
+  public void sendFakeMsg(String type, Component displayName) {
+    try {
+      switch (type) {
+        case "join":
+          sendMessage("*" + plainText().serialize(displayName) + "* joined the game!",
+              playerServerJoinAvatarUrl, "Join");
+          break;
+        case "leave":
+          sendMessage("*" + plainText().serialize(displayName) + "* left the game!",
+              playerServerLeaveAvatarUrl, "Leave");
+          break;
+      }
+    } catch (IOException ioException) {
+      ioException.printStackTrace();
     }
   }
 }

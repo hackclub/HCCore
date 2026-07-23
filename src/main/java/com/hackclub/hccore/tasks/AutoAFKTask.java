@@ -3,6 +3,7 @@ package com.hackclub.hccore.tasks;
 import com.hackclub.hccore.HCCorePlugin;
 import com.hackclub.hccore.PlayerData;
 import com.hackclub.hccore.playermessages.afk.AutoAFKMessage;
+import de.myzelyam.api.vanish.VanishAPI;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -21,6 +22,13 @@ public class AutoAFKTask extends BukkitRunnable {
       // Skip players who are already AFK
       if (data.isAfk()) {
         continue;
+      }
+
+      // Skip vanished players (no one can see them anyway, not needed to notify afk)
+      if (plugin.vanishPluginPresent) {
+        if (VanishAPI.isInvisible(player)) {
+          continue;
+        }
       }
 
       long secondsSinceLastActive =

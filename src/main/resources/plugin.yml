@@ -5,6 +5,9 @@ main: com.hackclub.hccore.HCCorePlugin
 depend:
   - UltimateAdvancementAPI
   - ProtocolLib
+softdepend:
+  - SuperVanish
+  - PremiumVanish
 commands:
   afk:
     description: Toggles your AFK status

@@ -5,6 +5,7 @@ import com.hackclub.hccore.HCCorePlugin;
 import com.hackclub.hccore.playermessages.MustBePlayerMessage;
 import com.hackclub.hccore.playermessages.NoOnlinePlayerMessage;
 import com.hackclub.hccore.playermessages.messages.PrivateMessage;
+import de.myzelyam.api.vanish.VanishAPI;
 import java.util.Arrays;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.Command;
@@ -41,6 +42,13 @@ public class ReplyCommand implements CommandExecutor {
     if (recipientPlayer == null) {
       sender.sendMessage(NoOnlinePlayerMessage.get());
       return true;
+    }
+
+    if (plugin.vanishPluginPresent) {
+      if (VanishAPI.isInvisible(recipientPlayer) && !VanishAPI.canSee(sendingPlayer, recipientPlayer)) {
+        sender.sendMessage(NoOnlinePlayerMessage.get());
+        return true;
+      }
     }
 
     final Component senderMessage = PrivateMessage.get("You", recipientPlayer.getName(), String.join(" ", args), null, this.plugin.getDataManager().getData(recipientPlayer).getNameColor());

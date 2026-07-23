@@ -11,6 +11,7 @@ import com.hackclub.hccore.playermessages.stats.StatMessage;
 import com.hackclub.hccore.playermessages.stats.UnsupportedStatMessage;
 import com.hackclub.hccore.playermessages.stats.YourStatsMessage;
 import com.hackclub.hccore.utils.TimeUtil;
+import de.myzelyam.api.vanish.VanishAPI;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -74,6 +75,12 @@ public class StatsCommand implements TabExecutor {
           }
           Player player = sender.getServer().getPlayerExact(args[0]);
           if (player != null) {
+            if (plugin.vanishPluginPresent) {
+              if (VanishAPI.isInvisible(player) && (!(sender instanceof Player sendingPlayer) || !VanishAPI.canSee(sendingPlayer, player))) {
+                sender.sendMessage(NoOnlinePlayerMessage.get());
+                return true;
+              }
+            }
             PlayerData data = this.plugin.getDataManager().getData(player);
             sender.sendMessage(SpecificStatMessage.get(data.getUsableName(), args[2].toLowerCase(),
                 String.valueOf(player.getStatistic(specificStat))));
@@ -91,6 +98,12 @@ public class StatsCommand implements TabExecutor {
     // /stats <player>
     Player targetPlayer = sender.getServer().getPlayerExact(args[0]);
     if (targetPlayer != null) {
+      if (plugin.vanishPluginPresent) {
+        if (VanishAPI.isInvisible(targetPlayer) && (!(sender instanceof Player sendingPlayer) || !VanishAPI.canSee(sendingPlayer, targetPlayer))) {
+          sender.sendMessage(NoOnlinePlayerMessage.get());
+          return true;
+        }
+      }
       PlayerData data = this.plugin.getDataManager().getData(targetPlayer);
       sender.sendMessage(YourStatsMessage.get(data.getUsableName()));
       this.sendStatistics(sender, targetPlayer, extended);
@@ -109,6 +122,11 @@ public class StatsCommand implements TabExecutor {
     switch (args.length) {
       case 1 -> {
         for (Player player : sender.getServer().getOnlinePlayers()) {
+          if (plugin.vanishPluginPresent) {
+            if (VanishAPI.isInvisible(player) && (!(sender instanceof Player sendingPlayer) || !VanishAPI.canSee(sendingPlayer, player))) {
+              continue;
+            }
+          }
           if (StringUtil.startsWithIgnoreCase(player.getName(), args[0])) {
             completions.add(player.getName());
           }

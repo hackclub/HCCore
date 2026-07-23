@@ -3,6 +3,22 @@
   <component name="JsonSchemaMappingsProjectConfiguration">
     <state>
       <map>
+        <entry key="Bukkit plugin.yml">
+          <value>
+            <SchemaInfo>
+              <option name="name" value="Bukkit plugin.yml" />
+              <option name="relativePathToSchema" value="https://www.schemastore.org/bukkit-plugin.json" />
+              <option name="applicationDefined" value="true" />
+              <option name="patterns">
+                <list>
+                  <Item>
+                    <option name="path" value="src/main/resources/plugin.yml" />
+                  </Item>
+                </list>
+              </option>
+            </SchemaInfo>
+          </value>
+        </entry>
         <entry key="GitHub Workflow">
           <value>
             <SchemaInfo>
