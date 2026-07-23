@@ -6,6 +6,7 @@ import com.hackclub.hccore.playermessages.MustBePlayerMessage;
 import com.hackclub.hccore.playermessages.NoOnlinePlayerMessage;
 import com.hackclub.hccore.playermessages.ping.PingFailMessage;
 import com.hackclub.hccore.playermessages.ping.PingMessage;
+import de.myzelyam.api.vanish.VanishAPI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -48,6 +49,12 @@ public class PingCommand implements TabExecutor {
     // /ping [player]
     Player targetPlayer = sender.getServer().getPlayerExact(args[0]);
     if (targetPlayer != null) {
+      if (plugin.vanishPluginPresent) {
+        if (VanishAPI.isInvisible(targetPlayer)) {
+          sender.sendMessage(NoOnlinePlayerMessage.get());
+          return true;
+        }
+      }
       PlayerData data = this.plugin.getDataManager().getData(targetPlayer);
       int ping = targetPlayer.getPing();
       // Failed for some reason
@@ -70,6 +77,11 @@ public class PingCommand implements TabExecutor {
     List<String> completions = new ArrayList<>();
     if (args.length == 1) {
       for (Player player : sender.getServer().getOnlinePlayers()) {
+        if (plugin.vanishPluginPresent) {
+          if (VanishAPI.isInvisible(player) && (!(sender instanceof Player sendingPlayer) || !VanishAPI.canSee(sendingPlayer, player))) {
+            continue;
+          }
+        }
         if (StringUtil.startsWithIgnoreCase(player.getName(), args[0])) {
           completions.add(player.getName());
         }

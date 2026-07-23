@@ -18,6 +18,7 @@ import com.hackclub.hccore.playermessages.loc.SelfShareMessage;
 import com.hackclub.hccore.playermessages.loc.SendSharedMessage;
 import com.hackclub.hccore.playermessages.loc.SpecifyLocationMessage;
 import com.hackclub.hccore.playermessages.loc.SpecifyShareMessage;
+import de.myzelyam.api.vanish.VanishAPI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -155,6 +156,12 @@ public class LocCommand implements TabExecutor {
         if (recipient == null) {
           sender.sendMessage(NoOnlinePlayerMessage.get());
           break;
+        }
+        if (plugin.vanishPluginPresent) {
+          if (VanishAPI.isInvisible(player)) {
+            sender.sendMessage(NoOnlinePlayerMessage.get());
+            break;
+          }
         }
         if (recipientName.equals(player.getName())) {
           sender.sendMessage(SelfShareMessage.get());

@@ -11,6 +11,7 @@ import com.hackclub.hccore.playermessages.stats.StatMessage;
 import com.hackclub.hccore.playermessages.stats.UnsupportedStatMessage;
 import com.hackclub.hccore.playermessages.stats.YourStatsMessage;
 import com.hackclub.hccore.utils.TimeUtil;
+import de.myzelyam.api.vanish.VanishAPI;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -74,6 +75,12 @@ public class StatsCommand implements TabExecutor {
           }
           Player player = sender.getServer().getPlayerExact(args[0]);
           if (player != null) {
+            if (plugin.vanishPluginPresent) {
+              if (VanishAPI.isInvisible(player)) {
+                sender.sendMessage(NoOnlinePlayerMessage.get());
+                return true;
+              }
+            }
             PlayerData data = this.plugin.getDataManager().getData(player);
             sender.sendMessage(SpecificStatMessage.get(data.getUsableName(), args[2].toLowerCase(),
                 String.valueOf(player.getStatistic(specificStat))));
