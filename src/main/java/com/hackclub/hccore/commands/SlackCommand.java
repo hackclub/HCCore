@@ -15,6 +15,7 @@ import com.hackclub.hccore.playermessages.slack.UnlinkedSlackMessage;
 import com.hackclub.hccore.playermessages.slack.VerificationErrorMessage;
 import com.hackclub.hccore.playermessages.slack.VerificationSentMessage;
 import com.slack.api.model.User;
+import de.myzelyam.api.vanish.VanishAPI;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -138,7 +139,7 @@ public class SlackCommand implements TabExecutor {
   @Override
   public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command cmd,
       @NotNull String alias, String[] args) {
-    if (!(sender instanceof Player)) {
+    if (!(sender instanceof Player sendingPlayer)) {
       return null;
     }
 
@@ -151,6 +152,11 @@ public class SlackCommand implements TabExecutor {
       case 2 -> {
         if (args[0].equalsIgnoreCase("lookup")) {
           for (Player player : sender.getServer().getOnlinePlayers()) {
+            if (plugin.vanishPluginPresent) {
+              if (VanishAPI.isInvisible(player) && !VanishAPI.canSee(sendingPlayer, player)) {
+                continue;
+              }
+            }
             if (StringUtil.startsWithIgnoreCase(player.getName(), args[1])) {
               completions.add(player.getName());
             }

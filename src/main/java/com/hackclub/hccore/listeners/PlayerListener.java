@@ -146,7 +146,7 @@ public class PlayerListener implements Listener {
     // NOTE: Title isn't cleared when the player leaves the server
     player.clearTitle();
     if (plugin.vanishPluginPresent) {
-      if (VanishAPI.isInvisible(event.getPlayer())) {
+      if (!VanishAPI.isInvisible(event.getPlayer())) {
         event.joinMessage(
             JoinMessage.get(player.displayName().hoverEvent(event.getPlayer())));
       }

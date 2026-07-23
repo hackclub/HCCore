@@ -158,7 +158,7 @@ public class LocCommand implements TabExecutor {
           break;
         }
         if (plugin.vanishPluginPresent) {
-          if (VanishAPI.isInvisible(player)) {
+          if (VanishAPI.isInvisible(recipient)) {
             sender.sendMessage(NoOnlinePlayerMessage.get());
             break;
           }
@@ -192,7 +192,7 @@ public class LocCommand implements TabExecutor {
   @Override
   public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command cmd,
       @NotNull String alias, String[] args) {
-    if (!(sender instanceof Player)) {
+    if (!(sender instanceof Player sendingPlayer)) {
       return null;
     }
 
@@ -226,6 +226,11 @@ public class LocCommand implements TabExecutor {
         }
 
         for (Player player : sender.getServer().getOnlinePlayers()) {
+          if (plugin.vanishPluginPresent) {
+            if (VanishAPI.isInvisible(player) && !VanishAPI.canSee(sendingPlayer, player)) {
+              continue;
+            }
+          }
           if (StringUtil.startsWithIgnoreCase(player.getName(), args[2])) {
             completions.add(player.getName());
           }

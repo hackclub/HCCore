@@ -50,7 +50,7 @@ public class PingCommand implements TabExecutor {
     Player targetPlayer = sender.getServer().getPlayerExact(args[0]);
     if (targetPlayer != null) {
       if (plugin.vanishPluginPresent) {
-        if (VanishAPI.isInvisible(targetPlayer)) {
+        if (VanishAPI.isInvisible(targetPlayer) && (!(sender instanceof Player sendingPlayer) || !VanishAPI.canSee(sendingPlayer, targetPlayer))) {
           sender.sendMessage(NoOnlinePlayerMessage.get());
           return true;
         }

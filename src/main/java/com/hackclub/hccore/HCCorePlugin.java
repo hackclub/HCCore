@@ -129,6 +129,7 @@ public class HCCorePlugin extends JavaPlugin {
     this.getServer().getPluginManager().registerEvents(new BeehiveInteractionListener(), this);
     this.getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
     this.getServer().getPluginManager().registerEvents(new ServerListPingListener(this), this);
+    vanishPluginPresent = (getServer().getPluginManager().isPluginEnabled("SuperVanish") || getServer().getPluginManager().isPluginEnabled("PremiumVanish"));
     if (vanishPluginPresent) {
       this.getServer().getPluginManager().registerEvents(new VanishListener(this), this);
     }

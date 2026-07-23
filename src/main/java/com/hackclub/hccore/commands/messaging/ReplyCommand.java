@@ -45,7 +45,7 @@ public class ReplyCommand implements CommandExecutor {
     }
 
     if (plugin.vanishPluginPresent) {
-      if (VanishAPI.isInvisible(recipientPlayer)) {
+      if (VanishAPI.isInvisible(recipientPlayer) && !VanishAPI.canSee(sendingPlayer, recipientPlayer)) {
         sender.sendMessage(NoOnlinePlayerMessage.get());
         return true;
       }
