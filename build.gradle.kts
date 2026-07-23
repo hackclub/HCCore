@@ -28,6 +28,7 @@ dependencies {
     compileOnly("net.dmulloy2:ProtocolLib:5.4.0")
     compileOnly("io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT")
     compileOnly("com.mojang:brigadier:1.0.18")
+    compileOnly("com.github.LeonMangler:SuperVanish:6.2.18-3")
 }
 
 tasks {
@@ -78,4 +79,7 @@ repositories {
 
     // brigadier
     maven("https://libraries.minecraft.net")
+
+    // supervanish
+    maven("https://jitpack.io")
 }

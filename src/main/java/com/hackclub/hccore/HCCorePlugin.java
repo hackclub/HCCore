@@ -41,6 +41,7 @@ import com.hackclub.hccore.listeners.BeehiveInteractionListener;
 import com.hackclub.hccore.listeners.NameChangeListener;
 import com.hackclub.hccore.listeners.PlayerListener;
 import com.hackclub.hccore.listeners.ServerListPingListener;
+import com.hackclub.hccore.listeners.VanishListener;
 import com.hackclub.hccore.slack.SlackBot;
 import com.hackclub.hccore.tasks.AutoAFKTask;
 import com.hackclub.hccore.tasks.IconTask;
@@ -68,6 +69,8 @@ public class HCCorePlugin extends JavaPlugin {
 
   // Server icon from Shrimp Shuffler
   public volatile CachedServerIcon serverIcon = null;
+
+  public boolean vanishPluginPresent = false;
 
   @Override
   public void onEnable() {
@@ -126,6 +129,9 @@ public class HCCorePlugin extends JavaPlugin {
     this.getServer().getPluginManager().registerEvents(new BeehiveInteractionListener(), this);
     this.getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
     this.getServer().getPluginManager().registerEvents(new ServerListPingListener(this), this);
+    if (vanishPluginPresent) {
+      this.getServer().getPluginManager().registerEvents(new VanishListener(this), this);
+    }
 
     // Register packet listeners
     this.getProtocolManager().addPacketListener(
