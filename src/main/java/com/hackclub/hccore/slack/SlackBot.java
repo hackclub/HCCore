@@ -61,7 +61,6 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerAdvancementDoneEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 public class SlackBot implements Listener {
@@ -212,33 +211,48 @@ public class SlackBot implements Listener {
                 })).then(LiteralArgumentBuilder.<SlashCommandRequest>literal("lookup")
                 .then(RequiredArgumentBuilder.<SlashCommandRequest, String>argument("mention",
                     StringArgumentType.greedyString()).executes(context -> {
-                  String mention = StringArgumentType.getString(context, "mention");
+                  String query = StringArgumentType.getString(context, "mention").trim();
                   String id;
 
                   // User mention
-                  if (mention.startsWith("<@") && mention.endsWith(">")) {
-                    int pipeIdx = mention.indexOf('|');
+                  if (query.startsWith("<@") && query.endsWith(">")) {
+                    int pipeIdx = query.indexOf('|');
                     if (pipeIdx == -1) {
-                      id = mention.substring(2, mention.length() - 1);
+                      id = query.substring(2, query.length() - 1);
                     } else {
-                      id = mention.substring(2, pipeIdx);
+                      id = query.substring(2, pipeIdx);
                     }
                   } else {
                     // Try user id
-                    id = mention;
+                    id = query;
                   }
 
                   try {
                     PlayerData data = this.plugin.getDataManager()
-                        .findData(pData -> pData.getSlackId().equals(id));
+                        .findData(pData -> Objects.equals(pData.getSlackId(), id));
 
-                    if (data == null) {
-                      context.getSource().getContext().respond("No linked user was found");
+                    if (data != null) {
+                      context.getSource().getContext().respond(
+                          "<@%s> is linked to the Minecraft account *%s* (`%s`).".formatted(
+                              id, data.getUsableName(), data.offlinePlayer.getName()));
+                      return 1;
+                    }
+
+                    data = this.plugin.getDataManager().findData(
+                        pData -> pData.offlinePlayer.getName() != null && (
+                            pData.offlinePlayer.getName().equalsIgnoreCase(query)
+                                || pData.getUsableName().equalsIgnoreCase(query)));
+
+                    if (data == null || data.getSlackId() == null) {
+                      context.getSource().getContext().respond(
+                          "No linked Slack or Minecraft account was found for `%s`.".formatted(
+                              query));
                       return 1;
                     }
 
                     context.getSource().getContext().respond(
-                        "The linked user is %s".formatted(data.getUsableName()));
+                        "Minecraft account *%s* (`%s`) is linked to <@%s>.".formatted(
+                            data.getUsableName(), data.offlinePlayer.getName(), data.getSlackId()));
                   } catch (IOException e) {
                     e.printStackTrace();
                   }
@@ -346,9 +360,10 @@ public class SlackBot implements Listener {
     sendMessage(":large_green_circle: *Server Started*", serverConsoleAvatarUrl, "Console");
   }
 
-  @Contract(pure = true)
   public static @NotNull String getPlayerAvatarLink(String uuid) {
-    return "https://cravatar.eu/avatar/" + uuid + "/512";
+    // Slack caches icon_url values aggressively. A changing query parameter makes it request the
+    // player's current skin instead of permanently reusing the first image it saw for this UUID.
+    return "https://cravatar.eu/avatar/" + uuid + "/512?cache=" + System.currentTimeMillis();
   }
 
   public void disconnect() throws Exception {
@@ -373,7 +388,8 @@ public class SlackBot implements Listener {
         return;
       }
     }
-    sendMessage("*" + plainText().serialize(player.displayName()) + "* joined the game!",
+    PlayerData data = plugin.getDataManager().getData(player);
+    sendMessage("*" + plainText().serialize(data.getDisplayedName()) + "* joined the game!",
         playerServerJoinAvatarUrl, "Join");
   }
 
