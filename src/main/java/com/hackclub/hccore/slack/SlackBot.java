@@ -182,8 +182,11 @@ public class SlackBot implements Listener {
         LiteralArgumentBuilder.<SlashCommandRequest>literal("/%s".formatted(commandBase)).then(
                 LiteralArgumentBuilder.<SlashCommandRequest>literal("players").executes(context -> {
                   Collection<? extends Player> onlinePlayers = plugin.getServer().getOnlinePlayers();
+                  if (plugin.vanishPluginPresent) {
+                    onlinePlayers.removeIf(VanishAPI::isInvisible);
+                  }
                   StringBuilder message = new StringBuilder();
-                  if (onlinePlayers.size() == 0) {
+                  if (onlinePlayers.isEmpty()) {
                     message.append("There are currently no players online");
                   } else {
                     message.append("*Players online* (%d/%d)\n\n".formatted(onlinePlayers.size(),
