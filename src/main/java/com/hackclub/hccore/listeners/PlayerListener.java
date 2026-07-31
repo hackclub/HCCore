@@ -136,7 +136,7 @@ public class PlayerListener implements Listener {
     return MustLinkMessage.get(baseCommand, code, codeExpires);
   }
 
-  @EventHandler(priority = EventPriority.MONITOR)
+  @EventHandler(priority = EventPriority.HIGHEST)
   public void onJoin(final PlayerJoinEvent event) {
     Player player = event.getPlayer();
     this.plugin.getDataManager().registerPlayer(player);

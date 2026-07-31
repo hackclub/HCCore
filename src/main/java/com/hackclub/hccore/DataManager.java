@@ -2,9 +2,12 @@ package com.hackclub.hccore;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Predicate;
+import java.util.logging.Level;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
@@ -43,7 +46,39 @@ public class DataManager {
   }
 
   public PlayerData findData(Predicate<? super PlayerData> predicate) {
-    return this.onlinePlayers.values().stream().filter(predicate).findFirst().orElse(null);
+    PlayerData onlineMatch = this.onlinePlayers.values().stream().filter(predicate).findFirst()
+        .orElse(null);
+    if (onlineMatch != null) {
+      return onlineMatch;
+    }
+
+    File[] files = new File(this.dataFolder).listFiles(
+        (directory, name) -> name.endsWith(".json"));
+    if (files == null) {
+      return null;
+    }
+
+    Set<UUID> onlineUuids = new HashSet<>(this.onlinePlayers.keySet());
+    for (File file : files) {
+      String filename = file.getName();
+      try {
+        UUID uuid = UUID.fromString(filename.substring(0, filename.length() - ".json".length()));
+        if (onlineUuids.contains(uuid)) {
+          continue;
+        }
+
+        PlayerData data = this.getData(this.plugin.getServer().getOfflinePlayer(uuid));
+        data.load();
+        if (predicate.test(data)) {
+          return data;
+        }
+      } catch (IllegalArgumentException exception) {
+        this.plugin.getLogger().log(Level.WARNING,
+            "Ignoring player data file with an invalid UUID: " + filename);
+      }
+    }
+
+    return null;
   }
 
   public void registerPlayer(Player player) {
