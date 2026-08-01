@@ -37,7 +37,6 @@ import de.myzelyam.api.vanish.VanishAPI;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -181,9 +180,11 @@ public class SlackBot implements Listener {
     dispatcher.register(
         LiteralArgumentBuilder.<SlashCommandRequest>literal("/%s".formatted(commandBase)).then(
                 LiteralArgumentBuilder.<SlashCommandRequest>literal("players").executes(context -> {
-                  Collection<? extends Player> onlinePlayers = plugin.getServer().getOnlinePlayers();
+                  List<? extends Player> onlinePlayers = plugin.getServer().getOnlinePlayers().stream()
+                      .filter(player -> !plugin.vanishPluginPresent || !VanishAPI.isInvisible(player))
+                      .toList();
                   StringBuilder message = new StringBuilder();
-                  if (onlinePlayers.size() == 0) {
+                  if (onlinePlayers.isEmpty()) {
                     message.append("There are currently no players online");
                   } else {
                     message.append("*Players online* (%d/%d)\n\n".formatted(onlinePlayers.size(),
