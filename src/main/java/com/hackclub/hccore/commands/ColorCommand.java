@@ -54,6 +54,7 @@ public class ColorCommand implements TabExecutor {
 
       if (newColor == null) {
         sender.sendMessage(InvalidColorMessage.get());
+        return true;
       }
 
 
@@ -74,7 +75,7 @@ public class ColorCommand implements TabExecutor {
       case "name" -> {
         if (args.length == 1) {
           data.setNameColor(null);
-          sender.sendMessage(ColorResetMessage.get("chat"));
+          sender.sendMessage(ColorResetMessage.get("name"));
           break;
         }
         data.setNameColor(newColor);
