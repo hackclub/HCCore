@@ -45,6 +45,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -181,10 +182,9 @@ public class SlackBot implements Listener {
     dispatcher.register(
         LiteralArgumentBuilder.<SlashCommandRequest>literal("/%s".formatted(commandBase)).then(
                 LiteralArgumentBuilder.<SlashCommandRequest>literal("players").executes(context -> {
-                  Collection<? extends Player> onlinePlayers = plugin.getServer().getOnlinePlayers();
-                  if (plugin.vanishPluginPresent) {
-                    onlinePlayers.removeIf(VanishAPI::isInvisible);
-                  }
+                  List<? extends Player> onlinePlayers = plugin.getServer().getOnlinePlayers().stream()
+                      .filter(player -> !plugin.vanishPluginPresent || !VanishAPI.isInvisible(player))
+                      .toList();
                   StringBuilder message = new StringBuilder();
                   if (onlinePlayers.isEmpty()) {
                     message.append("There are currently no players online");
