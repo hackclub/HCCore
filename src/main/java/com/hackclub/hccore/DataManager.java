@@ -1,8 +1,10 @@
 package com.hackclub.hccore;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -80,6 +82,39 @@ public class DataManager {
     }
 
     return null;
+  }
+
+  public List<PlayerData> findDataMany(Predicate<? super PlayerData> predicate) {
+    List<PlayerData> onlineMatches = this.onlinePlayers.values().stream().filter(predicate).toList();
+    List<PlayerData> matches = new ArrayList<>(onlineMatches);
+
+    File[] files = new File(this.dataFolder).listFiles(
+        (directory, name) -> name.endsWith(".json"));
+    if (files == null) {
+      return matches;
+    }
+
+    Set<UUID> onlineUuids = new HashSet<>(this.onlinePlayers.keySet());
+    for (File file : files) {
+      String filename = file.getName();
+      try {
+        UUID uuid = UUID.fromString(filename.substring(0, filename.length() - ".json".length()));
+        if (onlineUuids.contains(uuid)) {
+          continue;
+        }
+
+        PlayerData data = this.getData(this.plugin.getServer().getOfflinePlayer(uuid));
+        data.load();
+        if (predicate.test(data)) {
+          matches.add(data);
+        }
+      } catch (IllegalArgumentException exception) {
+        this.plugin.getLogger().log(Level.WARNING,
+            "Ignoring player data file with an invalid UUID: " + filename);
+      }
+    }
+
+    return matches;
   }
 
   public void registerPlayer(Player player) {
