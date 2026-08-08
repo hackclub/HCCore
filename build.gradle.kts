@@ -59,6 +59,9 @@ tasks {
         archiveClassifier.set("")
     }
 
+    jar {
+        archiveClassifier.set("thin")
+    }
 
     runServer {
         minecraftVersion("1.21.10")
