@@ -40,6 +40,7 @@ public class DataManager {
 
     if (data == null) {
       data = new PlayerData(this.plugin, offlinePlayer);
+      data.load();
     }
 
     return data;
