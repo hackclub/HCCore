@@ -71,7 +71,6 @@ public class DataManager {
         }
 
         PlayerData data = this.getData(this.plugin.getServer().getOfflinePlayer(uuid));
-        data.load();
         if (predicate.test(data)) {
           return data;
         }
@@ -104,7 +103,6 @@ public class DataManager {
         }
 
         PlayerData data = this.getData(this.plugin.getServer().getOfflinePlayer(uuid));
-        data.load();
         if (predicate.test(data)) {
           matches.add(data);
         }
