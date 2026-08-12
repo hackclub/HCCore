@@ -48,6 +48,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.commons.collections4.map.PassiveExpiringMap;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -88,9 +89,7 @@ public class SlackBot implements Listener {
     Pattern sdk = Pattern.compile(".*");
     app.message(sdk, (payload, ctx) -> {
       MessageEvent event = payload.getEvent();
-      // Weird bug with this right now...
-      // String text = StringEscapeUtils.unescapeHtml4(event.getText());
-      String text = event.getText();
+      String text = StringEscapeUtils.unescapeHtml4(event.getText());
       String channelId = event.getChannel();
       String mainChannel = getSlackChannel();
       if (!channelId.equals(mainChannel)) {
