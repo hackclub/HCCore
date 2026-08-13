@@ -72,6 +72,7 @@ public class SlackBot implements Listener {
   public static final String playerServerLeaveAvatarUrl = "https://cloud-if9tepzbn-hack-club-bot.vercel.app/0hccoreleave.png";
   public static final String playerServerJoinAvatarUrl = "https://cloud-if9tepzbn-hack-club-bot.vercel.app/1hccorejoin.png";
   public static final String playerAdvancementAvatarUrl = "https://cloud-obk2f29h4-hack-club-bot.vercel.app/0achievement.png";
+  public static final String playerNicknameChangeUrl = "https://user-cdn.hackclub-assets.com/019ff9c6-1c1e-77c5-8e89-ad86ea7201ae/nickname.png";
   private final HCCorePlugin plugin;
   private final App app;
   private final SlackAppServer server;
@@ -483,6 +484,14 @@ public class SlackBot implements Listener {
     try {
       sendMessage("%s has completed the %s *%s*".formatted(data.getUsableName(), advancementType,
           advancementName), playerAdvancementAvatarUrl, "Advancement");
+    } catch (IOException ioException) {
+      ioException.printStackTrace();
+    }
+  }
+
+  public void preNicknameChange(String oldNickname, String newNickname) {
+    try {
+      sendMessage("%s has changed their nickname to %s".formatted(oldNickname, newNickname), playerNicknameChangeUrl, "Nickname");
     } catch (IOException ioException) {
       ioException.printStackTrace();
     }

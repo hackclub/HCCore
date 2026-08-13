@@ -47,8 +47,11 @@ public class NickCommand implements CommandExecutor {
           PlayerData.MAX_NICKNAME_LENGTH));
       return true;
     }
-
-    this.plugin.getDataManager().getData(player).setNickname(newNickname);
+    PlayerData data = this.plugin.getDataManager().getData(player);
+    if (plugin.getSlackBot() != null) {
+      plugin.getSlackBot().preNicknameChange(data.getUsableName(), newNickname);
+    }
+    data.setNickname(newNickname);
     sender.sendMessage(NicknameSetMessage.get(newNickname,
         plugin.getDataManager().getData(player).getNameColor()));
     return true;
