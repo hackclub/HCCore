@@ -7,6 +7,7 @@ import com.hackclub.hccore.playermessages.nickname.NicknameLengthMessage;
 import com.hackclub.hccore.playermessages.nickname.NicknameResetMessage;
 import com.hackclub.hccore.playermessages.nickname.NicknameSetMessage;
 import com.hackclub.hccore.playermessages.nickname.SaharshMessage;
+import com.hackclub.hccore.slack.SlackBot;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -28,16 +29,24 @@ public class NickCommand implements CommandExecutor {
       sender.sendMessage(MustBePlayerMessage.get());
       return true;
     }
-
+    SlackBot bot = plugin.getSlackBot();
     if (args.length == 0) {
-      this.plugin.getDataManager().getData(player).setNickname(null);
+      PlayerData data = this.plugin.getDataManager().getData(player);
+      if (bot != null) {
+        bot.preNicknameChange(data.getUsableName(), player.getName());
+      }
+      data.setNickname(null);
       sender.sendMessage(NicknameResetMessage.get());
       return true;
     }
 
     String newNickname = String.join(" ", args);
     if (newNickname.equalsIgnoreCase("Saharsh")) {
-      this.plugin.getDataManager().getData(player).setNickname("Saharchery");
+      PlayerData data = this.plugin.getDataManager().getData(player);
+      if (bot != null) {
+        bot.preNicknameChange(data.getUsableName(), "Saharchery");
+      }
+      data.setNickname("Saharchery");
       player.kick(SaharshMessage.get());
       return true;
     }
@@ -47,8 +56,11 @@ public class NickCommand implements CommandExecutor {
           PlayerData.MAX_NICKNAME_LENGTH));
       return true;
     }
-
-    this.plugin.getDataManager().getData(player).setNickname(newNickname);
+    PlayerData data = this.plugin.getDataManager().getData(player);
+    if (bot != null) {
+      bot.preNicknameChange(data.getUsableName(), newNickname);
+    }
+    data.setNickname(newNickname);
     sender.sendMessage(NicknameSetMessage.get(newNickname,
         plugin.getDataManager().getData(player).getNameColor()));
     return true;
