@@ -98,9 +98,18 @@ public class SlackBot implements Listener {
         return ctx.ack();
       }
       String userId = event.getUser();
+      if (userId == null || event.getBotId() != null || event.getSubType() != null) {
+        return ctx.ack();
+      }
       UsersProfileGetResponse result = ctx.client()
           .usersProfileGet(r -> r.token(ctx.getBotToken()).user(userId));
+      if (result == null || result.getProfile() == null) {
+        return ctx.ack();
+      }
       String displayName = result.getProfile().getDisplayName();
+      if (displayName == null || displayName.isEmpty()) {
+        displayName = result.getProfile().getRealName();
+      }
 
       TextComponent nameComponent = Component.text(displayName).color(NamedTextColor.WHITE)
           .hoverEvent(Component.text(result.getProfile().getRealName()));
