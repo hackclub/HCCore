@@ -26,6 +26,10 @@ public class AstraAdv extends BaseAdvancement {
     super(key.getKey(), displayBuilder.coords(adapter, key).build(), root, maxProgression);
 
     registerEvent(PlayerMoveEvent.class, e -> {
+      if (isGranted(e.getPlayer())) {
+        return;
+      }
+      
       if (e.getPlayer().getWorld().getEnvironment() == World.Environment.NORMAL) {
         if (e.getPlayer().getLocation().getY() > minY) {
           incrementProgression(e.getPlayer());

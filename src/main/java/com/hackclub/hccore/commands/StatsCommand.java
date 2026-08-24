@@ -213,6 +213,5 @@ public class StatsCommand implements TabExecutor {
       number /= 100;
       return String.format("%.2f k", number);
     }
-    return null;
   }
 }
