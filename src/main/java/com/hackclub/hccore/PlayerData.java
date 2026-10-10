@@ -23,7 +23,7 @@ import org.bukkit.scoreboard.Team;
 
 public class PlayerData {
 
-  public static final int MAX_NICKNAME_LENGTH = 16;
+  public static final int MAX_NICKNAME_LENGTH = 32;
   private final HCCorePlugin plugin;
   public final Player player;
   public final OfflinePlayer offlinePlayer;
@@ -74,9 +74,10 @@ public class PlayerData {
       this.updateDisplayedName();
 
       TextColor newColor = afk ? NamedTextColor.GRAY : this.getNameColor();
-      String newSuffix = afk ? " (AFK)" : "";
-      this.getTeam().color(NamedTextColor.nearestTo(newColor));
-      this.getTeam().suffix(Component.text(newSuffix).color(newColor));
+      Team team = this.getTeam();
+      if (team != null) {
+        team.color(NamedTextColor.nearestTo(newColor));
+      }
 
       Event event = new PlayerAFKStatusChangeEvent(this.player, afk);
       this.player.getServer().getPluginManager().callEvent(event);
@@ -109,18 +110,45 @@ public class PlayerData {
       return;
     }
 
-    String oldName = this.getUsableName();
+    String oldProfileName = this.getProfileName();
     this.nickname = nickname;
     this.updateDisplayedName();
 
-    // Team#addEntry takes in a string, which in our case, will be a player name. We have to
-    // remove the old name and add the new one so the game has a reference to the player.
+    // The scoreboard team entry must match the name the client sees in the player info packet,
+    // otherwise the team's color and suffix won't apply to the player.
     Team team = this.getTeam();
     if (team != null) { // is null during pre-login event
-      team.removeEntry(oldName);
-      team.addEntry(this.getUsableName());
+      team.removeEntry(oldProfileName);
+      team.addEntry(this.getProfileName());
     }
+  }
 
+  // The name carried in the player's GameProfile. GameProfile names are limited to 16 UTF-16
+  // units, so longer nicknames are split: the first 16 units go here and the rest is appended
+  // via the scoreboard team suffix (see updateTeamDecorations) so the full nickname is still
+  // shown on the vanilla name tag above the player's head. The split never lands between the two
+  // halves of a surrogate pair, so supplementary characters are kept intact.
+  public String getProfileName() {
+    String nickname = this.getNickname();
+    if (nickname != null) {
+      return nickname.substring(0, getSplitIndex(nickname));
+    }
+    return this.offlinePlayer.getName();
+  }
+
+  public String getNicknameOverflow() {
+    String nickname = this.getNickname();
+    if (nickname == null) {
+      return "";
+    }
+    return nickname.substring(getSplitIndex(nickname));
+  }
+
+  private static int getSplitIndex(String nickname) {
+    if (nickname.length() <= 16) {
+      return nickname.length();
+    }
+    return Character.isHighSurrogate(nickname.charAt(15)) ? 15 : 16;
   }
 
   @SuppressWarnings("unused")
@@ -227,8 +255,20 @@ public class PlayerData {
       TextComponent builtDisplayName = this.getDisplayedName();
       this.player.displayName(builtDisplayName);
       this.player.playerListName(builtDisplayName);
+      this.updateTeamDecorations();
       this.refreshNameTag();
     }
+  }
+
+  private void updateTeamDecorations() {
+    Team team = this.getTeam();
+    if (team == null) {
+      return;
+    }
+
+    TextColor color = this.isAfk() ? NamedTextColor.GRAY : this.getNameColor();
+    String suffixText = this.getNicknameOverflow() + (this.isAfk() ? " (AFK)" : "");
+    team.suffix(Component.text(suffixText).color(color));
   }
 
   private void refreshNameTag() {

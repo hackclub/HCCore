@@ -44,8 +44,11 @@ public class NameChangeListener extends PacketAdapter {
         continue;
       }
 
-      // Create a profile with a custom name from current one
-      String newName = this.plugin.getDataManager().getData(player).getUsableName();
+      // Create a profile with a custom name from current one.
+      // GameProfile names are limited to 16 characters, so getProfileName only returns the first
+      // 16 units of longer nicknames; the rest is appended via the scoreboard team suffix
+      // (see PlayerData#updateTeamDecorations) and the display name used in chat/tab.
+      String newName = this.plugin.getDataManager().getData(player).getProfileName();
       WrappedGameProfile newProfile = playerInfoData.getProfile().withName(newName);
       // Copy properties (currently just skin texture) to new profile
       newProfile.getProperties().putAll(playerInfoData.getProfile().getProperties());
