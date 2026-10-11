@@ -75,8 +75,11 @@ public class PlayerData {
 
       TextColor newColor = afk ? NamedTextColor.GRAY : this.getNameColor();
       String newSuffix = afk ? " (AFK)" : "";
-      this.getTeam().color(NamedTextColor.nearestTo(newColor));
-      this.getTeam().suffix(Component.text(newSuffix).color(newColor));
+      Team team = this.getTeam();
+      if (team != null) {
+        team.color(NamedTextColor.nearestTo(newColor));
+        team.suffix(Component.text(newSuffix).color(newColor));
+      }
 
       Event event = new PlayerAFKStatusChangeEvent(this.player, afk);
       this.player.getServer().getPluginManager().callEvent(event);
@@ -179,14 +182,20 @@ public class PlayerData {
       }
 
       // Populate this instance
-      PlayerData data = GsonUtil.getInstance().fromJson(new FileReader(this.dataFile),
-          PlayerData.class);
-      this.setNickname(data.nickname);
-      this.setSlackId(data.slackId);
-      this.setNameColor(data.nameColor);
-      this.setMessageColor(data.messageColor);
-      this.setLastPlayerChattingWith(data.lastPlayerChattingWith);
-      this.savedLocations = data.savedLocations;
+      try (FileReader reader = new FileReader(this.dataFile)) {
+        PlayerData data = GsonUtil.getInstance().fromJson(reader,
+            PlayerData.class);
+        if (data != null) {
+          this.setNickname(data.nickname);
+          this.setSlackId(data.slackId);
+          this.setNameColor(data.nameColor);
+          this.setMessageColor(data.messageColor);
+          this.setLastPlayerChattingWith(data.lastPlayerChattingWith);
+          if (data.savedLocations != null) {
+            this.savedLocations = data.savedLocations;
+          }
+        }
+      }
     } catch (IOException e) {
       e.printStackTrace();
     }
