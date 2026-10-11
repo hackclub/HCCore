@@ -26,9 +26,13 @@ public class MileAdv extends BaseAdvancement {
     super(key.getKey(), displayBuilder.coords(adapter, key).build(), root, maxProgression);
 
     registerEvent(PlayerMoveEvent.class, e -> {
-      if (e.getPlayer().getStatistic(Statistic.WALK_ONE_CM) >= 1609.344 * 100 * 1000) {
-        grant(e.getPlayer());
-      }
+        if (isGranted(e.getPlayer())) {
+            return;
+        }
+        
+        if (e.getPlayer().getStatistic(Statistic.WALK_ONE_CM) >= 160934400) {
+            grant(e.getPlayer());
+        }
     });
   }
 }
